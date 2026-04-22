@@ -200,7 +200,7 @@
 
     <!-- 2. PLAY SCREEN (Talent) -->
     <div id="play-screen" class="screen">
-        <div class="talent-header"><h2>约玩达人</h2></div>
+        <div class="talent-header"><h2>玩</h2></div>
         <div class="talent-card">
             <div class="t-img" style="background-image: url('https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png');"></div>
             <div class="t-info">
@@ -209,7 +209,7 @@
                     <div class="t-stats"><span>168cm</span> | <span>48kg</span></div>
                     <div class="t-social"><span class="social-chip">抖音 2.4w</span><span class="social-chip">B站 1.2w</span></div>
                 </div>
-                <button class="order-btn">邀请约玩</button>
+                <button class="order-btn">邀请</button>
             </div>
             <div class="t-rank">⭐⭐⭐⭐⭐</div>
         </div>
@@ -279,7 +279,7 @@
 
     <nav id="nav-bar">
         <div class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><span>首页</span></div>
-        <div class="nav-item active" onclick="showScreen('play')"><div class="nav-icon">💎</div><span>约玩</span></div>
+        <div class="nav-item active" onclick="showScreen('play')"><div class="nav-icon">💎</div><span>玩</span></div>
         <div class="nav-item" onclick="showScreen('mall')"><div class="nav-icon"><div class="play-icon-box">∇</div></div><span style="margin-top:2px;">商城</span></div>
         <div class="nav-item" onclick="showScreen('msg')"><div class="nav-icon">💬</div><span>消息</span></div>
         <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><span>我</span></div>
@@ -291,7 +291,7 @@
             document.getElementById(id + '-screen').classList.add('active');
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
-                if(item.innerText.includes(id==='home'?'首页':(id==='play'?'约玩':(id==='mall'?'商城':(id==='msg'?'消息':'我'))))) {
+                if(item.innerText.includes(id==='home'?'首页':(id==='play'?'玩':(id==='mall'?'商城':(id==='msg'?'消息':'我'))))) {
                     item.classList.add('active');
                 }
             });
