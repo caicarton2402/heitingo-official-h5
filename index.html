@@ -285,7 +285,27 @@
         <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><span>我</span></div>
     </nav>
 
+    <script src="js/api.js"></script>
     <script>
+        // Load Dynamic Data from API
+        async function loadData() {
+            try {
+                // 1. Fetch Video Feed
+                const feed = await HeitingoAPI.getFeed();
+                if (feed && feed.length > 0) {
+                    const video = feed[0];
+                    document.querySelector('.video-overlay h4').innerHTML = `@${video.author_name || '娥娥不会飞'} <span class="v-badge">达人</span>`;
+                    document.querySelector('.video-overlay p').innerText = video.description;
+                }
+
+                // 2. Fetch Talent List
+                const talents = await HeitingoAPI.getTalentList();
+                // Logic to render talent cards dynamically can be added here
+            } catch (err) {
+                console.warn("Backend not connected, using offline mock data.");
+            }
+        }
+
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id + '-screen').classList.add('active');
@@ -300,6 +320,7 @@
             else video.src = video.src.replace('autoplay=0', 'autoplay=1');
         }
         showScreen('home');
+        loadData();
     </script>
 </body>
 </html>
