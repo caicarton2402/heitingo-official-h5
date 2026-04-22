@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>海汀阁 | HEITINGO - Official App</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #FFFFFF;
+            --accent-color: #FFFFFF;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Optima", "Didot", "Times New Roman", serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 2s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .logo-text {
+            font-size: 32px;
+            letter-spacing: 5px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-text span {
+            margin: 0 15px;
+        }
+        .divider {
+            width: 1px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        .subtitle {
+            margin-top: 20px;
+            font-size: 12px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            opacity: 0.6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .cta {
+            margin-top: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: inline-block;
+        }
+        .cta:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        /* Mobile adjustment */
+        @media (max-width: 480px) {
+            .logo-text { font-size: 24px; }
+            .subtitle { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-text">
+            <span>海汀阁</span>
+            <div class="divider"></div>
+            <span>HEITINGO</span>
+        </div>
+        <div class="subtitle">Short Video · 3D Dressing · Social · E-commerce</div>
+        <div class="cta" onclick="enterApp()">ENTER EXPERIENCE</div>
+    </div>
+
+    <script>
+        function enterApp() {
+            alert("HEITINGO App Interface is currently being refined based on your Architecture Proposal. More modules coming soon.");
+        }
+    </script>
+</body>
+</html>
