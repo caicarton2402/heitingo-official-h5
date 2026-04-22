@@ -12,6 +12,7 @@
     <style>
         :root {
             --bg: #000;
+            --card-bg: #121212;
             --text: #fff;
             --dim: rgba(255,255,255,0.6);
             --accent: #ff2d55;
@@ -25,22 +26,10 @@
             overflow: hidden;
         }
 
-        /* Splash Screen */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .logo-main {
-            font-size: 28px; font-weight: 300; letter-spacing: 4px;
-            display: flex; align-items: center; gap: 15px;
-        }
-        .logo-main .line { width: 1px; height: 24px; background: rgba(255,255,255,0.4); }
-
         /* Navigation Bar */
         nav {
             position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center;
             border-top: 1px solid var(--border); z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom);
@@ -50,126 +39,149 @@
             color: #888; font-size: 11px; gap: 6px; transition: 0.2s;
         }
         .nav-item.active { color: #fff; }
+        .nav-item.active .play-icon-box { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.2); color: #fff; }
         .nav-icon { width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
         .play-icon-box {
             width: 44px; height: 44px; border-radius: 12px;
             border: 2px solid var(--accent); display: flex;
             justify-content: center; align-items: center;
-            box-shadow: 0 0 15px rgba(255, 45, 85, 0.3);
-            color: var(--accent);
+            color: var(--accent); transition: 0.3s;
         }
 
-        /* Top Tab Bar - Persistent on Play Screen */
-        .top-nav {
-            position: absolute; top: 0; width: 100%; height: 100px;
-            z-index: 900;
-            padding: 50px 15px 10px; display: flex; align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
-        }
-        .top-tabs { display: flex; gap: 20px; font-size: 15px; color: #ccc; }
-        .top-tabs span.active { color: #fff; position: relative; }
-        .top-tabs span.active::after {
-            content: ''; position: absolute; bottom: -8px; left: 50%;
-            transform: translateX(-50%); width: 12px; height: 2px;
-            background: #fff; border-radius: 2px;
-        }
-        .icon-btn { font-size: 20px; color: #fff; }
-
-        /* Content Area */
+        /* Screen Wrapper */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             overflow: hidden; display: none;
         }
         .screen.active { display: block; }
 
-        /* 3D Dressing Screen - Strictly following New Image */
+        /* --- 1. HOME SCREEN (Video Player) --- */
+        #home-screen { background: #000; }
+        .video-container { width: 100%; height: 100%; position: relative; }
+        .video-player { width: 100%; height: 100%; background: #000; }
+        .video-overlay {
+            position: absolute; bottom: 100px; left: 15px; right: 80px;
+            z-index: 10; pointer-events: none;
+        }
+        .video-overlay h4 { margin: 0; font-size: 17px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .video-overlay p { font-size: 14px; margin: 8px 0; opacity: 0.9; line-height: 1.4; }
+        .video-sidebar {
+            position: absolute; right: 10px; bottom: 120px;
+            display: flex; flex-direction: column; gap: 20px; align-items: center;
+            z-index: 10;
+        }
+        .side-action { text-align: center; }
+        .side-action span { font-size: 28px; display: block; margin-bottom: 4px; }
+        .side-action label { font-size: 12px; opacity: 0.8; }
+        .avatar-circle {
+            width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff;
+            background-image: url('https://sc02.alicdn.com/kf/A45eadf405c67474aa45a7f58b7f54bb22.png');
+            background-size: cover; margin-bottom: 10px;
+        }
+
+        /* --- 2. PLAY SCREEN (3D Dressing) --- */
         #play-screen {
             background-image: url('https://sc02.alicdn.com/kf/Afb9c88bddfa941468baa06c0f03a5b37c.png');
-            background-size: cover;
-            background-position: center;
+            background-size: cover; background-position: center;
         }
-
-        /* Right Sidebar Buttons */
+        .top-nav {
+            position: absolute; top: 0; width: 100%; padding: 50px 15px 10px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 900;
+        }
+        .top-tabs { display: flex; gap: 20px; font-size: 15px; color: #ccc; }
+        .top-tabs span.active { color: #fff; font-weight: bold; border-bottom: 2px solid #fff; padding-bottom: 4px; }
+        
         .sidebar-right {
             position: absolute; right: 20px; top: 150px;
-            display: flex; flex-direction: column; gap: 15px;
-            z-index: 910;
+            display: flex; flex-direction: column; gap: 15px; z-index: 910;
         }
         .side-btn {
-            width: 54px; height: 54px; border-radius: 50%;
-            background: rgba(40, 50, 80, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(40, 50, 80, 0.8); border: 1px solid rgba(255, 255, 255, 0.2);
             display: flex; justify-content: center; align-items: center;
-            color: #fff; font-size: 14px; backdrop-filter: blur(5px);
+            color: #fff; font-size: 13px; backdrop-filter: blur(10px);
         }
+        
+        /* Selection Drawer */
+        #drawer {
+            position: fixed; bottom: -300px; width: 100%; height: 280px;
+            background: rgba(0,0,0,0.95); border-top-left-radius: 20px; border-top-right-radius: 20px;
+            z-index: 1100; transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px; border-top: 1px solid var(--border);
+        }
+        #drawer.open { bottom: 85px; }
+        .drawer-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
+        .items-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .item-slot {
+            aspect-ratio: 1; background: #1a1a1a; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; border: 1px solid transparent;
+        }
+        .item-slot.active { border-color: var(--accent); background: rgba(255, 45, 85, 0.1); }
+        .item-slot img { width: 80%; height: 80%; object-fit: contain; }
 
-        /* Left Bottom Tags */
-        .tags-left {
-            position: absolute; left: 20px; bottom: 120px;
-            display: flex; flex-direction: column; gap: 15px;
-            z-index: 910;
-        }
-        .tag-bubble {
-            padding: 8px 18px; border-radius: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff; font-size: 14px; width: fit-content;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Bottom Left Card */
-        .floating-card {
-            position: absolute; left: 20px; bottom: 180px;
-            width: 140px; background: rgba(0,0,0,0.6);
-            border-radius: 8px; padding: 10px;
-            border-left: 4px solid #fff;
-            z-index: 910; backdrop-filter: blur(5px);
-        }
-        .card-tag { font-size: 10px; color: var(--accent); margin-bottom: 4px; }
-        .card-title { font-size: 16px; font-weight: bold; }
-
-        /* Bottom Right Confirm */
         .confirm-btn {
             position: absolute; right: 25px; bottom: 120px;
-            width: 90px; height: 90px; border-radius: 50%;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #fff;
+            width: 85px; height: 85px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.85); border: 2px solid #fff;
             display: flex; justify-content: center; align-items: center;
-            color: #fff; font-size: 24px; font-weight: 300;
-            z-index: 910;
+            color: #fff; font-size: 22px; font-weight: 300; z-index: 910;
         }
 
-        /* Audio Icon */
-        .audio-btn {
-            position: absolute; right: 25px; bottom: 250px;
-            font-size: 20px; opacity: 0.8; z-index: 910;
+        /* --- 3. MALL SCREEN --- */
+        #mall-screen { background: #000; overflow-y: auto; padding-bottom: 100px; }
+        .mall-header { padding: 60px 20px 20px; }
+        .mall-header h1 { font-size: 28px; font-weight: 300; margin: 0; }
+        .search-bar {
+            margin: 20px; background: #1a1a1a; padding: 12px 15px;
+            border-radius: 10px; color: #888; font-size: 14px;
         }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+        .p-card { background: #121212; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .p-img { width: 100%; aspect-ratio: 1; background: #1a1a1a; }
+        .p-info { padding: 12px; }
+        .p-info h5 { margin: 0; font-size: 14px; font-weight: 400; }
+        .p-price { margin-top: 6px; font-size: 16px; font-weight: 600; color: #fff; }
 
-        .dots-indicator {
-            position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 8px; z-index: 910;
+        /* --- 4. PROFILE SCREEN --- */
+        #profile-screen { background: #000; overflow-y: auto; padding-bottom: 100px; }
+        .user-hero { padding: 60px 20px 30px; text-align: center; }
+        .p-avatar-big {
+            width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px;
+            border: 2px solid var(--border); background: #222;
         }
-        .dot { width: 24px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
-        .dot.active { background: #fff; }
-
+        .silver-membership {
+            background: linear-gradient(135deg, #777, #eee, #999);
+            margin: 0 20px; border-radius: 15px; padding: 25px; color: #000;
+            box-shadow: 0 10px 40px rgba(255,255,255,0.05); position: relative;
+        }
+        .membership-label { font-size: 11px; font-weight: bold; letter-spacing: 2px; }
+        .membership-name { font-size: 24px; font-weight: 200; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash" onclick="enterApp()">
-        <div class="logo-main">
-            <span>海汀阁</span>
-            <div class="line"></div>
-            <span>HEITINGO</span>
+    <!-- 1. HOME SCREEN: Short Video Player -->
+    <div id="home-screen" class="screen">
+        <div class="video-container">
+            <!-- YouTube Embed used as mock video player -->
+            <iframe id="main-video" class="video-player" src="https://www.youtube.com/embed/msMvjBbML0c?autoplay=1&mute=1&loop=1&playlist=msMvjBbML0c&controls=0&showinfo=0&rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+            
+            <div class="video-sidebar">
+                <div class="avatar-circle"></div>
+                <div class="side-action"><span>❤️</span><label>124k</label></div>
+                <div class="side-action"><span>💬</span><label>856</label></div>
+                <div class="side-action"><span>🔄</span><label>Share</label></div>
+            </div>
+
+            <div class="video-overlay">
+                <h4>@CloudAndEggroll</h4>
+                <p>Episode 1: Kick You Off the Table. Never Succeeded, Never Gave Up... 🐈‍⬛🐕 #FunnyPets #IneffectiveSocial</p>
+            </div>
         </div>
-        <p style="margin-top: 100px; font-size: 12px; opacity: 0.5; letter-spacing: 2px;">CLICK TO START</p>
     </div>
 
-    <!-- Play Screen (Active) - Strictly following New Reference -->
-    <div id="play-screen" class="screen active">
-        <!-- Top Navigation -->
+    <!-- 2. PLAY SCREEN: 3D Dressing Interaction -->
+    <div id="play-screen" class="screen">
         <div class="top-nav">
             <div class="icon-btn">☰</div>
             <div class="top-tabs">
@@ -177,53 +189,101 @@
                 <span>游客</span>
                 <span>会员</span>
                 <span>VIP</span>
-                <span>SVIP</span>
             </div>
             <div class="icon-btn">⚙️</div>
         </div>
 
-        <!-- Sidebar Right -->
         <div class="sidebar-right">
-            <div class="side-btn">内装</div>
-            <div class="side-btn">上装</div>
-            <div class="side-btn">下装</div>
-            <div class="side-btn">袜子</div>
-            <div class="side-btn">鞋子</div>
+            <div class="side-btn" onclick="openDrawer('内装')">内装</div>
+            <div class="side-btn" onclick="openDrawer('上装')">上装</div>
+            <div class="side-btn" onclick="openDrawer('下装')">下装</div>
+            <div class="side-btn" onclick="openDrawer('袜子')">袜子</div>
+            <div class="side-btn" onclick="openDrawer('鞋子')">鞋子</div>
         </div>
 
-        <div class="audio-btn">🔊</div>
+        <!-- Confirm Selection -->
+        <div class="confirm-btn" onclick="confirmDressing()">确认</div>
 
-        <!-- Left Bottom Info -->
-        <div class="tags-left">
-            <div class="tag-bubble">爬山</div>
-            <div class="tag-bubble">逛街</div>
+        <!-- Dressing Drawer -->
+        <div id="drawer">
+            <div class="drawer-header">
+                <span id="drawer-title" style="font-size: 18px;">选择上装</span>
+                <span onclick="closeDrawer()" style="font-size: 24px; opacity: 0.5;">✕</span>
+            </div>
+            <div class="items-grid">
+                <div class="item-slot active"><img src="https://sc02.alicdn.com/kf/A12be79b1f0d64d708f69bbc38fc016ban.png"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+                <div class="item-slot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MALL SCREEN -->
+    <div id="mall-screen" class="screen">
+        <div class="mall-header">
+            <h1>数字商城</h1>
+        </div>
+        <div class="search-bar">🔍 搜索全球 3D 联名资产...</div>
+        <div class="product-grid">
+            <div class="p-card">
+                <div class="p-img" style="background-image: url('https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png'); background-size: cover;"></div>
+                <div class="p-info">
+                    <h5>HEITINGO 限量腕表</h5>
+                    <div class="p-price">¥ 15,800</div>
+                </div>
+            </div>
+            <div class="p-card">
+                <div class="p-img"></div>
+                <div class="p-info">
+                    <h5>3D 虚拟套装 - 极光</h5>
+                    <div class="p-price">¥ 1,299</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PROFILE SCREEN -->
+    <div id="profile-screen" class="screen">
+        <div class="user-hero">
+            <div class="p-avatar-big"></div>
+            <h2 style="font-weight: 300; margin-bottom: 5px;">Cai Zhisen</h2>
+            <p style="font-size: 12px; color: var(--dim);">UID: 7084687961</p>
+        </div>
+        
+        <div class="silver-membership">
+            <div class="membership-label">HEITINGO EXCLUSIVE</div>
+            <div class="membership-name">SILVER MEMBER</div>
+            <div style="margin-top: 30px; font-size: 10px; opacity: 0.6;">EXPIRES: 2027/12/31</div>
         </div>
 
-        <div class="floating-card">
-            <div class="card-tag">菲梦 — 韵</div>
-            <div class="card-title">KTV 套装</div>
+        <div style="padding: 30px 20px;">
+            <h4 style="font-weight: 300; margin-bottom: 20px;">我的勋章</h4>
+            <div style="display: flex; gap: 20px;">
+                <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; border: 1px solid #333; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                    <img src="https://sc02.alicdn.com/kf/A48f1ff4f94744389b97ec5831cc11c0bm.png" style="width: 100%;">
+                </div>
+                <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; border: 1px solid #333; opacity: 0.3;"></div>
+                <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; border: 1px solid #333; opacity: 0.3;"></div>
+            </div>
         </div>
-
-        <div class="dots-indicator">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-        </div>
-
-        <!-- Confirm Button -->
-        <div class="confirm-btn">确认</div>
     </div>
 
     <!-- Bottom Navigation -->
-    <nav id="nav-bar" style="display: flex;">
-        <div class="nav-item">
+    <nav id="nav-bar">
+        <div class="nav-item" onclick="showScreen('home')">
             <div class="nav-icon">🏠</div>
             <span>首页</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="showScreen('mall')">
             <div class="nav-icon">🔒</div>
             <span>商城</span>
         </div>
-        <div class="nav-item active">
+        <div class="nav-item active" onclick="showScreen('play')">
             <div class="nav-icon">
                 <div class="play-icon-box">∇</div>
             </div>
@@ -233,16 +293,50 @@
             <div class="nav-icon">💬</div>
             <span>信息</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="showScreen('profile')">
             <div class="nav-icon">👤</div>
             <span>我</span>
         </div>
     </nav>
 
     <script>
-        function enterApp() {
-            document.getElementById('splash').style.display = 'none';
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id + '-screen').classList.add('active');
+            
+            // Highlight Nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.innerText.includes(id==='home'?'首页':(id==='mall'?'商城':(id==='play'?'玩':(id==='info'?'信息':'我'))))) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Pause/Play Home Video
+            const video = document.getElementById('main-video');
+            if(id !== 'home') {
+                video.src = video.src.replace('autoplay=1', 'autoplay=0');
+            } else {
+                video.src = video.src.replace('autoplay=0', 'autoplay=1');
+            }
         }
+
+        function openDrawer(title) {
+            document.getElementById('drawer-title').innerText = '选择' + title;
+            document.getElementById('drawer').classList.add('open');
+        }
+
+        function closeDrawer() {
+            document.getElementById('drawer').classList.remove('open');
+        }
+
+        function confirmDressing() {
+            alert("正在生成 3D 渲染快照...");
+            closeDrawer();
+        }
+
+        // Default screen
+        showScreen('home');
     </script>
 </body>
 </html>
