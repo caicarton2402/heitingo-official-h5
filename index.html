@@ -12,11 +12,9 @@
     <style>
         :root {
             --bg: #000;
-            --card-bg: #121212;
             --text: #fff;
             --dim: rgba(255,255,255,0.6);
-            --accent: #ff2d55; /* Neon Pink */
-            --gradient: linear-gradient(90deg, #ff2d55 0%, #000 100%);
+            --accent: #ff2d55;
             --border: rgba(255,255,255,0.1);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -39,10 +37,10 @@
         }
         .logo-main .line { width: 1px; height: 24px; background: rgba(255,255,255,0.4); }
 
-        /* Navigation Bar - Strictly following Image */
+        /* Navigation Bar */
         nav {
             position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center;
             border-top: 1px solid var(--border); z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom);
@@ -51,69 +49,109 @@
             flex: 1; display: flex; flex-direction: column; align-items: center;
             color: #888; font-size: 11px; gap: 6px; transition: 0.2s;
         }
-        .nav-item.active { color: var(--accent); }
+        .nav-item.active { color: #fff; }
         .nav-icon { width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
         .play-icon-box {
             width: 44px; height: 44px; border-radius: 12px;
             border: 2px solid var(--accent); display: flex;
             justify-content: center; align-items: center;
             box-shadow: 0 0 15px rgba(255, 45, 85, 0.3);
+            color: var(--accent);
         }
 
-        /* Top Tab Bar - Strictly following Image */
+        /* Top Tab Bar - Persistent on Play Screen */
         .top-nav {
-            position: sticky; top: 0; width: 100%; height: 100px;
-            background: #000; z-index: 900;
+            position: absolute; top: 0; width: 100%; height: 100px;
+            z-index: 900;
             padding: 50px 15px 10px; display: flex; align-items: center;
             justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
         }
-        .top-tabs { display: flex; gap: 20px; font-size: 15px; color: #888; }
+        .top-tabs { display: flex; gap: 20px; font-size: 15px; color: #ccc; }
         .top-tabs span.active { color: #fff; position: relative; }
         .top-tabs span.active::after {
             content: ''; position: absolute; bottom: -8px; left: 50%;
             transform: translateX(-50%); width: 12px; height: 2px;
-            background: var(--accent); border-radius: 2px;
+            background: #fff; border-radius: 2px;
         }
         .icon-btn { font-size: 20px; color: #fff; }
 
         /* Content Area */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow-y: auto; display: none; padding-bottom: 90px;
+            overflow: hidden; display: none;
         }
         .screen.active { display: block; }
 
-        /* Play Feed - Strictly following Image */
-        .feed-container { width: 100%; }
-        .user-card { margin-bottom: 2px; background: #000; }
-        
-        .user-header {
-            height: 36px; padding: 0 15px;
-            background: var(--gradient);
-            display: flex; align-items: center; justify-content: space-between;
-            font-size: 13px; font-weight: 500;
+        /* 3D Dressing Screen - Strictly following New Image */
+        #play-screen {
+            background-image: url('https://sc02.alicdn.com/kf/Afb9c88bddfa941468baa06c0f03a5b37c.png');
+            background-size: cover;
+            background-position: center;
         }
-        .user-meta { display: flex; gap: 12px; align-items: center; opacity: 0.9; }
-        .meta-dot { width: 14px; height: 14px; background: #fff; border-radius: 50%; }
 
-        .user-image {
-            width: 100%; aspect-ratio: 16/9; overflow: hidden;
-            background: #111; position: relative;
+        /* Right Sidebar Buttons */
+        .sidebar-right {
+            position: absolute; right: 20px; top: 150px;
+            display: flex; flex-direction: column; gap: 15px;
+            z-index: 910;
         }
-        .user-image img { width: 100%; height: 100%; object-fit: cover; }
-
-        .user-stats {
-            height: 44px; padding: 0 15px; background: #000;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid #111;
+        .side-btn {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: rgba(40, 50, 80, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 14px; backdrop-filter: blur(5px);
         }
-        .stats-left { display: flex; gap: 15px; font-size: 12px; color: #fff; opacity: 0.8; }
-        .stats-item { display: flex; align-items: center; gap: 5px; }
-        .stats-icon { font-size: 16px; }
-        .hearts { color: var(--accent); font-size: 14px; display: flex; gap: 2px; }
 
-        /* Placeholder Screens */
-        .placeholder-screen { padding: 150px 20px; text-align: center; color: var(--dim); }
+        /* Left Bottom Tags */
+        .tags-left {
+            position: absolute; left: 20px; bottom: 120px;
+            display: flex; flex-direction: column; gap: 15px;
+            z-index: 910;
+        }
+        .tag-bubble {
+            padding: 8px 18px; border-radius: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff; font-size: 14px; width: fit-content;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Bottom Left Card */
+        .floating-card {
+            position: absolute; left: 20px; bottom: 180px;
+            width: 140px; background: rgba(0,0,0,0.6);
+            border-radius: 8px; padding: 10px;
+            border-left: 4px solid #fff;
+            z-index: 910; backdrop-filter: blur(5px);
+        }
+        .card-tag { font-size: 10px; color: var(--accent); margin-bottom: 4px; }
+        .card-title { font-size: 16px; font-weight: bold; }
+
+        /* Bottom Right Confirm */
+        .confirm-btn {
+            position: absolute; right: 25px; bottom: 120px;
+            width: 90px; height: 90px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #fff;
+            display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 24px; font-weight: 300;
+            z-index: 910;
+        }
+
+        /* Audio Icon */
+        .audio-btn {
+            position: absolute; right: 25px; bottom: 250px;
+            font-size: 20px; opacity: 0.8; z-index: 910;
+        }
+
+        .dots-indicator {
+            position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; z-index: 910;
+        }
+        .dot { width: 24px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .dot.active { background: #fff; }
 
     </style>
 </head>
@@ -129,9 +167,8 @@
         <p style="margin-top: 100px; font-size: 12px; opacity: 0.5; letter-spacing: 2px;">CLICK TO START</p>
     </div>
 
-    <!-- Main App Container -->
-    <div id="app" style="display:none;">
-        
+    <!-- Play Screen (Active) - Strictly following New Reference -->
+    <div id="play-screen" class="screen active">
         <!-- Top Navigation -->
         <div class="top-nav">
             <div class="icon-btn">☰</div>
@@ -145,125 +182,66 @@
             <div class="icon-btn">⚙️</div>
         </div>
 
-        <!-- 1. 首页 -->
-        <div id="home-screen" class="screen">
-            <div class="placeholder-screen">首页正在建设中...</div>
+        <!-- Sidebar Right -->
+        <div class="sidebar-right">
+            <div class="side-btn">内装</div>
+            <div class="side-btn">上装</div>
+            <div class="side-btn">下装</div>
+            <div class="side-btn">袜子</div>
+            <div class="side-btn">鞋子</div>
         </div>
 
-        <!-- 2. 商城 -->
-        <div id="mall-screen" class="screen">
-            <div class="placeholder-screen">数字商城正在建设中...</div>
+        <div class="audio-btn">🔊</div>
+
+        <!-- Left Bottom Info -->
+        <div class="tags-left">
+            <div class="tag-bubble">爬山</div>
+            <div class="tag-bubble">逛街</div>
         </div>
 
-        <!-- 3. 玩 (Active Screen) -->
-        <div id="play-screen" class="screen active">
-            <div class="feed-container">
-                <!-- Card 1 -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="handle">@阿洛大魔王</div>
-                        <div class="user-meta">
-                            <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>172cm</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>57kg</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>38D</span>
-                        </div>
-                    </div>
-                    <div class="user-image">
-                        <img src="https://sc02.alicdn.com/kf/Af414af792b324770a59a467535342156x.png" alt="Avatar 1">
-                    </div>
-                    <div class="user-stats">
-                        <div class="stats-left">
-                            <div class="stats-item"><span class="stats-icon">🎵</span> 107.5万</div>
-                            <div class="stats-item"><span class="stats-icon">📺</span> 46万</div>
-                            <div class="stats-item"><span class="stats-icon">👁️</span> 98万</div>
-                        </div>
-                        <div class="hearts">❤️❤️❤️❤️❤️</div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="handle">@阿洛大魔王</div>
-                        <div class="user-meta">
-                             <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>172cm</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>57kg</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><div class="meta-dot"></div>38D</span>
-                        </div>
-                    </div>
-                    <div class="user-image">
-                        <img src="https://sc02.alicdn.com/kf/Af414af792b324770a59a467535342156x.png" alt="Avatar 2">
-                    </div>
-                    <div class="user-stats">
-                        <div class="stats-left">
-                            <div class="stats-item"><span class="stats-icon">🎵</span> 107.5万</div>
-                            <div class="stats-item"><span class="stats-icon">📺</span> 46万</div>
-                            <div class="stats-item"><span class="stats-icon">👁️</span> 98万</div>
-                        </div>
-                        <div class="hearts">❤️❤️❤️❤️❤️</div>
-                    </div>
-                </div>
-            </div>
+        <div class="floating-card">
+            <div class="card-tag">菲梦 — 韵</div>
+            <div class="card-title">KTV 套装</div>
         </div>
 
-        <!-- 4. 信息 -->
-        <div id="info-screen" class="screen">
-            <div class="placeholder-screen">消息中心正在建设中...</div>
+        <div class="dots-indicator">
+            <div class="dot active"></div>
+            <div class="dot"></div>
         </div>
 
-        <!-- 5. 我 -->
-        <div id="profile-screen" class="screen">
-            <div class="placeholder-screen">个人中心正在建设中...</div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <nav id="nav-bar">
-            <div class="nav-item" onclick="navTo('home')">
-                <div class="nav-icon">🏠</div>
-                <span>首页</span>
-            </div>
-            <div class="nav-item" onclick="navTo('mall')">
-                <div class="nav-icon">🔒</div>
-                <span>商城</span>
-            </div>
-            <div class="nav-item active" onclick="navTo('play')">
-                <div class="nav-icon">
-                    <div class="play-icon-box">∇</div>
-                </div>
-                <span style="margin-top:2px;">玩</span>
-            </div>
-            <div class="nav-item" onclick="navTo('info')">
-                <div class="nav-icon">💬</div>
-                <span>信息</span>
-            </div>
-            <div class="nav-item" onclick="navTo('profile')">
-                <div class="nav-icon">👤</div>
-                <span>我</span>
-            </div>
-        </nav>
+        <!-- Confirm Button -->
+        <div class="confirm-btn">确认</div>
     </div>
+
+    <!-- Bottom Navigation -->
+    <nav id="nav-bar" style="display: flex;">
+        <div class="nav-item">
+            <div class="nav-icon">🏠</div>
+            <span>首页</span>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">🔒</div>
+            <span>商城</span>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">
+                <div class="play-icon-box">∇</div>
+            </div>
+            <span style="margin-top:2px;">玩</span>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">💬</div>
+            <span>信息</span>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">👤</div>
+            <span>我</span>
+        </div>
+    </nav>
 
     <script>
         function enterApp() {
             document.getElementById('splash').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-        }
-
-        function navTo(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id + '-screen').classList.add('active');
-            
-            // Toggle Top Nav Visibility
-            document.querySelector('.top-nav').style.display = (id === 'play' ? 'flex' : 'none');
-
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if(item.innerText.includes(
-                    id==='home'?'首页':(id==='mall'?'商城':(id==='play'?'玩':(id==='info'?'信息':'我')))
-                )) {
-                    item.classList.add('active');
-                }
-            });
         }
     </script>
 </body>
