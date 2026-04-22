@@ -8,356 +8,289 @@
     <meta name="apple-mobile-web-app-title" content="海汀阁">
     <link rel="apple-touch-icon" href="https://sc02.alicdn.com/kf/Ac377697ec23a42df987d7246de3a6a5d8.png">
     <link rel="manifest" href="manifest.json">
-    <title>海汀阁 | HEITINGO - Official App</title>
+    <title>海汀阁 | HEITINGO</title>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #1a1a1a;
-            --text-color: #FFFFFF;
-            --accent-color: #FFFFFF;
-            --dim-text: rgba(255, 255, 255, 0.6);
-            --border: rgba(255, 255, 255, 0.1);
+            --bg: #000;
+            --text: #fff;
+            --dim: rgba(255,255,255,0.6);
+            --border: rgba(255,255,255,0.1);
+            --accent: #fff;
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, "Didot", serif;
             overflow: hidden;
         }
-        
-        /* Navigation */
+
+        /* Splash Screen - Strictly following the Logo Image */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 2000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
+        }
+        .logo-main {
+            font-size: 28px; font-weight: 300; letter-spacing: 4px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .logo-main .line { width: 1px; height: 24px; background: rgba(255,255,255,0.4); }
+        .splash-footer { position: absolute; bottom: 80px; font-size: 10px; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; }
+
+        /* Navigation - Strictly following PDF (5 Tabs) */
         nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid var(--border);
-            z-index: 1000;
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid var(--border); z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom);
         }
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 10px;
-            color: var(--dim-text);
-            cursor: pointer;
-            transition: 0.3s;
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            color: var(--dim); font-size: 10px; gap: 4px; transition: 0.2s;
         }
-        .nav-item.active {
-            color: var(--accent-color);
-        }
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
+        .nav-item.active { color: var(--text); }
+        .nav-icon { font-size: 22px; }
 
-        /* Screen Wrapper */
+        /* Content Areas */
         .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: calc(100% - 70px);
-            overflow-y: auto;
-            display: none;
-            padding-bottom: 20px;
+            position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 75px);
+            overflow-y: auto; display: none; -webkit-overflow-scrolling: touch;
         }
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .screen.active { display: block; }
 
-        /* Header */
-        header {
-            padding: 60px 20px 20px;
-            text-align: left;
+        /* 1. 首页 (Short Video/Home) */
+        #home-screen { background: #000; overflow: hidden; }
+        .video-placeholder {
+            width: 100%; height: 100%; position: relative;
+            background: linear-gradient(45deg, #111, #000);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
         }
-        header h1 { font-size: 24px; margin: 0; font-weight: 300; letter-spacing: 2px; }
-        header p { color: var(--dim-text); font-size: 12px; margin-top: 5px; }
+        .video-info { margin-bottom: 20px; }
+        .video-info h4 { margin: 0; font-size: 16px; }
+        .video-info p { margin: 5px 0; font-size: 13px; color: rgba(255,255,255,0.8); }
+        .video-actions { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .v-action { font-size: 24px; display: flex; flex-direction: column; align-items: center; font-size: 11px; gap: 4px; }
+        .v-action span { font-size: 24px; }
 
-        /* Module 1: 3D Dressing */
-        #dressing-screen {
-            background: linear-gradient(180deg, #000 0%, #1a1a1a 100%);
-            overflow: hidden;
-        }
-        .avatar-container {
-            width: 100%;
-            height: 60%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-        .avatar-img {
-            height: 90%;
-            object-fit: contain;
-        }
-        .dressing-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .control-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-        }
-        .tag-selector {
-            padding: 20px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .tag-selector::-webkit-scrollbar { display: none; }
-        .tag-item {
-            padding: 8px 20px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            font-size: 12px;
-            white-space: nowrap;
-            border: 1px solid var(--border);
-        }
-        .tag-item.active {
-            background: #fff;
-            color: #000;
-        }
+        /* 2. 约玩 (Play/Social) */
+        .page-title { padding: 60px 20px 20px; font-size: 24px; font-weight: 300; letter-spacing: 2px; }
+        .card-list { padding: 0 15px; }
+        .play-card { background: #111; border-radius: 15px; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border); display: flex; gap: 15px; }
+        .play-avatar { width: 60px; height: 60px; border-radius: 50%; background: #333; }
+        .play-info h4 { margin: 0; font-size: 16px; font-weight: 400; }
+        .play-info p { margin: 5px 0; font-size: 12px; color: var(--dim); }
 
-        /* Module 2: Mall/Feed */
-        .feed-container { padding: 0 15px; }
-        .product-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border);
+        /* 3. 商城 (Mall) */
+        .mall-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .mall-item { background: #111; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+        .item-img { width: 100%; aspect-ratio: 1; background: #222; }
+        .item-info { padding: 10px; }
+        .item-info h5 { margin: 0; font-size: 13px; font-weight: 400; }
+        .item-price { margin-top: 5px; font-size: 14px; font-weight: 600; }
+
+        /* 4. 信息 (Messages) */
+        .chat-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 15px; align-items: center; }
+        .chat-avatar { width: 50px; height: 50px; border-radius: 50%; background: #222; }
+        .chat-content { flex: 1; }
+        .chat-content h4 { margin: 0; font-size: 15px; font-weight: 400; display: flex; justify-content: space-between; }
+        .chat-content p { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
+        .chat-time { font-size: 10px; opacity: 0.5; font-weight: 300; }
+
+        /* 5. 个人 (Profile/Dressing) */
+        .profile-hero { padding: 40px 20px; text-align: center; }
+        .p-avatar { width: 85px; height: 85px; border-radius: 50%; background: #1a1a1a; margin: 0 auto 15px; border: 1px solid var(--border); overflow: hidden; }
+        .silver-card-img {
+            width: calc(100% - 40px); margin: 0 20px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.05);
         }
-        .product-img {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-        .product-info { padding: 15px; }
-        .product-info h3 { font-size: 16px; margin: 0; font-weight: 400; }
-        .product-info p { color: var(--dim-text); font-size: 12px; margin: 5px 0 10px; }
-        .price { font-size: 18px; font-weight: 600; }
-        
-        /* Module 3: Medal Wall */
-        .profile-header {
-            padding: 40px 20px;
-            text-align: center;
-            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
-        }
-        .silver-card {
-            background: linear-gradient(135deg, #a0a0a0 0%, #e0e0e0 100%);
-            color: #000;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-        }
-        .silver-card h2 { margin: 0; font-size: 18px; }
-        .silver-card p { font-size: 12px; opacity: 0.8; margin: 5px 0 20px; }
-        .medal-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-        .medal-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .medal-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--card-bg);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
+        .medal-wall { padding: 20px; }
+        .medal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+        .medal-box { text-align: center; font-size: 10px; color: var(--dim); }
+        .medal-icon { width: 55px; height: 55px; background: #111; border-radius: 50%; margin: 0 auto 8px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
         .medal-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .medal-name { font-size: 11px; color: var(--dim-text); }
 
-        /* Splash Screen */
-        #splash-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            z-index: 2000;
-            background: #000;
+        /* Utility */
+        .pwa-btn {
+            background: #fff; color: #000; border: none; padding: 12px 30px;
+            border-radius: 30px; font-size: 14px; letter-spacing: 1px; margin-top: 40px;
         }
-        .logo-text { font-size: 28px; letter-spacing: 4px; font-weight: 300; display: flex; align-items: center; gap: 15px; }
-        .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.4); }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash-screen" class="screen active" onclick="showScreen('dressing')">
-        <div class="logo-text">
+    <!-- Splash Screen - Strictly following the Logo Image -->
+    <div id="splash" onclick="enterApp()">
+        <div class="logo-main">
             <span>海汀阁</span>
-            <div class="divider"></div>
+            <div class="line"></div>
             <span>HEITINGO</span>
         </div>
-        <p style="letter-spacing: 4px; font-size: 10px; margin-top: 20px; opacity: 0.5;">Short Video · 3D Dressing · Social</p>
-        <p style="margin-top: 60px; font-size: 12px; opacity: 0.8; border: 1px solid rgba(255,255,255,0.2); padding: 8px 24px; border-radius: 30px;">ENTER EXPERIENCE</p>
+        <div class="splash-footer">Digital Fashion · Social · E-commerce</div>
+        <button class="pwa-btn" style="margin-top: 100px;">点击进入</button>
     </div>
 
-    <!-- Screen 1: 3D Dressing -->
-    <div id="dressing-screen" class="screen">
-        <header>
-            <h1>3D 数字展厅</h1>
-            <p>基于数字资产的即时换装系统</p>
-        </header>
-        <div class="avatar-container">
-            <img src="https://sc02.alicdn.com/kf/Af414af792b324770a59a467535342156x.png" class="avatar-img" alt="3D Avatar">
-            <div class="dressing-controls">
-                <div class="control-btn">🔄</div>
-                <div class="control-btn">📷</div>
-                <div class="control-btn">✨</div>
+    <!-- 1. 首页 (Home/Video) -->
+    <div id="home-screen" class="screen">
+        <div class="video-placeholder">
+            <div class="video-info">
+                <h4>@HEITINGO_Official</h4>
+                <p>2026 春季系列：数字孪生换装体验。 #海汀阁 #3D穿搭</p>
+            </div>
+            <div class="video-actions">
+                <div class="v-action"><span>❤️</span>1.2w</div>
+                <div class="v-action"><span>💬</span>342</div>
+                <div class="v-action"><span>🔄</span>分享</div>
             </div>
         </div>
-        <div class="tag-selector">
-            <div class="tag-item active">全套搭配</div>
-            <div class="tag-item">潮流上装</div>
-            <div class="tag-item">质感下装</div>
-            <div class="tag-item">配饰预览</div>
-            <div class="tag-item">发型切换</div>
-        </div>
-        <div style="padding: 0 20px; font-size: 13px; color: var(--dim-text);">
-            <p>已选配：2026 春季高定系列 (PWA Demo)</p>
+    </div>
+
+    <!-- 2. 约玩 (Play/Social) -->
+    <div id="play-screen" class="screen">
+        <div class="page-title">约玩社区</div>
+        <div class="card-list">
+            <div class="play-card">
+                <div class="play-avatar" style="background-image: url('https://sc02.alicdn.com/kf/Af414af792b324770a59a467535342156x.png'); background-size: cover;"></div>
+                <div class="play-info">
+                    <h4>时尚达人 - 艾米</h4>
+                    <p>正在寻找一起参加 3D 展秀的伙伴...</p>
+                    <p style="color: var(--text); font-size: 10px;">📍 上海 · 静安</p>
+                </div>
+            </div>
+            <div class="play-card">
+                <div class="play-avatar"></div>
+                <div class="play-info">
+                    <h4>高级玩家 - 王先生</h4>
+                    <p>收藏了 3 件稀有高定，欢迎互看主页。</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Screen 2: Mall/Feed -->
+    <!-- 3. 商城 (Mall) -->
     <div id="mall-screen" class="screen">
-        <header>
-            <h1>潮流广场</h1>
-            <p>精选资讯与 3D 联名商城</p>
-        </header>
-        <div class="feed-container">
-            <div class="product-card">
-                <img src="https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png" class="product-img">
-                <div class="product-info">
-                    <h3>HEITINGO X BAZAAR 联名系列</h3>
-                    <p>将虚拟时尚带入现实，首款支持数字孪生的实体腕表。</p>
-                    <div class="price">¥ 12,800.00</div>
+        <div class="page-title">数字商城</div>
+        <div class="mall-grid">
+            <div class="mall-item">
+                <div class="item-img" style="background-image: url('https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png'); background-size: cover;"></div>
+                <div class="item-info">
+                    <h5>HEITINGO 限量腕表</h5>
+                    <div class="item-price">¥ 15,800</div>
                 </div>
             </div>
-            <div class="product-card">
-                <div style="padding: 40px; text-align: center; color: var(--dim-text); background: #111;">
-                    🎞️ 短视频预览区域 (约玩入口)
+            <div class="mall-item">
+                <div class="item-img"></div>
+                <div class="item-info">
+                    <h5>3D 虚拟套装 - 极光</h5>
+                    <div class="item-price">¥ 1,299</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Screen 3: Medal Wall -->
-    <div id="medal-screen" class="screen">
-        <div class="profile-header">
-            <div style="width: 80px; height: 80px; background: #333; border-radius: 50%; margin: 0 auto 15px;"></div>
-            <h2 style="font-weight: 300;">Cai Zhisen</h2>
-            <p style="font-size: 12px; color: var(--dim-text);">用户 UID: 7084687961</p>
+    <!-- 4. 信息 (Messages) -->
+    <div id="info-screen" class="screen">
+        <div class="page-title">消息中心</div>
+        <div class="chat-item">
+            <div class="chat-avatar"></div>
+            <div class="chat-content">
+                <h4>系统消息 <span class="chat-time">10:24</span></h4>
+                <p>您的银卡会员权益已激活，立即查看...</p>
+            </div>
+        </div>
+        <div class="chat-item">
+            <div class="chat-avatar"></div>
+            <div class="chat-content">
+                <h4>官方客服 <span class="chat-time">昨日</span></h4>
+                <p>感谢您关注海汀阁，有任何问题请咨询。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 个人 (Profile) -->
+    <div id="profile-screen" class="screen">
+        <div class="profile-hero">
+            <div class="p-avatar"></div>
+            <h3 style="font-weight: 300;">Cai Zhisen</h3>
+            <p style="font-size: 11px; opacity: 0.5;">UID: 7084687961</p>
         </div>
         
-        <div class="silver-card">
-            <h2>银卡会员 · SILVER</h2>
-            <p>解锁 3D 区域限制，尊享专属数字资产</p>
-            <div style="font-size: 10px; font-weight: bold; letter-spacing: 1px;">HAITINGO VIP SYSTEM</div>
-        </div>
+        <!-- Silver Card - Strictly Following PDF -->
+        <img src="https://sc02.alicdn.com/kf/A2cc876051c4d49e08affed5b645cbd09V.png" class="silver-card-img" alt="Silver Membership">
 
-        <h3 style="padding: 20px 20px 0; font-weight: 300;">我的成就勋章</h3>
-        <div class="medal-grid">
-            <div class="medal-item">
-                <div class="medal-icon"><img src="https://sc02.alicdn.com/kf/A48f1ff4f94744389b97ec5831cc11c0bm.png"></div>
-                <div class="medal-name">初创先锋</div>
+        <div class="medal-wall">
+            <h4 style="font-weight: 300; margin-bottom: 20px;">成就勋章</h4>
+            <div class="medal-grid">
+                <div class="medal-box">
+                    <div class="medal-icon"><img src="https://sc02.alicdn.com/kf/A48f1ff4f94744389b97ec5831cc11c0bm.png"></div>
+                    <span>初创先锋</span>
+                </div>
+                <div class="medal-box">
+                    <div class="medal-icon">🔒</div>
+                    <span>潮流买手</span>
+                </div>
+                <div class="medal-box">
+                    <div class="medal-icon">🔒</div>
+                    <span>社区大使</span>
+                </div>
             </div>
-            <div class="medal-item">
-                <div class="medal-icon" style="opacity: 0.3;">🔒</div>
-                <div class="medal-name">换装达人</div>
-            </div>
-            <div class="medal-item">
-                <div class="medal-icon" style="opacity: 0.3;">🔒</div>
-                <div class="medal-name">分销大使</div>
-            </div>
+        </div>
+        
+        <div style="padding: 20px; text-align: center;">
+            <button class="pwa-btn" style="width: 100%; margin: 0; background: transparent; color: #fff; border: 1px solid var(--border);">退出登录</button>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav id="bottom-nav" style="display: none;">
-        <div class="nav-item active" onclick="showScreen('dressing')">
+    <!-- Navigation - Strictly following PDF (5 Tabs) -->
+    <nav id="nav-bar" style="display: none;">
+        <div class="nav-item active" onclick="navTo('home')">
+            <div class="nav-icon">🏠</div>
+            <span>首页</span>
+        </div>
+        <div class="nav-item" onclick="navTo('play')">
+            <div class="nav-icon">🎭</div>
+            <span>约玩</span>
+        </div>
+        <div class="nav-item" onclick="navTo('mall')">
+            <div class="nav-icon">🛒</div>
+            <span>商城</span>
+        </div>
+        <div class="nav-item" onclick="navTo('info')">
+            <div class="nav-icon">✉️</div>
+            <span>信息</span>
+        </div>
+        <div class="nav-item" onclick="navTo('profile')">
             <div class="nav-icon">👤</div>
-            <span>换装</span>
-        </div>
-        <div class="nav-item" onclick="showScreen('mall')">
-            <div class="nav-icon">🛍️</div>
-            <span>广场</span>
-        </div>
-        <div class="nav-item" onclick="showScreen('medal')">
-            <div class="nav-icon">🏅</div>
-            <span>我的</span>
+            <span>个人</span>
         </div>
     </nav>
 
     <script>
-        function showScreen(id) {
+        function enterApp() {
+            document.getElementById('splash').style.display = 'none';
+            document.getElementById('nav-bar').style.display = 'flex';
+            navTo('home');
+        }
+
+        function navTo(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id + '-screen').classList.add('active');
             
-            // Hide splash and show nav
-            if(id !== 'splash') {
-                document.getElementById('splash-screen').style.display = 'none';
-                document.getElementById('bottom-nav').style.display = 'flex';
-            }
-
-            // Update nav state
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
-                if(item.innerText.includes(id === 'dressing' ? '换装' : (id === 'mall' ? '广场' : '我的'))) {
+                if(item.innerText.includes(
+                    id==='home'?'首页':(id==='play'?'约玩':(id==='mall'?'商城':(id==='info'?'信息':'个人')))
+                )) {
                     item.classList.add('active');
                 }
             });
         }
 
-        // Handle enterApp
-        function enterApp() {
-            showScreen('dressing');
+        // Automatic splash skip if PWA
+        if (window.navigator.standalone === true) {
+            // enterApp(); 
         }
     </script>
 </body>
