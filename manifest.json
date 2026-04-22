@@ -1,0 +1,17 @@
+{
+  "name": "海汀阁 | HEITINGO",
+  "short_name": "海汀阁",
+  "description": "Short Video · 3D Dressing · Social · E-commerce",
+  "start_url": "/heitingo-official-h5/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://sc02.alicdn.com/kf/Ac377697ec23a42df987d7246de3a6a5d8.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
