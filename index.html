@@ -272,7 +272,7 @@
             </div>
         );
 
-        const RemittancePage = ({ onBack }) => (
+        const RemittancePage = ({ onBack, onNavigate }) => (
             <div className="flex-1 bg-primary flex flex-col text-white animate-in slide-in-from-bottom duration-300">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
@@ -317,7 +317,7 @@
                 <div className="px-8 flex flex-col items-center">
                     <div className="w-64 h-64 bg-white rounded-full flex items-center justify-center border-2 border-dashed border-primary/20 relative mb-10">
                         <div className="w-48 h-48 bg-primary/5 rounded-full nfc-animation flex items-center justify-center">
-                            <Icon name="contactless" size={80} className="text-primary" />
+                            <Icon name="nfc" size={80} className="text-primary" />
                         </div>
                         <div className="absolute -bottom-4 bg-primary text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest">Tap Card to Phone</div>
                     </div>
@@ -464,39 +464,6 @@
                 </div>
                 <button onClick={() => onBack(true)} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20">Return to Home</button>
                 <p className="mt-8 text-[11px] text-slate-400 font-bold tracking-widest uppercase">Level {data?.level || 4}: Transaction Confirmation & Receipt</p>
-            </div>
-        );
-
-        const RemitClaimPage = ({ onBack, onNavigate }) => (
-            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
-                <div className="px-6 py-6 flex items-center gap-4">
-                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">Remit Verification</h2>
-                </div>
-                <div className="p-8">
-                    <div className="bg-white p-8 rounded-[32px] shadow-soft mb-8">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Icon name="user-check" /></div>
-                            <div>
-                                <h3 className="font-black">Identity Check</h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase">Required by AML Policy</p>
-                            </div>
-                        </div>
-                        <p className="text-sm text-slate-600 mb-6 leading-relaxed">Please confirm your <strong>Timor-Leste National ID</strong> matches the recipient name on the Wise/Remitly transfer.</p>
-                        <div className="space-y-4">
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
-                                <span className="text-xs font-bold">Recipient</span>
-                                <span className="text-xs font-black">Alexandre Gusmao</span>
-                            </div>
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
-                                <span className="text-xs font-bold">ID Number</span>
-                                <span className="text-xs font-black">TL-2024-XXXX</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button onClick={() => onNavigate('success', { title: 'Funds Claimed!', msg: 'USD 240.00 has been added to your card balance.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black">Confirm & Deposit</button>
-                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: KYC/AML Compliance Verification</p>
-                </div>
             </div>
         );
 
@@ -655,7 +622,7 @@
             );
         };
 
-        const ProfilePage = ({ onBack }) => (
+        const ProfilePage = ({ onBack, onNavigate }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
                 <div className="px-6 py-8 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
