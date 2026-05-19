@@ -37,45 +37,64 @@
     </style>
 </head>
 <body class="bg-slate-50 flex justify-center min-h-screen">
-    <div id="root" class="w-full max-w-[430px] bg-surface min-h-screen shadow-2xl relative overflow-hidden flex flex-col"></div>
+    <div id="root" class="w-full max-w-[430px] bg-surface h-screen shadow-2xl relative overflow-hidden flex flex-col"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
         // --- Shared Components ---
-        const Icon = ({ name, size = 24, className = "" }) => {
-            useEffect(() => { window.lucide && window.lucide.createIcons(); }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
+            useEffect(() => { 
+                if (window.lucide) {
+                    window.lucide.createIcons(); 
+                }
+            }, [name, size, strokeWidth]);
+            return <i data-lucide={name} style={{ width: size, height: size, strokeWidth: strokeWidth }} className={className}></i>;
         };
 
-        const BottomNav = ({ active, onNavigate }) => (
-            <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 pt-3 pb-8 flex justify-between items-center z-50">
-                {[
-                    { id: 'home', icon: 'home', label: 'Home' },
-                    { id: 'agents', icon: 'map-pin', label: 'Agents' },
-                    { id: 'scan', icon: 'qr-code', label: 'Pay', center: true },
-                    { id: 'remit', icon: 'arrow-left-right', label: 'Remit' },
-                    { id: 'profile', icon: 'user', label: 'Profile' }
-                ].map(item => (
-                    <button 
-                        key={item.id}
-                        onClick={() => onNavigate(item.id)}
-                        className={`flex flex-col items-center gap-1 transition-all ${item.center ? '-mt-12' : ''}`}
-                    >
-                        {item.center ? (
-                            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 border-4 border-surface active:scale-90 transition-transform">
-                                <Icon name={item.icon} size={32} />
-                            </div>
-                        ) : (
-                            <div className={`${active === item.id ? 'text-primary' : 'text-slate-400'} flex flex-col items-center`}>
-                                <Icon name={item.icon} size={24} />
-                                <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">{item.label}</span>
-                            </div>
-                        )}
-                    </button>
-                ))}
-            </div>
-        );
+        const BottomNav = ({ active, onNavigate }) => {
+            const activeTab = useMemo(() => {
+                if (['agents', 'agent-detail', 'withdrawal-qr'].includes(active)) return 'agents';
+                if (['remit', 'remit-claim'].includes(active)) return 'remit';
+                if (['scan', 'pay-input'].includes(active)) return 'scan';
+                if (['profile'].includes(active)) return 'profile';
+                if (['services', 'service-detail'].includes(active)) return 'home'; // Keep home active for services for now or add its own
+                if (['tcard', 'tcard-detail'].includes(active)) return 'home'; // Same for tcard
+                return 'home';
+            }, [active]);
+
+            return (
+                <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100 px-6 pt-3 pb-8 flex justify-between items-center z-[100] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                    {[
+                        { id: 'home', icon: 'home', label: 'Home' },
+                        { id: 'agents', icon: 'map-pin', label: 'Agents' },
+                        { id: 'scan', icon: 'qr-code', label: 'Pay', center: true },
+                        { id: 'remit', icon: 'arrow-left-right', label: 'Remit' },
+                        { id: 'profile', icon: 'user', label: 'Profile' }
+                    ].map(item => (
+                        <button 
+                            key={item.id}
+                            onClick={() => {
+                                if (item.id === 'home') onNavigate('reset');
+                                else onNavigate(item.id);
+                            }}
+                            className={`flex flex-col items-center gap-1 transition-all ${item.center ? '-mt-12' : 'active:scale-90'}`}
+                        >
+                            {item.center ? (
+                                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-xl shadow-primary/40 border-4 border-white active:scale-95 transition-transform">
+                                    <Icon name={item.icon} size={32} strokeWidth={2.5} />
+                                </div>
+                            ) : (
+                                <div className={`${activeTab === item.id ? 'text-primary' : 'text-slate-400'} flex flex-col items-center`}>
+                                    <Icon name={item.icon} size={24} strokeWidth={activeTab === item.id ? 3 : 2} />
+                                    <span className={`text-[10px] mt-1 uppercase tracking-tighter ${activeTab === item.id ? 'font-black' : 'font-bold'}`}>{item.label}</span>
+                                </div>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            );
+        };
 
         // --- Pages ---
 
@@ -193,18 +212,18 @@
         };
 
         const AgentFinder = ({ onBack, onNavigate }) => (
-            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300 pb-32 overflow-y-auto">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
                     <h2 className="text-xl font-extrabold">Cash-Out Points</h2>
                 </div>
-                <div className="flex-1 bg-slate-200 m-4 rounded-[32px] relative overflow-hidden">
+                <div className="flex-1 bg-slate-200 m-4 rounded-[32px] min-h-[300px] relative overflow-hidden">
                     <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/125.57, -8.55,14,0/400x400?access_token=pk.mock')] bg-cover bg-center"></div>
                     {/* Mock Map Markers */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="coffee" size={14} /></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-8 h-8 bg-accent rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="shopping-cart" size={14} /></div>
+                    <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white active:scale-90 transition-transform" onClick={() => onNavigate('agent-detail')}><Icon name="coffee" size={14} /></button>
+                    <button className="absolute bottom-1/4 right-1/4 w-8 h-8 bg-accent rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white active:scale-90 transition-transform" onClick={() => onNavigate('agent-detail')}><Icon name="shopping-cart" size={14} /></button>
                 </div>
-                <div className="px-6 pb-32">
+                <div className="px-6">
                     <h3 className="font-bold text-slate-500 text-xs uppercase tracking-widest mb-4">Closest to you</h3>
                     <button onClick={() => onNavigate('agent-detail')} className="w-full text-left active:scale-95 transition-transform">
                         <div className="bg-white rounded-3xl p-5 shadow-soft border-l-4 border-primary">
@@ -216,6 +235,39 @@
                             <div className="w-full bg-primary text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 text-center">Open Agent Profile</div>
                         </div>
                     </button>
+                </div>
+            </div>
+        );
+
+        const RemitClaimPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300 pb-32 overflow-y-auto">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Remit Verification</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-white p-8 rounded-[32px] shadow-soft mb-8">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Icon name="user-check" /></div>
+                            <div>
+                                <h3 className="font-black">Identity Check</h3>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase">Required by AML Policy</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-6 leading-relaxed">Please confirm your <strong>Timor-Leste National ID</strong> matches the recipient name on the Wise/Remitly transfer.</p>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">Recipient</span>
+                                <span className="text-xs font-black">Alexandre Gusmao</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">ID Number</span>
+                                <span className="text-xs font-black">TL-2024-XXXX</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Funds Claimed!', msg: 'USD 240.00 has been added to your card balance.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20 active:scale-95 transition-transform">Confirm & Deposit</button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: KYC/AML Compliance Verification</p>
                 </div>
             </div>
         );
@@ -492,65 +544,116 @@
             </div>
         );
 
-        const ScanPay = ({ onBack, onNavigate }) => (
-            <div className="flex-1 bg-black flex flex-col text-white animate-in zoom-in duration-500 relative">
-                <div className="px-6 py-8 flex justify-between items-center z-10">
-                    <button onClick={onBack} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="x" /></button>
-                    <span className="text-xs font-black uppercase tracking-widest">Scan Merchant QR</span>
-                    <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="flashlight" size={20} /></button>
-                </div>
-                <div className="flex-1 flex flex-col items-center justify-center relative">
-                    <div className="relative group">
-                        {/* Scanning Box */}
-                        <div className="w-72 h-72 border-2 border-white/20 rounded-[56px] relative overflow-hidden bg-slate-900/40 backdrop-blur-sm">
-                            {/* QR Code Image Placeholder */}
-                            <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                                <Icon name="qr-code" size={200} className="text-white" />
-                            </div>
-                            
-                            {/* Corners */}
-                            <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-[40px]"></div>
-                            <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-[40px]"></div>
-                            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-[40px]"></div>
-                            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-[40px]"></div>
-                            
-                            {/* Scanning Line */}
-                            <div className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_20px_rgba(0,87,183,0.8)] animate-[scan_2.5s_infinite] z-20"></div>
-                            
-                            {/* Shimmer Effect */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent h-1/2 animate-[shimmer_2.5s_infinite]"></div>
+        const ScanPay = ({ onBack, onNavigate }) => {
+            const [mode, setMode] = useState('pay'); // 'pay' or 'receive'
+
+            return (
+                <div className="flex-1 bg-[#0a0a0a] flex flex-col text-white animate-in zoom-in duration-500 relative">
+                    {/* Header */}
+                    <div className="px-6 py-8 flex justify-between items-center z-10">
+                        <button onClick={onBack} className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/5 active:scale-90 transition-transform"><Icon name="x" /></button>
+                        <div className="bg-white/5 backdrop-blur-md p-1 rounded-2xl flex items-center border border-white/5">
+                            <button 
+                                onClick={() => setMode('pay')}
+                                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === 'pay' ? 'bg-primary text-white shadow-lg' : 'text-slate-400'}`}
+                            >
+                                Scan to Pay
+                            </button>
+                            <button 
+                                onClick={() => setMode('receive')}
+                                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === 'receive' ? 'bg-primary text-white shadow-lg' : 'text-slate-400'}`}
+                            >
+                                Receive
+                            </button>
                         </div>
+                        <button className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/5"><Icon name="flashlight" size={20} /></button>
                     </div>
 
-                    <div className="mt-12 flex flex-col items-center animate-bounce">
-                        <p className="text-xs font-bold text-primary uppercase tracking-[4px]">Align QR Code</p>
-                    </div>
+                    <div className="flex-1 flex flex-col items-center justify-center relative px-6">
+                        {mode === 'pay' ? (
+                            <div className="w-full flex flex-col items-center animate-in fade-in duration-500">
+                                <div className="relative group mb-12">
+                                    {/* Scanning Box */}
+                                    <div className="w-72 h-72 border-2 border-white/10 rounded-[56px] relative overflow-hidden bg-slate-900/30 backdrop-blur-[2px]">
+                                        {/* QR Code Background Animation */}
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.15] scale-110">
+                                            <Icon name="qr-code" size={300} className="text-white" />
+                                        </div>
+                                        
+                                        {/* Corners (Glow) */}
+                                        <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-[40px] shadow-[-4px_-4px_15px_rgba(0,87,183,0.4)]"></div>
+                                        <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-[40px] shadow-[4px_-4px_15px_rgba(0,87,183,0.4)]"></div>
+                                        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-[40px] shadow-[-4px_4px_15px_rgba(0,87,183,0.4)]"></div>
+                                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-[40px] shadow-[4px_4px_15px_rgba(0,87,183,0.4)]"></div>
+                                        
+                                        {/* Scanning Line (High Precision) */}
+                                        <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_25px_rgba(0,87,183,1)] animate-[scan_3s_infinite] z-20"></div>
+                                        
+                                        {/* Shimmer / Scan Shade */}
+                                        <div className="absolute inset-x-0 h-1/2 bg-gradient-to-b from-primary/20 to-transparent animate-[shimmer_3s_infinite] pointer-events-none"></div>
+                                    </div>
+                                </div>
 
-                    <button 
-                        onClick={() => onNavigate('pay-input')} 
-                        className="mt-10 bg-white/10 hover:bg-white/20 backdrop-blur-md px-8 py-3 rounded-2xl border border-white/10 flex items-center gap-3 transition-all active:scale-95"
-                    >
-                        <Icon name="store" size={18} />
-                        <span className="text-[10px] font-black uppercase tracking-wider">Simulate Found: Burger Dili</span>
-                    </button>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[4px] animate-pulse">Scanning for Merchant...</p>
+
+                                <button 
+                                    onClick={() => onNavigate('pay-input')} 
+                                    className="mt-16 bg-white/5 hover:bg-white/10 backdrop-blur-xl px-8 py-4 rounded-[28px] border border-white/10 flex items-center gap-4 transition-all active:scale-95 group"
+                                >
+                                    <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <Icon name="store" size={20} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black uppercase text-slate-500">Found Merchant</p>
+                                        <p className="text-xs font-black text-white">Burger Dili - Timor Plaza</p>
+                                    </div>
+                                    <Icon name="chevron-right" size={16} className="text-slate-600 ml-2" />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="w-full flex flex-col items-center animate-in slide-in-from-bottom duration-500">
+                                <div className="bg-white rounded-[48px] p-10 shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex flex-col items-center relative overflow-hidden">
+                                    <div className="absolute top-0 inset-x-0 h-2 bg-primary"></div>
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-[10px] font-black italic">TP</div>
+                                        <span className="text-sm font-black text-slate-800 tracking-tighter uppercase">My Payment QR</span>
+                                    </div>
+                                    
+                                    <div className="bg-slate-50 p-6 rounded-[32px] border border-slate-100 mb-8">
+                                        <Icon name="qr-code" size={200} className="text-slate-900" strokeWidth={2.5} />
+                                    </div>
+
+                                    <div className="text-center">
+                                        <p className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1">Alexandre Gusmao</p>
+                                        <p className="text-[10px] font-bold text-slate-400 tracking-tighter">TimorPay ID: 8820-9938-1120</p>
+                                    </div>
+                                </div>
+                                <p className="mt-10 text-[10px] font-black text-primary uppercase tracking-[4px] text-center px-10 leading-relaxed">Present this code to the merchant to receive funds or pay</p>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <p className="p-10 text-[11px] text-white/20 font-bold text-center uppercase tracking-[6px]">Pay 1.0 High Fidelity</p>
+                    
+                    <style>{`
+                        @keyframes scan { 
+                            0% { top: 5%; opacity: 0; } 
+                            10% { opacity: 1; }
+                            50% { top: 90%; opacity: 1; } 
+                            90% { opacity: 1; }
+                            100% { top: 5%; opacity: 0; } 
+                        }
+                        @keyframes shimmer {
+                            0% { transform: translateY(-100%); opacity: 0; }
+                            10% { opacity: 1; }
+                            50% { transform: translateY(0%); opacity: 1; }
+                            90% { opacity: 1; }
+                            100% { transform: translateY(100%); opacity: 0; }
+                        }
+                    `}</style>
                 </div>
-                
-                <p className="p-10 text-[11px] text-white/40 font-bold text-center uppercase tracking-widest">Level 2: Computer Vision / Scan Integration</p>
-                
-                <style>{`
-                    @keyframes scan { 
-                        0% { top: 5%; } 
-                        50% { top: 90%; opacity: 1; } 
-                        100% { top: 5%; } 
-                    }
-                    @keyframes shimmer {
-                        0% { transform: translateY(-100%); }
-                        50% { transform: translateY(100%); }
-                        100% { transform: translateY(-100%); }
-                    }
-                `}</style>
-            </div>
-        );
+            );
+        };
 
         const ProfilePage = ({ onBack }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
@@ -636,7 +739,11 @@
             const currentScreen = navStack[navStack.length - 1];
 
             const navigate = (id, data = null) => {
-                setNavStack([...navStack, { id, data }]);
+                if (id === 'reset') {
+                    setNavStack([{ id: 'home' }]);
+                } else {
+                    setNavStack([...navStack, { id, data }]);
+                }
             };
 
             const goBack = () => {
@@ -667,7 +774,7 @@
             };
 
             return (
-                <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+                <div className="flex-1 flex flex-col h-full relative overflow-hidden">
                     {renderScreen()}
                     <BottomNav active={currentScreen.id} onNavigate={navigate} />
                 </div>
