@@ -1,326 +1,1188 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="海汀阁">
-    <link rel="apple-touch-icon" href="https://sc02.alicdn.com/kf/Ac377697ec23a42df987d7246de3a6a5d8.png">
-    <link rel="manifest" href="manifest.json">
-    <title>海汀阁 | HEITINGO V3.0 PRD Compliance</title>
-    <style>
-        :root {
-            --bg: #000;
-            --card-bg: #121212;
-            --text: #fff;
-            --dim: rgba(255,255,255,0.6);
-            --accent: #ff2d55;
-            --border: rgba(255,255,255,0.1);
-            --gold: #d4af37;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background: var(--bg); color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-        }
-
-        /* Bottom Navigation */
-        nav {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(25px);
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 0.5px solid var(--border); z-index: 3000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .nav-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-            color: #777; font-size: 10px; gap: 4px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-item.active { color: #fff; transform: translateY(-2px); }
-        .nav-item.active .play-icon-box { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); color: #fff; }
-        .nav-icon { width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
-        .play-icon-box {
-            width: 46px; height: 46px; border-radius: 14px;
-            border: 2px solid var(--accent); display: flex;
-            justify-content: center; align-items: center;
-            color: var(--accent); transition: 0.3s; background: rgba(255, 45, 85, 0.05);
-        }
-
-        /* Screen Wrapper */
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden; display: none;
-        }
-        .screen.active { display: block; }
-
-        /* --- 1. HOME SCREEN (Short Video Feed) --- */
-        #home-screen { background: #000; }
-        .home-top-nav {
-            position: absolute; top: 0; width: 100%; padding: 50px 20px 20px;
-            display: flex; justify-content: center; gap: 20px; z-index: 100;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
-        }
-        .home-top-nav span { font-size: 16px; color: rgba(255,255,255,0.6); font-weight: 500; transition: 0.2s; }
-        .home-top-nav span.active { color: #fff; border-bottom: 2px solid #fff; padding-bottom: 5px; }
-        .home-search-icon { position: absolute; right: 20px; top: 52px; font-size: 20px; }
-
-        .video-container { width: 100%; height: 100%; position: relative; }
-        .video-player { width: 100%; height: 100%; background: #000; pointer-events: none; }
-        .video-overlay {
-            position: absolute; bottom: 100px; left: 15px; right: 85px;
-            z-index: 10; pointer-events: none;
-        }
-        .video-overlay h4 { margin: 0; font-size: 17px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 8px; }
-        .v-badge { background: var(--accent); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .video-overlay p { font-size: 14px; margin: 10px 0; opacity: 0.9; line-height: 1.5; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        
-        .video-sidebar {
-            position: absolute; right: 12px; bottom: 120px;
-            display: flex; flex-direction: column; gap: 22px; align-items: center;
-            z-index: 10;
-        }
-        .side-action { text-align: center; color: #fff; }
-        .side-action span { font-size: 30px; display: block; margin-bottom: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-        .side-action label { font-size: 12px; font-weight: 500; }
-        .avatar-circle {
-            width: 52px; height: 52px; border-radius: 50%; border: 2px solid #fff;
-            background-color: #333; margin-bottom: 12px; position: relative;
-        }
-        .add-icon {
-            position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-            width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 14px; border: 2px solid #fff;
-        }
-
-        /* --- 2. PLAY SCREEN (Talent Showcase) --- */
-        #play-screen { background: #080808; overflow-y: auto; padding: 90px 15px 120px; }
-        .talent-header { position: fixed; top: 0; left: 0; width: 100%; background: #080808; padding: 50px 15px 15px; z-index: 500; border-bottom: 1px solid var(--border); }
-        .talent-header h2 { margin: 0; font-size: 22px; font-weight: 300; }
-        .talent-card {
-            background: #141414; border-radius: 16px; margin-bottom: 15px; overflow: hidden;
-            display: flex; position: relative; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .t-img { width: 120px; height: 160px; background: #222; background-size: cover; background-position: center; }
-        .t-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .t-name { font-size: 18px; font-weight: 500; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-        .t-stats { font-size: 12px; color: var(--dim); display: flex; gap: 10px; margin-bottom: 8px; }
-        .t-social { display: flex; gap: 8px; margin-top: 5px; }
-        .social-chip { font-size: 10px; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); }
-        .t-rank { position: absolute; top: 10px; right: 15px; color: var(--gold); font-size: 18px; }
-        .order-btn {
-            background: var(--accent); color: #fff; border: none; padding: 8px 15px;
-            border-radius: 8px; font-size: 13px; font-weight: bold; align-self: flex-end;
-        }
-
-        /* --- 3. MALL SCREEN --- */
-        #mall-screen { background: #000; overflow-y: auto; padding-bottom: 120px; }
-        .mall-top { padding: 60px 20px 10px; position: sticky; top: 0; background: rgba(0,0,0,0.9); z-index: 500; }
-        .mall-top h1 { font-size: 24px; font-weight: 300; margin: 0 0 15px; }
-        .search-container { background: #1a1a1a; border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; color: #666; font-size: 14px; }
-        .coupon-banner { margin: 15px 20px; height: 80px; background: linear-gradient(90deg, #ff2d55, #ff6b6b); border-radius: 12px; display: flex; align-items: center; padding: 0 20px; color: #fff; }
-        .waterfall { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
-        .p-card-v2 { background: #121212; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .p-img-box { width: 100%; aspect-ratio: 0.8; background: #1a1a1a; position: relative; background-size: cover; }
-        .p-img-tag { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); font-size: 10px; padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(4px); }
-        .p-info-v2 { padding: 12px; }
-        .p-title { font-size: 13px; line-height: 1.4; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .p-bottom { display: flex; justify-content: space-between; align-items: center; }
-        .p-price-v2 { font-size: 16px; font-weight: 700; color: #fff; }
-
-        /* --- 4. MESSAGE SCREEN --- */
-        #msg-screen { background: #000; overflow-y: auto; padding-top: 50px; }
-        .msg-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .activity-entry { margin: 0 15px 25px; background: #121212; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,45,85,0.2); }
-        .act-icon { width: 44px; height: 44px; background: var(--accent); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; }
-        .chat-list { list-style: none; padding: 0; margin: 0; }
-        .chat-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 0.5px solid rgba(255,255,255,0.05); }
-        .c-avatar { width: 56px; height: 56px; border-radius: 50%; background: #222; }
-        .c-main { flex: 1; }
-        .c-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .c-name { font-size: 16px; font-weight: 500; }
-        .c-time { font-size: 12px; color: #444; }
-        .c-msg { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-
-        /* --- 5. PROFILE SCREEN (Map & Wallet) --- */
-        #profile-screen { background: #000; overflow-y: auto; padding-bottom: 120px; }
-        .u-top { padding: 60px 20px 20px; display: flex; gap: 20px; align-items: center; }
-        .u-avatar { width: 80px; height: 80px; border-radius: 50%; background: #222; border: 2px solid var(--border); }
-        .u-name { font-size: 22px; font-weight: 300; margin-bottom: 4px; }
-        .u-id { font-size: 11px; color: #555; }
-        
-        .map-section { margin: 15px; background: #121212; border-radius: 20px; padding: 20px; position: relative; overflow: hidden; }
-        .map-bg { position: absolute; top: 0; right: 0; opacity: 0.1; width: 150px; pointer-events: none; }
-        .map-title { font-size: 15px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .map-progress { display: flex; justify-content: space-between; text-align: center; }
-        .map-node { flex: 1; position: relative; }
-        .node-dot { width: 32px; height: 32px; background: #222; border-radius: 50%; margin: 0 auto 8px; display: flex; justify-content: center; align-items: center; font-size: 14px; }
-        .node-dot.active { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-        .node-label { font-size: 10px; color: #555; }
-
-        .wallet-card { margin: 15px; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        .w-top { display: flex; justify-content: space-between; color: #888; font-size: 12px; margin-bottom: 10px; }
-        .w-balance { font-size: 32px; font-weight: bold; font-family: 'Courier New', Courier, monospace; }
-        .w-actions { margin-top: 20px; display: flex; gap: 15px; }
-        .w-btn { flex: 1; padding: 10px; text-align: center; background: rgba(255,255,255,0.05); border-radius: 10px; font-size: 13px; }
-
-        .silver-card {
-            background: linear-gradient(135deg, #777, #ccc, #999);
-            margin: 15px; border-radius: 15px; padding: 20px; color: #000;
-            position: relative; overflow: hidden;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 1. HOME SCREEN -->
-    <div id="home-screen" class="screen">
-        <div class="home-top-nav">
-            <span>关注</span>
-            <span class="active">视频</span>
-            <span>搜索</span>
-        </div>
-        <div class="video-container">
-            <iframe id="main-video" class="video-player" src="https://www.youtube.com/embed/msMvjBbML0c?autoplay=1&mute=1&loop=1&playlist=msMvjBbML0c&controls=0&showinfo=0&rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>
-            <div class="video-sidebar">
-                <div class="avatar-circle"><div class="add-icon">+</div></div>
-                <div class="side-action"><span>❤️</span><label>3.5k</label></div>
-                <div class="side-action"><span>💬</span><label>856</label></div>
-                <div class="side-action"><span>⭐</span><label>1.2k</label></div>
-                <div class="side-action"><span>🔄</span><label>500</label></div>
-            </div>
-            <div class="video-overlay">
-                <h4>@娥娥不会飞 <span class="v-badge">达人</span></h4>
-                <p>#明日方舟终末地 #终末地公测 #cos #伊冯 | 终于等到你！这套伊冯的 Cosplay 质感如何？✨</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. PLAY SCREEN (Talent) -->
-    <div id="play-screen" class="screen">
-        <div class="talent-header"><h2>玩</h2></div>
-        <div class="talent-card">
-            <div class="t-img" style="background-image: url('https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png');"></div>
-            <div class="t-info">
-                <div>
-                    <div class="t-name">江户川·小爱 👑</div>
-                    <div class="t-stats"><span>168cm</span> | <span>48kg</span></div>
-                    <div class="t-social"><span class="social-chip">抖音 2.4w</span><span class="social-chip">B站 1.2w</span></div>
-                </div>
-                <button class="order-btn">邀请</button>
-            </div>
-            <div class="t-rank">⭐⭐⭐⭐⭐</div>
-        </div>
-        <div class="talent-card">
-            <div class="t-img" style="background-image: url('https://sc02.alicdn.com/kf/A45eadf405c67474aa45a7f58b7f54bb22.png');"></div>
-            <div class="t-info">
-                <div><div class="t-name">云朵酱 (Cloud) 🐱</div><div class="t-stats"><span>布偶猫</span> | <span>SSR</span></div><div class="t-social"><span class="social-chip">小红书 15w</span></div></div>
-                <button class="order-btn">立即预约</button>
-            </div>
-            <div class="t-rank">⭐⭐⭐⭐⭐</div>
-        </div>
-    </div>
-
-    <!-- 3. MALL SCREEN -->
-    <div id="mall-screen" class="screen">
-        <div class="mall-top"><h1>数字资产商城</h1><div class="search-container"><span>🔍</span> 搜索 3D 联名服装、潮玩...</div></div>
-        <div class="coupon-banner"><div><div style="font-size: 18px; font-weight: bold;">新人专享 ¥500 礼包</div><div style="font-size: 11px; opacity: 0.8;">全场 3D 资产通用</div></div><div style="margin-left: auto; background: #fff; color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">去领券</div></div>
-        <div class="waterfall">
-            <div class="p-card-v2">
-                <div class="p-img-box" style="background-image: url('https://sc02.alicdn.com/kf/Aaa3e3b3cf0ea472ebbf623f8608cf4d9F.png');"><div class="p-img-tag">限量 99 件</div></div>
-                <div class="p-info-v2"><div class="p-title">HEITINGO X STAY FLUFFY 联名数字腕表</div><div class="p-bottom"><span class="p-price-v2">¥ 15,800</span></div></div>
-            </div>
-            <div class="p-card-v2">
-                <div class="p-img-box" style="background-image: url('https://sc02.alicdn.com/kf/A12be79b1f0d64d708f69bbc38fc016ban.png');"><div class="p-img-tag">VIP 专属</div></div>
-                <div class="p-info-v2"><div class="p-title">【3D 换装】极光之影 - 赛博礼服全套</div><div class="p-bottom"><span class="p-price-v2">¥ 2,499</span></div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. MESSAGE SCREEN -->
-    <div id="msg-screen" class="screen">
-        <div class="msg-header"><h2 style="font-weight: 300;">消息</h2><span>🔔</span></div>
-        <div class="activity-entry"><div class="act-icon">📅</div><div style="flex: 1;"><div style="font-size: 15px; font-weight: 500;">线下沙龙报名中</div><div style="font-size: 12px; color: #666;">上海·海汀阁会员中心 05.20</div></div><div style="font-size: 18px; opacity: 0.3;">›</div></div>
-        <ul class="chat-list">
-            <li class="chat-item">
-                <div class="c-avatar" style="background-image: url('https://sc02.alicdn.com/kf/A45eadf405c67474aa45a7f58b7f54bb22.png'); background-size: cover;"></div>
-                <div class="c-main"><div class="c-top"><span class="c-name">系统通知</span><span class="c-time">14:20</span></div><div class="c-msg">恭喜！您的二级分销收益 ¥125.00 已入账。</div></div>
-            </li>
-        </ul>
-    </div>
-
-    <!-- 5. PROFILE SCREEN -->
-    <div id="profile-screen" class="screen">
-        <div class="u-top"><div class="u-avatar"></div><div><div class="u-name">Cai Zhisen ★</div><div class="u-id">UID: 7084687961 | 邀友赢金 🎟️</div></div></div>
-        <div class="wallet-card">
-            <div class="w-top"><span>累计分销收益 (元)</span><span>详情 ›</span></div>
-            <div class="w-balance">8,560.00</div>
-            <div class="w-actions"><div class="w-btn">立即提现</div><div class="w-btn" style="background: var(--accent);">推广赚金</div></div>
-        </div>
-        <div class="map-section">
-            <img class="map-bg" src="https://sc02.alicdn.com/kf/A48f1ff4f94744389b97ec5831cc11c0bm.png">
-            <div class="map-title">📍 城市解锁进度 <span style="font-size: 11px; font-weight: normal; color: var(--dim);">已解锁 3/15</span></div>
-            <div class="map-progress">
-                <div class="map-node"><div class="node-dot active">🏠</div><div class="node-label">上海</div></div>
-                <div class="map-node"><div class="node-dot active">🏙️</div><div class="node-label">北京</div></div>
-                <div class="map-node"><div class="node-dot active">⛵</div><div class="node-label">广州</div></div>
-                <div class="map-node"><div class="node-dot">🎡</div><div class="node-label">深圳</div></div>
-                <div class="map-node"><div class="node-dot">🍵</div><div class="node-label">成都</div></div>
-            </div>
-        </div>
-        <div class="silver-card">
-            <div style="font-size: 11px; font-weight: bold; letter-spacing: 2px;">HEITINGO EXCLUSIVE</div>
-            <div style="font-size: 24px; font-weight: 200; margin: 15px 0;">SILVER MEMBER</div>
-            <div style="font-size: 10px; opacity: 0.6;">持卡人：CAI ZHISEN</div>
-        </div>
-    </div>
-
-    <nav id="nav-bar">
-        <div class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><span>首页</span></div>
-        <div class="nav-item active" onclick="showScreen('play')"><div class="nav-icon">💎</div><span>玩</span></div>
-        <div class="nav-item" onclick="showScreen('mall')"><div class="nav-icon"><div class="play-icon-box">∇</div></div><span style="margin-top:2px;">商城</span></div>
-        <div class="nav-item" onclick="showScreen('msg')"><div class="nav-icon">💬</div><span>消息</span></div>
-        <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><span>我</span></div>
-    </nav>
-
-    <script src="js/api.js"></script>
+    <title>TimorPay 2.0 - Inclusive Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
-        // Load Dynamic Data from API
-        async function loadData() {
-            try {
-                // 1. Fetch Video Feed
-                const feed = await HeitingoAPI.getFeed();
-                if (feed && feed.length > 0) {
-                    const video = feed[0];
-                    document.querySelector('.video-overlay h4').innerHTML = `@${video.author_name || '娥娥不会飞'} <span class="v-badge">达人</span>`;
-                    document.querySelector('.video-overlay p').innerText = video.description;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0057B7', // Timor Flag Blue
+                        secondary: '#FFD700', // Timor Gold
+                        accent: '#E41E26', // Timor Red
+                        dark: '#1A1A1A',
+                        surface: '#F8FAFC',
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    boxShadow: { 'soft': '0 8px 30px rgba(0, 87, 183, 0.08)' }
                 }
-
-                // 2. Fetch Talent List
-                const talents = await HeitingoAPI.getTalentList();
-                // Logic to render talent cards dynamically can be added here
-            } catch (err) {
-                console.warn("Backend not connected, using offline mock data.");
             }
         }
+    </script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; background: #f1f5f9; }
+        .card-gradient { background: linear-gradient(135deg, #0057B7 0%, #003D82 100%); }
+        .nfc-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(1); } }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex justify-center items-start min-h-screen">
+    <div id="root" class="w-full max-w-[430px] bg-surface min-h-screen shadow-2xl relative overflow-hidden flex flex-col"></div>
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id + '-screen').classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if(item.innerText.includes(id==='home'?'首页':(id==='play'?'玩':(id==='mall'?'商城':(id==='msg'?'消息':'我'))))) {
-                    item.classList.add('active');
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- Shared Components ---
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => { window.lucide && window.lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const BottomNav = ({ active, onNavigate }) => (
+            <div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 pt-3 pb-8 flex justify-between items-center z-50">
+                {[
+                    { id: 'home', icon: 'home', label: 'Home' },
+                    { id: 'agents', icon: 'map-pin', label: 'Agents' },
+                    { id: 'scan', icon: 'qr-code', label: 'Pay', center: true },
+                    { id: 'remit', icon: 'arrow-left-right', label: 'Remit' },
+                    { id: 'profile', icon: 'user', label: 'Profile' }
+                ].map(item => (
+                    <button 
+                        key={item.id}
+                        onClick={() => onNavigate(item.id)}
+                        className={`flex flex-col items-center gap-1 transition-all ${item.center ? '-mt-12' : ''}`}
+                    >
+                        {item.center ? (
+                            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 border-4 border-surface active:scale-90 transition-transform">
+                                <Icon name={item.icon} size={32} />
+                            </div>
+                        ) : (
+                            <div className={`${active === item.id ? 'text-primary' : 'text-slate-400'} flex flex-col items-center`}>
+                                <Icon name={item.icon} size={24} />
+                                <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">{item.label}</span>
+                            </div>
+                        )}
+                    </button>
+                ))}
+            </div>
+        );
+
+        // --- Pages ---
+
+        const HomePage = ({ onNavigate }) => {
+            return (
+                <div className="flex-1 pb-32 overflow-y-auto hide-scrollbar animate-in fade-in duration-300">
+                    {/* Top Bar */}
+                    <div className="px-6 py-6 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black italic">TP</div>
+                            <div>
+                                <h1 className="text-lg font-extrabold text-slate-900 leading-none">TimorPay</h1>
+                                <p className="text-[10px] font-bold text-primary tracking-widest uppercase mt-1">Inclusive Finance</p>
+                            </div>
+                        </div>
+                        <button className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center relative">
+                            <Icon name="bell" size={20} className="text-slate-600" />
+                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
+                        </button>
+                    </div>
+
+                    {/* octopus Card UI */}
+                    <div className="px-6">
+                        <div className="card-gradient rounded-[32px] p-6 text-white shadow-2xl shadow-primary/20 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-20"><Icon name="cpu" size={100} /></div>
+                            <div className="flex justify-between items-start mb-8">
+                                <div>
+                                    <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">Total Balance</p>
+                                    <h2 className="text-4xl font-black">USD 124.50</h2>
+                                </div>
+                                <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border border-white/20">
+                                    NFC Active
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Linked Card</p>
+                                    <p className="font-mono text-sm tracking-[4px]">**** **** 8820</p>
+                                </div>
+                                <button onClick={() => onNavigate('card-mgmt')} className="bg-secondary text-primary px-4 py-2 rounded-xl text-xs font-black shadow-lg active:scale-95 transition-transform uppercase">
+                                    Manage Card
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Actions (2.0 Strategy) */}
+                    <div className="px-6 mt-8 grid grid-cols-4 gap-4">
+                        {[
+                            { id: 'agents', icon: 'banknote', label: 'Cash In/Out', color: 'bg-blue-50 text-blue-600' },
+                            { id: 'remit', icon: 'globe', label: 'Remittance', color: 'bg-emerald-50 text-emerald-600' },
+                            { id: 'subsidy', icon: 'user-check', label: 'Subsidies', color: 'bg-amber-50 text-amber-600' },
+                            { id: 'services', icon: 'layout-grid', label: 'Services', color: 'bg-slate-50 text-slate-600' }
+                        ].map(item => (
+                            <button key={item.id} onClick={() => onNavigate(item.id)} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                                <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center shadow-sm`}>
+                                    <Icon name={item.icon} size={24} />
+                                </div>
+                                <span className="text-[10px] font-extrabold text-slate-500 text-center leading-tight uppercase tracking-tighter">{item.label}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Agent Map Preview */}
+                    <div className="px-6 mt-10">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-extrabold text-slate-900">Nearby Agents</h3>
+                            <button onClick={() => onNavigate('agents')} className="text-primary text-[10px] font-bold uppercase tracking-widest">Open Map</button>
+                        </div>
+                        <div className="bg-white rounded-[24px] p-4 border border-slate-100 shadow-soft">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                    <Icon name="coffee" size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-sm font-bold text-slate-800 leading-none">Letefoho Coffee - Timor Plaza</h4>
+                                    <p className="text-[10px] text-slate-400 mt-1 font-bold"><Icon name="navigation" size={8} className="inline mr-1" /> 120m away • Open until 21:00</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Cash Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent History (MoneyGram focused) */}
+                    <div className="px-6 mt-10">
+                        <h3 className="font-extrabold text-slate-900 mb-4">Recent Activity</h3>
+                        <div className="space-y-3">
+                            {[
+                                { title: 'Intl Remittance (Wise)', subtitle: 'From: Jose Ramos (AU)', amount: '+$240.00', time: 'Today, 10:20', type: 'in' },
+                                { title: 'Cash Out at Agent', subtitle: 'Timor Plaza Shop 12', amount: '-$50.00', time: 'Yesterday, 14:15', type: 'out' },
+                                { title: 'Government Subsidy', subtitle: 'Retirement Benefit Gadu', amount: '+$120.00', time: 'May 15, 2026', type: 'in' }
+                            ].map((tx, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-50 shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-600'}`}>
+                                            <Icon name={tx.type === 'in' ? 'arrow-down-left' : 'arrow-up-right'} size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-slate-800">{tx.title}</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{tx.subtitle}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className={`text-sm font-black ${tx.type === 'in' ? 'text-emerald-600' : 'text-slate-800'}`}>{tx.amount}</p>
+                                        <p className="text-[9px] text-slate-400 font-bold">{tx.time}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const AgentFinder = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Cash-Out Points</h2>
+                </div>
+                <div className="flex-1 bg-slate-200 m-4 rounded-[32px] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/125.57, -8.55,14,0/400x400?access_token=pk.mock')] bg-cover bg-center"></div>
+                    {/* Mock Map Markers */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="coffee" size={14} /></div>
+                    <div className="absolute bottom-1/4 right-1/4 w-8 h-8 bg-accent rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="shopping-cart" size={14} /></div>
+                </div>
+                <div className="px-6 pb-32">
+                    <h3 className="font-bold text-slate-500 text-xs uppercase tracking-widest mb-4">Closest to you</h3>
+                    <button onClick={() => onNavigate('agent-detail')} className="w-full text-left active:scale-95 transition-transform">
+                        <div className="bg-white rounded-3xl p-5 shadow-soft border-l-4 border-primary">
+                            <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-black text-slate-800">Dili Mart Central</h4>
+                                <span className="text-[10px] text-primary font-bold">400m</span>
+                            </div>
+                            <p className="text-xs text-slate-400 mb-4 font-bold uppercase tracking-tighter">Availability: High (USD 2,000+)</p>
+                            <div className="w-full bg-primary text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 text-center">Open Agent Profile</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        );
+
+        const RemittancePage = ({ onBack }) => (
+            <div className="flex-1 bg-primary flex flex-col text-white animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">International Remit</h2>
+                </div>
+                <div className="flex-1 bg-surface rounded-t-[48px] p-8 text-slate-800">
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 mb-8">
+                        <div className="flex items-center gap-4 mb-4">
+                            <Icon name="shield-check" className="text-emerald-600" size={32} />
+                            <div>
+                                <h3 className="font-black text-slate-800">Wise / Remitly Partner</h3>
+                                <p className="text-xs text-slate-500">Fastest way to receive money in Timor</p>
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                            <span>Status: Online</span>
+                            <span>Fee: $0.50</span>
+                        </div>
+                    </div>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Reference Number (MoneyGram/Wise)</label>
+                            <input type="text" placeholder="e.g. 123-456-789" className="w-full bg-white border border-slate-100 rounded-2xl py-5 px-6 text-xl font-mono shadow-sm focus:ring-2 focus:ring-primary outline-none" />
+                        </div>
+                        <button onClick={() => onNavigate('remit-claim')} className="w-full bg-primary text-white py-6 rounded-[24px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
+                            Claim My Funds
+                        </button>
+                    </div>
+                    <p className="text-center text-[10px] font-bold text-slate-400 mt-8 leading-relaxed">
+                        Funds will be deposited to your TimorPay card instantly.<br />Visit any Agent to cash out in 10 minutes.
+                    </p>
+                </div>
+            </div>
+        );
+
+        const CardMgmt = ({ onBack }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in fade-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">NFC Card</h2>
+                </div>
+                <div className="px-8 flex flex-col items-center">
+                    <div className="w-64 h-64 bg-white rounded-full flex items-center justify-center border-2 border-dashed border-primary/20 relative mb-10">
+                        <div className="w-48 h-48 bg-primary/5 rounded-full nfc-animation flex items-center justify-center">
+                            <Icon name="contactless" size={80} className="text-primary" />
+                        </div>
+                        <div className="absolute -bottom-4 bg-primary text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest">Tap Card to Phone</div>
+                    </div>
+                    <div className="w-full space-y-4">
+                        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-700">Lock Physical Card</span>
+                            <div className="w-12 h-6 bg-slate-200 rounded-full p-1"><div className="w-4 h-4 bg-white rounded-full"></div></div>
+                        </div>
+                        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-700">Offline Limit ($20)</span>
+                            <span className="text-xs font-black text-primary uppercase underline">Change</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const SubsidyPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Govt Subsidies</h2>
+                </div>
+                <div className="px-6 space-y-4">
+                    {[
+                        { id: 'sub-vet', title: 'Veterans Benefit', provider: 'Ministry of Social', amount: '$150.00', status: 'Ready' },
+                        { id: 'sub-edu', title: 'Student Support', provider: 'Education Dept', amount: '$45.00', status: 'Processing' },
+                    ].map(item => (
+                        <button key={item.id} onClick={() => onNavigate('subsidy-detail', { name: item.title, amount: item.amount })} className="w-full bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center text-left active:scale-95 transition-transform">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center"><Icon name="award" /></div>
+                                <div>
+                                    <h4 className="font-black text-slate-800">{item.title}</h4>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase">{item.provider}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm font-black text-slate-800">{item.amount}</p>
+                                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${item.status === 'Ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{item.status}</span>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+                <p className="p-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: National Subsidy Program Registry (Gadu Integration)</p>
+            </div>
+        );
+
+        const SubsidyDetail = ({ onBack, data }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in fade-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Benefit Details</h2>
+                </div>
+                <div className="flex-1 px-8 py-10 flex flex-col items-center">
+                    <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center mb-6"><Icon name="medal" size={40} /></div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-1">{data?.name || 'Veteran Benefit'}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Verification ID: V-9938201</p>
+                    
+                    <div className="w-full space-y-6">
+                        <div className="flex justify-between border-b border-slate-50 pb-4">
+                            <span className="text-xs font-bold text-slate-400 uppercase">Gross Amount</span>
+                            <span className="text-sm font-black text-slate-800">{data?.amount || '$150.00'}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-slate-50 pb-4">
+                            <span className="text-xs font-bold text-slate-400 uppercase">Processing Fee</span>
+                            <span className="text-sm font-black text-slate-800">$0.10</span>
+                        </div>
+                        <div className="flex justify-between pt-2">
+                            <span className="text-xs font-bold text-slate-900 uppercase">Net to Card</span>
+                            <span className="text-xl font-black text-primary">$149.90</span>
+                        </div>
+                    </div>
+                    
+                    <button onClick={() => onNavigate('success', { title: 'Benefit Claimed!', msg: 'The subsidy has been credited to your card.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-3xl mt-12 font-black shadow-xl shadow-primary/20">Claim to My NFC Card</button>
+                    <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: Deep Financial Breakdown & Disbursement Logic</p>
+                </div>
+            </div>
+        );
+
+        const AgentDetail = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Agent Service</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-white rounded-[32px] p-8 shadow-soft border border-slate-100 flex flex-col items-center text-center">
+                        <div className="w-20 h-20 bg-primary/10 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="coffee" size={40} /></div>
+                        <h3 className="text-xl font-black text-slate-800 mb-2">Letefoho Coffee - Timor Plaza</h3>
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-8">Authorized Agent ID: AGT-9902</p>
+                        
+                        <div className="grid grid-cols-2 gap-4 w-full mb-8">
+                            <div className="bg-slate-50 p-4 rounded-2xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Cash Out</p>
+                                <p className="text-sm font-black text-emerald-600">Available</p>
+                            </div>
+                            <div className="bg-slate-50 p-4 rounded-2xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">NFC Sync</p>
+                                <p className="text-sm font-black text-primary">Ready</p>
+                            </div>
+                        </div>
+
+                        <button onClick={() => onNavigate('withdrawal-qr')} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-lg shadow-primary/30 active:scale-95 transition-transform uppercase tracking-wider">
+                            Generate Cash-Out Code
+                        </button>
+                    </div>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: Authorized Agent Profile & Service Discovery</p>
+                </div>
+            </div>
+        );
+
+        const WithdrawalQR = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in zoom-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Scan to Cash-Out</h2>
+                </div>
+                <div className="flex-1 flex flex-col items-center justify-center p-10">
+                    <p className="text-sm font-black text-slate-800 mb-8 uppercase tracking-widest">Show this to the Agent</p>
+                    <div className="w-64 h-64 bg-slate-50 rounded-[48px] border-8 border-primary/5 p-8 flex items-center justify-center relative">
+                        <Icon name="qr-code" size={180} className="text-slate-800" />
+                        <div className="absolute inset-0 border-4 border-primary rounded-[48px] animate-pulse"></div>
+                    </div>
+                    <div className="mt-12 text-center">
+                        <p className="text-3xl font-black text-primary mb-2">$50.00</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase">Valid for 5:00 minutes</p>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Cash-Out Successful', msg: 'You have received $50.00 cash from the agent.', level: 4 })} className="mt-10 text-primary text-xs font-bold underline uppercase">Simulate Agent Scan</button>
+                    <p className="mt-16 text-[11px] text-slate-400 font-bold">Level 3: Secure Dynamic Token Generation</p>
+                </div>
+            </div>
+        );
+
+        const SuccessPage = ({ onBack, data }) => (
+            <div className="flex-1 bg-white flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
+                <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-8 animate-bounce">
+                    <Icon name="check" size={48} />
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 mb-4 text-center">{data?.title || 'Success'}</h2>
+                <p className="text-sm text-slate-500 text-center mb-12">{data?.msg || 'Transaction completed successfully.'}</p>
+                <div className="w-full p-6 bg-slate-50 rounded-3xl border border-dashed border-slate-200 mb-12">
+                    <div className="flex justify-between mb-2"><span className="text-[10px] font-bold text-slate-400 uppercase">Reference</span><span className="text-xs font-mono font-bold">#TP-99283-X</span></div>
+                    <div className="flex justify-between"><span className="text-[10px] font-bold text-slate-400 uppercase">Timestamp</span><span className="text-xs font-bold">May 19, 14:30</span></div>
+                </div>
+                <button onClick={() => onBack(true)} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20">Return to Home</button>
+                <p className="mt-8 text-[11px] text-slate-400 font-bold tracking-widest uppercase">Level {data?.level || 4}: Transaction Confirmation & Receipt</p>
+            </div>
+        );
+
+        const RemitClaimPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Remit Verification</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-white p-8 rounded-[32px] shadow-soft mb-8">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Icon name="user-check" /></div>
+                            <div>
+                                <h3 className="font-black">Identity Check</h3>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase">Required by AML Policy</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-6 leading-relaxed">Please confirm your <strong>Timor-Leste National ID</strong> matches the recipient name on the Wise/Remitly transfer.</p>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">Recipient</span>
+                                <span className="text-xs font-black">Alexandre Gusmao</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">ID Number</span>
+                                <span className="text-xs font-black">TL-2024-XXXX</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Funds Claimed!', msg: 'USD 240.00 has been added to your card balance.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black">Confirm & Deposit</button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: KYC/AML Compliance Verification</p>
+                </div>
+            </div>
+        );
+
+        const ServicesPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Local Services</h2>
+                </div>
+                <div className="px-6 grid grid-cols-2 gap-4">
+                    {[
+                        { id: 'topup', icon: 'smartphone', label: 'Mobile Topup', color: 'bg-blue-50 text-blue-600' },
+                        { id: 'bills', icon: 'zap', label: 'EDTL (Power)', color: 'bg-amber-50 text-amber-600' },
+                        { id: 'church', icon: 'church', label: 'Donations', color: 'bg-accent/5 text-accent' },
+                        { id: 'tax', icon: 'file-text', label: 'Tax Payment', color: 'bg-slate-50 text-slate-600' }
+                    ].map(item => (
+                        <button key={item.id} onClick={() => onNavigate('service-detail', { name: item.label, icon: item.icon })} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-50 flex flex-col items-center gap-4 active:scale-95 transition-transform">
+                            <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center`}><Icon name={item.icon} /></div>
+                            <span className="text-xs font-black text-slate-800 uppercase tracking-tighter">{item.label}</span>
+                        </button>
+                    ))}
+                </div>
+                <p className="mt-auto p-8 text-[11px] text-slate-400 font-bold text-center">Level 2: Ecosystem Service Discovery</p>
+            </div>
+        );
+
+        const ServiceDetail = ({ onBack, onNavigate, data }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">{data?.name || 'Service'}</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-slate-50 rounded-[32px] p-8 mb-8 flex flex-col items-center">
+                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 text-primary"><Icon name={data?.icon || 'zap'} size={32} /></div>
+                        <label className="text-[10px] font-black uppercase text-slate-400 mb-2">Customer Number / Meter ID</label>
+                        <input type="text" placeholder="1022-883-990" className="w-full bg-white rounded-2xl py-4 px-6 text-xl font-mono text-center outline-none focus:ring-2 focus:ring-primary" />
+                        <div className="grid grid-cols-3 gap-3 w-full mt-8">
+                            {['$5', '$10', '$20'].map(v => <button key={v} className="bg-white border border-slate-200 py-3 rounded-xl font-black text-xs hover:border-primary">{v}</button>)}
+                        </div>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Payment Sent', msg: `Your payment for ${data?.name} is being processed.`, level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black">Pay Securely</button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: Micro-Payment Logic & External API Bridge</p>
+                </div>
+            </div>
+        );
+
+        const ScanPay = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-black flex flex-col text-white animate-in zoom-in duration-500">
+                <div className="px-6 py-8 flex justify-between items-center">
+                    <button onClick={onBack} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="x" /></button>
+                    <span className="text-xs font-black uppercase tracking-widest">Scan Merchant QR</span>
+                    <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="flashlight" size={20} /></button>
+                </div>
+                <div className="flex-1 flex items-center justify-center relative">
+                    <div className="w-64 h-64 border-2 border-white/30 rounded-[48px] relative">
+                        <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-primary rounded-tl-3xl"></div>
+                        <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-primary rounded-tr-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-primary rounded-bl-3xl"></div>
+                        <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-primary rounded-br-3xl"></div>
+                        <div className="absolute inset-x-0 h-0.5 bg-primary/50 animate-[scan_2s_infinite]"></div>
+                    </div>
+                    <button onClick={() => onNavigate('pay-input')} className="absolute bottom-10 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-black uppercase">Simulate Found: Burger Dili</button>
+                </div>
+                <p className="p-10 text-[11px] text-white/40 font-bold text-center uppercase tracking-widest">Level 2: Computer Vision / Scan Integration</p>
+                <style>{`@keyframes scan { 0% { top: 10%; } 50% { top: 90%; } 100% { top: 10%; } }`}</style>
+            </div>
+        );
+
+        const PayInput = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Payment to Burger Dili</h2>
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                    <div className="bg-white rounded-[48px] p-10 shadow-soft border border-slate-50 flex flex-col items-center">
+                        <div className="w-20 h-20 bg-primary/5 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="store" size={40} /></div>
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-tighter">Enter Amount (USD)</p>
+                        <div className="flex items-baseline gap-1 text-5xl font-black text-slate-900 mb-8">
+                            <span className="text-2xl text-slate-300">$</span>
+                            <input type="number" defaultValue="8.50" className="w-32 bg-transparent outline-none text-center" />
+                        </div>
+                        <div className="w-full flex justify-between p-4 bg-slate-50 rounded-2xl">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Available</span>
+                            <span className="text-[10px] font-black text-primary">$124.50</span>
+                        </div>
+                    </div>
+                    <div className="mt-auto">
+                        <button onClick={() => onNavigate('success', { title: 'Payment Successful', msg: 'You have paid $8.50 to Burger Dili.', level: 4 })} className="w-full bg-primary text-white py-6 rounded-[32px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
+                            Swipe to Pay
+                        </button>
+                        <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: Real-time Transaction Settlement</p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- Main App Controller ---
+        const App = () => {
+            const [navStack, setNavStack] = useState([{ id: 'home' }]);
+            
+            const currentScreen = navStack[navStack.length - 1];
+
+            const navigate = (id, data = null) => {
+                setNavStack([...navStack, { id, data }]);
+            };
+
+            const goBack = () => {
+                if (navStack.length > 1) {
+                    setNavStack(navStack.slice(0, -1));
                 }
-            });
-            const video = document.getElementById('main-video');
-            if(id !== 'home') video.src = video.src.replace('autoplay=1', 'autoplay=0');
-            else video.src = video.src.replace('autoplay=0', 'autoplay=1');
+            };
+
+            const renderScreen = () => {
+                switch(currentScreen.id) {
+                    case 'agents': return <AgentFinder onBack={goBack} onNavigate={navigate} />;
+                    case 'agent-detail': return <AgentDetail onBack={goBack} onNavigate={navigate} />;
+                    case 'withdrawal-qr': return <WithdrawalQR onBack={goBack} onNavigate={navigate} />;
+                    case 'remit': return <RemittancePage onBack={goBack} onNavigate={navigate} />;
+                    case 'remit-claim': return <RemitClaimPage onBack={goBack} onNavigate={navigate} />;
+                    case 'card-mgmt': return <CardMgmt onBack={goBack} />;
+                    case 'subsidy': return <SubsidyPage onBack={goBack} onNavigate={navigate} />;
+                    case 'subsidy-detail': return <SubsidyDetail onBack={goBack} data={currentScreen.data} onNavigate={navigate} />;
+                    case 'services': return <ServicesPage onBack={goBack} onNavigate={navigate} />;
+                    case 'service-detail': return <ServiceDetail onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
+                    case 'scan': return <ScanPay onBack={goBack} onNavigate={navigate} />;
+                    case 'pay-input': return <PayInput onBack={goBack} onNavigate={navigate} />;
+                    case 'success': return <SuccessPage onBack={goBack} data={currentScreen.data} />;
+                    case 'home':
+                    default: return <HomePage onNavigate={navigate} />;
+                }
+            };
+
+            return (
+                <div className="flex-1 flex flex-col h-screen overflow-hidden">
+                    {renderScreen()}
+                    <BottomNav active={currentScreen.id} onNavigate={navigate} />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TimorPay 2.0 - Inclusive Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0057B7', // Timor Flag Blue
+                        secondary: '#FFD700', // Timor Gold
+                        accent: '#E41E26', // Timor Red
+                        dark: '#1A1A1A',
+                        surface: '#F8FAFC',
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    boxShadow: { 'soft': '0 8px 30px rgba(0, 87, 183, 0.08)' }
+                }
+            }
         }
-        showScreen('home');
-        loadData();
+    </script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; background: #f1f5f9; }
+        .card-gradient { background: linear-gradient(135deg, #0057B7 0%, #003D82 100%); }
+        .nfc-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(1); } }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex justify-center items-start min-h-screen">
+    <div id="root" class="w-full max-w-[430px] bg-surface min-h-screen shadow-2xl relative overflow-hidden flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- Shared Components ---
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => { window.lucide && window.lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const BottomNav = ({ active, onNavigate }) => (
+            <div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 pt-3 pb-8 flex justify-between items-center z-50">
+                {[
+                    { id: 'home', icon: 'home', label: 'Home' },
+                    { id: 'agents', icon: 'map-pin', label: 'Agents' },
+                    { id: 'scan', icon: 'qr-code', label: 'Pay', center: true },
+                    { id: 'remit', icon: 'arrow-left-right', label: 'Remit' },
+                    { id: 'profile', icon: 'user', label: 'Profile' }
+                ].map(item => (
+                    <button 
+                        key={item.id}
+                        onClick={() => onNavigate(item.id)}
+                        className={`flex flex-col items-center gap-1 transition-all ${item.center ? '-mt-12' : ''}`}
+                    >
+                        {item.center ? (
+                            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 border-4 border-surface active:scale-90 transition-transform">
+                                <Icon name={item.icon} size={32} />
+                            </div>
+                        ) : (
+                            <div className={`${active === item.id ? 'text-primary' : 'text-slate-400'} flex flex-col items-center`}>
+                                <Icon name={item.icon} size={24} />
+                                <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter">{item.label}</span>
+                            </div>
+                        )}
+                    </button>
+                ))}
+            </div>
+        );
+
+        // --- Pages ---
+
+        const HomePage = ({ onNavigate }) => {
+            return (
+                <div className="flex-1 pb-32 overflow-y-auto hide-scrollbar animate-in fade-in duration-300">
+                    {/* Top Bar */}
+                    <div className="px-6 py-6 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-black italic">TP</div>
+                            <div>
+                                <h1 className="text-lg font-extrabold text-slate-900 leading-none">TimorPay</h1>
+                                <p className="text-[10px] font-bold text-primary tracking-widest uppercase mt-1">Inclusive Finance</p>
+                            </div>
+                        </div>
+                        <button className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center relative">
+                            <Icon name="bell" size={20} className="text-slate-600" />
+                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
+                        </button>
+                    </div>
+
+                    {/* octopus Card UI */}
+                    <div className="px-6">
+                        <div className="card-gradient rounded-[32px] p-6 text-white shadow-2xl shadow-primary/20 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-20"><Icon name="cpu" size={100} /></div>
+                            <div className="flex justify-between items-start mb-8">
+                                <div>
+                                    <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">Total Balance</p>
+                                    <h2 className="text-4xl font-black">USD 124.50</h2>
+                                </div>
+                                <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter border border-white/20">
+                                    NFC Active
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Linked Card</p>
+                                    <p className="font-mono text-sm tracking-[4px]">**** **** 8820</p>
+                                </div>
+                                <button onClick={() => onNavigate('card-mgmt')} className="bg-secondary text-primary px-4 py-2 rounded-xl text-xs font-black shadow-lg active:scale-95 transition-transform uppercase">
+                                    Manage Card
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Actions (2.0 Strategy) */}
+                    <div className="px-6 mt-8 grid grid-cols-4 gap-4">
+                        {[
+                            { id: 'agents', icon: 'banknote', label: 'Cash In/Out', color: 'bg-blue-50 text-blue-600' },
+                            { id: 'remit', icon: 'globe', label: 'Remittance', color: 'bg-emerald-50 text-emerald-600' },
+                            { id: 'subsidy', icon: 'user-check', label: 'Subsidies', color: 'bg-amber-50 text-amber-600' },
+                            { id: 'services', icon: 'layout-grid', label: 'Services', color: 'bg-slate-50 text-slate-600' }
+                        ].map(item => (
+                            <button key={item.id} onClick={() => onNavigate(item.id)} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                                <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center shadow-sm`}>
+                                    <Icon name={item.icon} size={24} />
+                                </div>
+                                <span className="text-[10px] font-extrabold text-slate-500 text-center leading-tight uppercase tracking-tighter">{item.label}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Agent Map Preview */}
+                    <div className="px-6 mt-10">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-extrabold text-slate-900">Nearby Agents</h3>
+                            <button onClick={() => onNavigate('agents')} className="text-primary text-[10px] font-bold uppercase tracking-widest">Open Map</button>
+                        </div>
+                        <div className="bg-white rounded-[24px] p-4 border border-slate-100 shadow-soft">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                    <Icon name="coffee" size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-sm font-bold text-slate-800 leading-none">Letefoho Coffee - Timor Plaza</h4>
+                                    <p className="text-[10px] text-slate-400 mt-1 font-bold"><Icon name="navigation" size={8} className="inline mr-1" /> 120m away • Open until 21:00</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Cash Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent History (MoneyGram focused) */}
+                    <div className="px-6 mt-10">
+                        <h3 className="font-extrabold text-slate-900 mb-4">Recent Activity</h3>
+                        <div className="space-y-3">
+                            {[
+                                { title: 'Intl Remittance (Wise)', subtitle: 'From: Jose Ramos (AU)', amount: '+$240.00', time: 'Today, 10:20', type: 'in' },
+                                { title: 'Cash Out at Agent', subtitle: 'Timor Plaza Shop 12', amount: '-$50.00', time: 'Yesterday, 14:15', type: 'out' },
+                                { title: 'Government Subsidy', subtitle: 'Retirement Benefit Gadu', amount: '+$120.00', time: 'May 15, 2026', type: 'in' }
+                            ].map((tx, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-50 shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'in' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-600'}`}>
+                                            <Icon name={tx.type === 'in' ? 'arrow-down-left' : 'arrow-up-right'} size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-slate-800">{tx.title}</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{tx.subtitle}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className={`text-sm font-black ${tx.type === 'in' ? 'text-emerald-600' : 'text-slate-800'}`}>{tx.amount}</p>
+                                        <p className="text-[9px] text-slate-400 font-bold">{tx.time}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const AgentFinder = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Cash-Out Points</h2>
+                </div>
+                <div className="flex-1 bg-slate-200 m-4 rounded-[32px] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/125.57, -8.55,14,0/400x400?access_token=pk.mock')] bg-cover bg-center"></div>
+                    {/* Mock Map Markers */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="coffee" size={14} /></div>
+                    <div className="absolute bottom-1/4 right-1/4 w-8 h-8 bg-accent rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white" onClick={() => onNavigate('agent-detail')}><Icon name="shopping-cart" size={14} /></div>
+                </div>
+                <div className="px-6 pb-32">
+                    <h3 className="font-bold text-slate-500 text-xs uppercase tracking-widest mb-4">Closest to you</h3>
+                    <button onClick={() => onNavigate('agent-detail')} className="w-full text-left active:scale-95 transition-transform">
+                        <div className="bg-white rounded-3xl p-5 shadow-soft border-l-4 border-primary">
+                            <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-black text-slate-800">Dili Mart Central</h4>
+                                <span className="text-[10px] text-primary font-bold">400m</span>
+                            </div>
+                            <p className="text-xs text-slate-400 mb-4 font-bold uppercase tracking-tighter">Availability: High (USD 2,000+)</p>
+                            <div className="w-full bg-primary text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 text-center">Open Agent Profile</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        );
+
+        const RemittancePage = ({ onBack }) => (
+            <div className="flex-1 bg-primary flex flex-col text-white animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">International Remit</h2>
+                </div>
+                <div className="flex-1 bg-surface rounded-t-[48px] p-8 text-slate-800">
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 mb-8">
+                        <div className="flex items-center gap-4 mb-4">
+                            <Icon name="shield-check" className="text-emerald-600" size={32} />
+                            <div>
+                                <h3 className="font-black text-slate-800">Wise / Remitly Partner</h3>
+                                <p className="text-xs text-slate-500">Fastest way to receive money in Timor</p>
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                            <span>Status: Online</span>
+                            <span>Fee: $0.50</span>
+                        </div>
+                    </div>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Reference Number (MoneyGram/Wise)</label>
+                            <input type="text" placeholder="e.g. 123-456-789" className="w-full bg-white border border-slate-100 rounded-2xl py-5 px-6 text-xl font-mono shadow-sm focus:ring-2 focus:ring-primary outline-none" />
+                        </div>
+                        <button onClick={() => onNavigate('remit-claim')} className="w-full bg-primary text-white py-6 rounded-[24px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
+                            Claim My Funds
+                        </button>
+                    </div>
+                    <p className="text-center text-[10px] font-bold text-slate-400 mt-8 leading-relaxed">
+                        Funds will be deposited to your TimorPay card instantly.<br />Visit any Agent to cash out in 10 minutes.
+                    </p>
+                </div>
+            </div>
+        );
+
+        const CardMgmt = ({ onBack }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in fade-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">NFC Card</h2>
+                </div>
+                <div className="px-8 flex flex-col items-center">
+                    <div className="w-64 h-64 bg-white rounded-full flex items-center justify-center border-2 border-dashed border-primary/20 relative mb-10">
+                        <div className="w-48 h-48 bg-primary/5 rounded-full nfc-animation flex items-center justify-center">
+                            <Icon name="contactless" size={80} className="text-primary" />
+                        </div>
+                        <div className="absolute -bottom-4 bg-primary text-white px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest">Tap Card to Phone</div>
+                    </div>
+                    <div className="w-full space-y-4">
+                        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-700">Lock Physical Card</span>
+                            <div className="w-12 h-6 bg-slate-200 rounded-full p-1"><div className="w-4 h-4 bg-white rounded-full"></div></div>
+                        </div>
+                        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center">
+                            <span className="text-sm font-bold text-slate-700">Offline Limit ($20)</span>
+                            <span className="text-xs font-black text-primary uppercase underline">Change</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const SubsidyPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Govt Subsidies</h2>
+                </div>
+                <div className="px-6 space-y-4">
+                    {[
+                        { id: 'sub-vet', title: 'Veterans Benefit', provider: 'Ministry of Social', amount: '$150.00', status: 'Ready' },
+                        { id: 'sub-edu', title: 'Student Support', provider: 'Education Dept', amount: '$45.00', status: 'Processing' },
+                    ].map(item => (
+                        <button key={item.id} onClick={() => onNavigate('subsidy-detail', { name: item.title, amount: item.amount })} className="w-full bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center text-left active:scale-95 transition-transform">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center"><Icon name="award" /></div>
+                                <div>
+                                    <h4 className="font-black text-slate-800">{item.title}</h4>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase">{item.provider}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm font-black text-slate-800">{item.amount}</p>
+                                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${item.status === 'Ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{item.status}</span>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+                <p className="p-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: National Subsidy Program Registry (Gadu Integration)</p>
+            </div>
+        );
+
+        const SubsidyDetail = ({ onBack, data }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in fade-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Benefit Details</h2>
+                </div>
+                <div className="flex-1 px-8 py-10 flex flex-col items-center">
+                    <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center mb-6"><Icon name="medal" size={40} /></div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-1">{data?.name || 'Veteran Benefit'}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Verification ID: V-9938201</p>
+                    
+                    <div className="w-full space-y-6">
+                        <div className="flex justify-between border-b border-slate-50 pb-4">
+                            <span className="text-xs font-bold text-slate-400 uppercase">Gross Amount</span>
+                            <span className="text-sm font-black text-slate-800">{data?.amount || '$150.00'}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-slate-50 pb-4">
+                            <span className="text-xs font-bold text-slate-400 uppercase">Processing Fee</span>
+                            <span className="text-sm font-black text-slate-800">$0.10</span>
+                        </div>
+                        <div className="flex justify-between pt-2">
+                            <span className="text-xs font-bold text-slate-900 uppercase">Net to Card</span>
+                            <span className="text-xl font-black text-primary">$149.90</span>
+                        </div>
+                    </div>
+                    
+                    <button onClick={() => onNavigate('success', { title: 'Benefit Claimed!', msg: 'The subsidy has been credited to your card.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-3xl mt-12 font-black shadow-xl shadow-primary/20">Claim to My NFC Card</button>
+                    <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: Deep Financial Breakdown & Disbursement Logic</p>
+                </div>
+            </div>
+        );
+
+        const AgentDetail = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Agent Service</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-white rounded-[32px] p-8 shadow-soft border border-slate-100 flex flex-col items-center text-center">
+                        <div className="w-20 h-20 bg-primary/10 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="coffee" size={40} /></div>
+                        <h3 className="text-xl font-black text-slate-800 mb-2">Letefoho Coffee - Timor Plaza</h3>
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-8">Authorized Agent ID: AGT-9902</p>
+                        
+                        <div className="grid grid-cols-2 gap-4 w-full mb-8">
+                            <div className="bg-slate-50 p-4 rounded-2xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Cash Out</p>
+                                <p className="text-sm font-black text-emerald-600">Available</p>
+                            </div>
+                            <div className="bg-slate-50 p-4 rounded-2xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">NFC Sync</p>
+                                <p className="text-sm font-black text-primary">Ready</p>
+                            </div>
+                        </div>
+
+                        <button onClick={() => onNavigate('withdrawal-qr')} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-lg shadow-primary/30 active:scale-95 transition-transform uppercase tracking-wider">
+                            Generate Cash-Out Code
+                        </button>
+                    </div>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: Authorized Agent Profile & Service Discovery</p>
+                </div>
+            </div>
+        );
+
+        const WithdrawalQR = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in zoom-in duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Scan to Cash-Out</h2>
+                </div>
+                <div className="flex-1 flex flex-col items-center justify-center p-10">
+                    <p className="text-sm font-black text-slate-800 mb-8 uppercase tracking-widest">Show this to the Agent</p>
+                    <div className="w-64 h-64 bg-slate-50 rounded-[48px] border-8 border-primary/5 p-8 flex items-center justify-center relative">
+                        <Icon name="qr-code" size={180} className="text-slate-800" />
+                        <div className="absolute inset-0 border-4 border-primary rounded-[48px] animate-pulse"></div>
+                    </div>
+                    <div className="mt-12 text-center">
+                        <p className="text-3xl font-black text-primary mb-2">$50.00</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase">Valid for 5:00 minutes</p>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Cash-Out Successful', msg: 'You have received $50.00 cash from the agent.', level: 4 })} className="mt-10 text-primary text-xs font-bold underline uppercase">Simulate Agent Scan</button>
+                    <p className="mt-16 text-[11px] text-slate-400 font-bold">Level 3: Secure Dynamic Token Generation</p>
+                </div>
+            </div>
+        );
+
+        const SuccessPage = ({ onBack, data }) => (
+            <div className="flex-1 bg-white flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
+                <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-8 animate-bounce">
+                    <Icon name="check" size={48} />
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 mb-4 text-center">{data?.title || 'Success'}</h2>
+                <p className="text-sm text-slate-500 text-center mb-12">{data?.msg || 'Transaction completed successfully.'}</p>
+                <div className="w-full p-6 bg-slate-50 rounded-3xl border border-dashed border-slate-200 mb-12">
+                    <div className="flex justify-between mb-2"><span className="text-[10px] font-bold text-slate-400 uppercase">Reference</span><span className="text-xs font-mono font-bold">#TP-99283-X</span></div>
+                    <div className="flex justify-between"><span className="text-[10px] font-bold text-slate-400 uppercase">Timestamp</span><span className="text-xs font-bold">May 19, 14:30</span></div>
+                </div>
+                <button onClick={() => onBack(true)} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20">Return to Home</button>
+                <p className="mt-8 text-[11px] text-slate-400 font-bold tracking-widest uppercase">Level {data?.level || 4}: Transaction Confirmation & Receipt</p>
+            </div>
+        );
+
+        const RemitClaimPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Remit Verification</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-white p-8 rounded-[32px] shadow-soft mb-8">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Icon name="user-check" /></div>
+                            <div>
+                                <h3 className="font-black">Identity Check</h3>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase">Required by AML Policy</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-6 leading-relaxed">Please confirm your <strong>Timor-Leste National ID</strong> matches the recipient name on the Wise/Remitly transfer.</p>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">Recipient</span>
+                                <span className="text-xs font-black">Alexandre Gusmao</span>
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between">
+                                <span className="text-xs font-bold">ID Number</span>
+                                <span className="text-xs font-black">TL-2024-XXXX</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Funds Claimed!', msg: 'USD 240.00 has been added to your card balance.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black">Confirm & Deposit</button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: KYC/AML Compliance Verification</p>
+                </div>
+            </div>
+        );
+
+        const ServicesPage = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Local Services</h2>
+                </div>
+                <div className="px-6 grid grid-cols-2 gap-4">
+                    {[
+                        { id: 'topup', icon: 'smartphone', label: 'Mobile Topup', color: 'bg-blue-50 text-blue-600' },
+                        { id: 'bills', icon: 'zap', label: 'EDTL (Power)', color: 'bg-amber-50 text-amber-600' },
+                        { id: 'church', icon: 'church', label: 'Donations', color: 'bg-accent/5 text-accent' },
+                        { id: 'tax', icon: 'file-text', label: 'Tax Payment', color: 'bg-slate-50 text-slate-600' }
+                    ].map(item => (
+                        <button key={item.id} onClick={() => onNavigate('service-detail', { name: item.label, icon: item.icon })} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-50 flex flex-col items-center gap-4 active:scale-95 transition-transform">
+                            <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center`}><Icon name={item.icon} /></div>
+                            <span className="text-xs font-black text-slate-800 uppercase tracking-tighter">{item.label}</span>
+                        </button>
+                    ))}
+                </div>
+                <p className="mt-auto p-8 text-[11px] text-slate-400 font-bold text-center">Level 2: Ecosystem Service Discovery</p>
+            </div>
+        );
+
+        const ServiceDetail = ({ onBack, onNavigate, data }) => (
+            <div className="flex-1 bg-white flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">{data?.name || 'Service'}</h2>
+                </div>
+                <div className="p-8">
+                    <div className="bg-slate-50 rounded-[32px] p-8 mb-8 flex flex-col items-center">
+                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 text-primary"><Icon name={data?.icon || 'zap'} size={32} /></div>
+                        <label className="text-[10px] font-black uppercase text-slate-400 mb-2">Customer Number / Meter ID</label>
+                        <input type="text" placeholder="1022-883-990" className="w-full bg-white rounded-2xl py-4 px-6 text-xl font-mono text-center outline-none focus:ring-2 focus:ring-primary" />
+                        <div className="grid grid-cols-3 gap-3 w-full mt-8">
+                            {['$5', '$10', '$20'].map(v => <button key={v} className="bg-white border border-slate-200 py-3 rounded-xl font-black text-xs hover:border-primary">{v}</button>)}
+                        </div>
+                    </div>
+                    <button onClick={() => onNavigate('success', { title: 'Payment Sent', msg: `Your payment for ${data?.name} is being processed.`, level: 4 })} className="w-full bg-primary text-white py-5 rounded-[24px] font-black">Pay Securely</button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center">Level 3: Micro-Payment Logic & External API Bridge</p>
+                </div>
+            </div>
+        );
+
+        const ScanPay = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-black flex flex-col text-white animate-in zoom-in duration-500">
+                <div className="px-6 py-8 flex justify-between items-center">
+                    <button onClick={onBack} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="x" /></button>
+                    <span className="text-xs font-black uppercase tracking-widest">Scan Merchant QR</span>
+                    <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="flashlight" size={20} /></button>
+                </div>
+                <div className="flex-1 flex items-center justify-center relative">
+                    <div className="w-64 h-64 border-2 border-white/30 rounded-[48px] relative">
+                        <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-primary rounded-tl-3xl"></div>
+                        <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-primary rounded-tr-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-primary rounded-bl-3xl"></div>
+                        <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-primary rounded-br-3xl"></div>
+                        <div className="absolute inset-x-0 h-0.5 bg-primary/50 animate-[scan_2s_infinite]"></div>
+                    </div>
+                    <button onClick={() => onNavigate('pay-input')} className="absolute bottom-10 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-black uppercase">Simulate Found: Burger Dili</button>
+                </div>
+                <p className="p-10 text-[11px] text-white/40 font-bold text-center uppercase tracking-widest">Level 2: Computer Vision / Scan Integration</p>
+                <style>{`@keyframes scan { 0% { top: 10%; } 50% { top: 90%; } 100% { top: 10%; } }`}</style>
+            </div>
+        );
+
+        const PayInput = ({ onBack, onNavigate }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
+                <div className="px-6 py-6 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">Payment to Burger Dili</h2>
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                    <div className="bg-white rounded-[48px] p-10 shadow-soft border border-slate-50 flex flex-col items-center">
+                        <div className="w-20 h-20 bg-primary/5 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="store" size={40} /></div>
+                        <p className="text-xs font-bold text-slate-400 uppercase mb-4 tracking-tighter">Enter Amount (USD)</p>
+                        <div className="flex items-baseline gap-1 text-5xl font-black text-slate-900 mb-8">
+                            <span className="text-2xl text-slate-300">$</span>
+                            <input type="number" defaultValue="8.50" className="w-32 bg-transparent outline-none text-center" />
+                        </div>
+                        <div className="w-full flex justify-between p-4 bg-slate-50 rounded-2xl">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Available</span>
+                            <span className="text-[10px] font-black text-primary">$124.50</span>
+                        </div>
+                    </div>
+                    <div className="mt-auto">
+                        <button onClick={() => onNavigate('success', { title: 'Payment Successful', msg: 'You have paid $8.50 to Burger Dili.', level: 4 })} className="w-full bg-primary text-white py-6 rounded-[32px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
+                            Swipe to Pay
+                        </button>
+                        <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: Real-time Transaction Settlement</p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- Main App Controller ---
+        const App = () => {
+            const [navStack, setNavStack] = useState([{ id: 'home' }]);
+            
+            const currentScreen = navStack[navStack.length - 1];
+
+            const navigate = (id, data = null) => {
+                setNavStack([...navStack, { id, data }]);
+            };
+
+            const goBack = () => {
+                if (navStack.length > 1) {
+                    setNavStack(navStack.slice(0, -1));
+                }
+            };
+
+            const renderScreen = () => {
+                switch(currentScreen.id) {
+                    case 'agents': return <AgentFinder onBack={goBack} onNavigate={navigate} />;
+                    case 'agent-detail': return <AgentDetail onBack={goBack} onNavigate={navigate} />;
+                    case 'withdrawal-qr': return <WithdrawalQR onBack={goBack} onNavigate={navigate} />;
+                    case 'remit': return <RemittancePage onBack={goBack} onNavigate={navigate} />;
+                    case 'remit-claim': return <RemitClaimPage onBack={goBack} onNavigate={navigate} />;
+                    case 'card-mgmt': return <CardMgmt onBack={goBack} />;
+                    case 'subsidy': return <SubsidyPage onBack={goBack} onNavigate={navigate} />;
+                    case 'subsidy-detail': return <SubsidyDetail onBack={goBack} data={currentScreen.data} onNavigate={navigate} />;
+                    case 'services': return <ServicesPage onBack={goBack} onNavigate={navigate} />;
+                    case 'service-detail': return <ServiceDetail onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
+                    case 'scan': return <ScanPay onBack={goBack} onNavigate={navigate} />;
+                    case 'pay-input': return <PayInput onBack={goBack} onNavigate={navigate} />;
+                    case 'success': return <SuccessPage onBack={goBack} data={currentScreen.data} />;
+                    case 'home':
+                    default: return <HomePage onNavigate={navigate} />;
+                }
+            };
+
+            return (
+                <div className="flex-1 flex flex-col h-screen overflow-hidden">
+                    {renderScreen()}
+                    <BottomNav active={currentScreen.id} onNavigate={navigate} />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
