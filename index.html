@@ -59,7 +59,7 @@
                 if (['scan', 'pay-input'].includes(active)) return 'scan';
                 if (['profile'].includes(active)) return 'profile';
                 if (['services', 'service-detail'].includes(active)) return 'home'; // Keep home active for services for now or add its own
-                if (['tcard', 'tcard-detail'].includes(active)) return 'home'; // Same for tcard
+                if (['tcard', 'tcard-detail', 'tcard-topup', 'tcard-withdraw', 'tcard-nfc-receive', 'tcard-nfc-pay'].includes(active)) return 'home'; // Same for tcard
                 return 'home';
             }, [active]);
 
@@ -134,7 +134,7 @@
                                     <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Linked Card</p>
                                     <p className="font-mono text-sm tracking-[4px]">**** **** 8820</p>
                                 </div>
-                                <button onClick={() => onNavigate('card-mgmt')} className="bg-secondary text-primary px-4 py-2 rounded-xl text-xs font-black shadow-lg active:scale-95 transition-transform uppercase">
+                                <button onClick={() => onNavigate('tcard')} className="bg-secondary text-primary px-4 py-2 rounded-xl text-xs font-black shadow-lg active:scale-95 transition-transform uppercase">
                                     Manage Card
                                 </button>
                             </div>
@@ -337,31 +337,53 @@
 
         const TCardPage = ({ onBack, onNavigate }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
-                <div className="px-6 py-6 flex items-center gap-4">
-                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">T-Card (NFC)</h2>
+                <div className="px-6 py-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                        <h2 className="text-xl font-extrabold">My T-Cards</h2>
+                    </div>
+                    <button className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/20 active:scale-90 transition-transform">
+                        <Icon name="plus" size={20} />
+                    </button>
                 </div>
-                <div className="px-6 space-y-4">
-                    {[
-                        { id: 'sub-vet', title: 'Veterans Benefit', provider: 'Ministry of Social', amount: '$150.00', status: 'Ready' },
-                        { id: 'sub-edu', title: 'Student Support', provider: 'Education Dept', amount: '$45.00', status: 'Processing' },
-                    ].map(item => (
-                        <button key={item.id} onClick={() => onNavigate('tcard-detail', { name: item.title, amount: item.amount })} className="w-full bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center text-left active:scale-95 transition-transform">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center"><Icon name="award" /></div>
-                                <div>
-                                    <h4 className="font-black text-slate-800">{item.title}</h4>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase">{item.provider}</p>
+
+                <div className="px-6 pb-32 overflow-y-auto hide-scrollbar">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Linked NFC Cards</p>
+                    
+                    <div className="space-y-6">
+                        {[
+                            { id: 'card-1', type: 'Personal', balance: '124.50', lastFour: '8820', color: 'bg-primary' },
+                            { id: 'card-2', type: 'Family/Sub', balance: '45.00', lastFour: '1102', color: 'bg-slate-800' }
+                        ].map(card => (
+                            <button key={card.id} onClick={() => onNavigate('tcard-detail', card)} className="w-full text-left active:scale-95 transition-all">
+                                <div className={`${card.color} rounded-[32px] p-6 text-white shadow-xl relative overflow-hidden group`}>
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Icon name="cpu" size={80} /></div>
+                                    <div className="flex justify-between items-start mb-10">
+                                        <div>
+                                            <p className="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-1">{card.type} Card</p>
+                                            <h3 className="text-2xl font-black">USD {card.balance}</h3>
+                                        </div>
+                                        <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter border border-white/10">
+                                            NFC Ready
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-end">
+                                        <p className="font-mono text-xs tracking-[4px]">**** {card.lastFour}</p>
+                                        <Icon name="contactless" size={20} className="text-white/40" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-sm font-black text-slate-800">{item.amount}</p>
-                                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${item.status === 'Ready' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{item.status}</span>
-                            </div>
-                        </button>
-                    ))}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="mt-12 bg-white/50 border-2 border-dashed border-slate-200 rounded-[32px] p-10 flex flex-col items-center gap-4 text-center">
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400"><Icon name="plus-circle" size={32} /></div>
+                        <div>
+                            <p className="text-sm font-black text-slate-800">Add New NFC Card</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Order physical card or link existing</p>
+                        </div>
+                    </div>
                 </div>
-                <p className="p-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: T-Card NFC Subsidy Registry (Gadu Integration)</p>
             </div>
         );
 
@@ -369,33 +391,202 @@
             <div className="flex-1 bg-white flex flex-col animate-in fade-in duration-300">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">Benefit Details</h2>
+                    <h2 className="text-xl font-extrabold">Card Controls</h2>
                 </div>
-                <div className="flex-1 px-8 py-10 flex flex-col items-center">
-                    <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center mb-6"><Icon name="medal" size={40} /></div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-1">{data?.name || 'Veteran Benefit'}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Verification ID: V-9938201</p>
-                    
-                    <div className="w-full space-y-6">
-                        <div className="flex justify-between border-b border-slate-50 pb-4">
-                            <span className="text-xs font-bold text-slate-400 uppercase">Gross Amount</span>
-                            <span className="text-sm font-black text-slate-800">{data?.amount || '$150.00'}</span>
+                
+                <div className="px-6 pb-32 overflow-y-auto">
+                    {/* Mini Card View */}
+                    <div className="bg-slate-900 rounded-[32px] p-6 text-white mb-10 shadow-lg relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-6">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{data?.type || 'Personal'}</span>
+                            <Icon name="nfc" size={20} className="text-primary" />
                         </div>
-                        <div className="flex justify-between border-b border-slate-50 pb-4">
-                            <span className="text-xs font-bold text-slate-400 uppercase">Processing Fee</span>
-                            <span className="text-sm font-black text-slate-800">$0.10</span>
-                        </div>
-                        <div className="flex justify-between pt-2">
-                            <span className="text-xs font-bold text-slate-900 uppercase">Net to Card</span>
-                            <span className="text-xl font-black text-primary">$149.90</span>
+                        <p className="text-xs font-bold text-white/40 mb-1">Available Balance</p>
+                        <h3 className="text-3xl font-black mb-6">USD {data?.balance || '124.50'}</h3>
+                        <div className="flex justify-between items-center">
+                            <span className="font-mono text-sm tracking-[4px]">**** {data?.lastFour || '8820'}</span>
+                            <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center"><Icon name="settings-2" size={16} /></div>
                         </div>
                     </div>
-                    
-                    <button onClick={() => onNavigate('success', { title: 'Benefit Claimed!', msg: 'The subsidy has been credited to your T-Card.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-3xl mt-12 font-black shadow-xl shadow-primary/20">Claim to T-Card</button>
-                    <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: T-Card Financial Breakdown & Disbursement Logic</p>
+
+                    {/* Quick Actions Grid */}
+                    <div className="grid grid-cols-2 gap-4 mb-10">
+                        {[
+                            { id: 'tcard-topup', label: 'Top Up', icon: 'plus-circle', color: 'bg-emerald-50 text-emerald-600', sub: 'Add funds' },
+                            { id: 'tcard-withdraw', label: 'Withdraw', icon: 'minus-circle', color: 'bg-blue-50 text-blue-600', sub: 'To wallet' },
+                            { id: 'tcard-nfc-receive', label: 'NFC Receive', icon: 'download', color: 'bg-amber-50 text-amber-600', sub: 'Tap to collect' },
+                            { id: 'tcard-nfc-pay', label: 'NFC Pay', icon: 'upload', color: 'bg-slate-50 text-slate-900', sub: 'Tap to pay' }
+                        ].map(action => (
+                            <button 
+                                key={action.id} 
+                                onClick={() => onNavigate(action.id, data)}
+                                className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm flex flex-col items-start gap-3 active:scale-95 transition-all"
+                            >
+                                <div className={`w-10 h-10 ${action.color} rounded-xl flex items-center justify-center`}><Icon name={action.icon} size={20} /></div>
+                                <div className="text-left">
+                                    <p className="text-xs font-black text-slate-800 uppercase tracking-tighter">{action.label}</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{action.sub}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Recent Card Activity */}
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-[4px] mb-4 ml-2">Card History</h3>
+                    <div className="space-y-3">
+                        {[
+                            { title: 'Card Recharge', sub: 'Via Wallet', amt: '+$50.00', time: '2h ago' },
+                            { title: 'Burger Dili', sub: 'NFC Payment', amt: '-$8.50', time: 'Yesterday' }
+                        ].map((h, i) => (
+                            <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div>
+                                    <p className="text-xs font-black text-slate-800">{h.title}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase">{h.sub}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`text-xs font-black ${h.amt.startsWith('+') ? 'text-emerald-600' : 'text-slate-800'}`}>{h.amt}</p>
+                                    <p className="text-[9px] text-slate-400 font-bold">{h.time}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
+
+        const TCardTopUp = ({ onBack, onNavigate, data }) => {
+            const [step, setStep] = useState(1); // 1: Amount, 2: Verification
+            const [amount, setAmount] = useState('20.00');
+
+            return (
+                <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
+                    <div className="px-6 py-6 flex items-center gap-4">
+                        <button onClick={onBack} className="w-10 h-10 bg-white rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                        <h2 className="text-xl font-extrabold">Recharge Card</h2>
+                    </div>
+
+                    <div className="p-8 flex-1 flex flex-col">
+                        <div className="bg-white rounded-[40px] p-8 shadow-soft border border-slate-50 flex flex-col items-center">
+                            <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6"><Icon name="plus-circle" size={28} /></div>
+                            
+                            {step === 1 ? (
+                                <div className="w-full flex flex-col items-center animate-in fade-in">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[4px] mb-4">Recharge Amount</p>
+                                    <div className="flex items-baseline gap-1 text-5xl font-black text-slate-900 mb-8">
+                                        <span className="text-2xl text-slate-300">$</span>
+                                        <input 
+                                            type="number" 
+                                            value={amount} 
+                                            onChange={(e) => setAmount(e.target.value)}
+                                            className="w-32 bg-transparent outline-none text-center" 
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-3 w-full mb-8">
+                                        {['10', '20', '50'].map(v => (
+                                            <button 
+                                                key={v} 
+                                                onClick={() => setAmount(v+'.00')}
+                                                className={`py-3 rounded-xl font-black text-xs transition-all ${amount === v+'.00' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 border border-slate-100'}`}
+                                            >
+                                                ${v}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button onClick={() => setStep(2)} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20">Continue</button>
+                                </div>
+                            ) : (
+                                <div className="w-full flex flex-col items-center animate-in zoom-in">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[4px] mb-4 text-center">Enter Verification Code</p>
+                                    <p className="text-[10px] text-slate-500 mb-8 text-center px-4 font-bold">Sent to +670 **** 8839</p>
+                                    
+                                    <div className="flex gap-3 mb-10">
+                                        {[1, 2, 3, 4].map(i => (
+                                            <div key={i} className="w-12 h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl flex items-center justify-center text-xl font-black text-primary italic">
+                                                {i === 1 ? '•' : ''}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    <button 
+                                        onClick={() => onNavigate('success', { title: 'Recharge Success', msg: `$${amount} successfully added to Card **** ${data?.lastFour || '8820'}`, level: 4 })}
+                                        className="w-full bg-emerald-600 text-white py-5 rounded-[24px] font-black shadow-xl shadow-emerald-200"
+                                    >
+                                        Verify & Confirm
+                                    </button>
+                                    <button onClick={() => setStep(1)} className="mt-6 text-[10px] font-black text-slate-400 uppercase underline">Change Amount</button>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="mt-10 p-5 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-4">
+                            <Icon name="info" className="text-blue-500" size={20} />
+                            <p className="text-[10px] font-bold text-blue-700 leading-relaxed uppercase tracking-tighter">Funds will be moved from your main wallet balance to your physical T-Card.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const TCardNFCAction = ({ onBack, onNavigate, type, data }) => {
+            const config = {
+                pay: { title: 'NFC Payment', label: 'Tapping to Pay...', icon: 'upload', color: 'bg-slate-900' },
+                receive: { title: 'NFC Collection', label: 'Tapping to Receive...', icon: 'download', color: 'bg-emerald-600' },
+                withdraw: { title: 'Withdraw to Wallet', label: 'Tapping to Withdraw...', icon: 'minus-circle', color: 'bg-primary' }
+            }[type] || { title: 'NFC Sync', label: 'Syncing...', icon: 'contactless', color: 'bg-primary' };
+
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    onNavigate('success', { 
+                        title: `${config.title} Success`, 
+                        msg: `Transaction completed via NFC Card **** ${data?.lastFour || '8820'}.`,
+                        level: 4 
+                    });
+                }, 4000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return (
+                <div className={`flex-1 ${config.color} flex flex-col text-white animate-in zoom-in duration-500 relative`}>
+                    <div className="px-6 py-6 flex items-center gap-4 z-10">
+                        <button onClick={onBack} className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center"><Icon name="x" /></button>
+                        <h2 className="text-xl font-extrabold">{config.title}</h2>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center relative p-10 text-center">
+                        <div className="w-64 h-64 bg-white/5 rounded-full flex items-center justify-center border-2 border-dashed border-white/20 relative mb-12">
+                            <div className="w-48 h-48 bg-white/10 rounded-full nfc-animation flex items-center justify-center">
+                                <Icon name="nfc" size={80} className="text-white" />
+                            </div>
+                            {/* Scanning Line Animation Effect */}
+                            <div className="absolute inset-0 border-4 border-white/20 rounded-full animate-ping opacity-20"></div>
+                        </div>
+                        
+                        <h3 className="text-2xl font-black mb-2 animate-pulse uppercase tracking-widest">{config.label}</h3>
+                        <p className="text-xs font-bold text-white/40 uppercase tracking-[4px]">Hold card near top of phone</p>
+                        
+                        <div className="mt-20 p-6 bg-white/5 backdrop-blur-xl rounded-[32px] border border-white/10 w-full">
+                            <div className="flex justify-between items-center opacity-60 mb-1">
+                                <span className="text-[10px] font-black uppercase tracking-widest">Card Reference</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">NFC Ready</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="font-mono text-sm tracking-[4px]">**** {data?.lastFour || '8820'}</span>
+                                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_10px_#4ade80]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>{`
+                        .nfc-animation { animation: pulse 1.5s infinite ease-in-out; }
+                        @keyframes pulse { 
+                            0% { transform: scale(1); opacity: 0.8; }
+                            50% { transform: scale(1.08); opacity: 1; }
+                            100% { transform: scale(1); opacity: 0.8; }
+                        }
+                    `}</style>
+                </div>
+            );
+        };
 
         const AgentDetail = ({ onBack, onNavigate }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
@@ -729,6 +920,10 @@
                     case 'card-mgmt': return <CardMgmt onBack={goBack} />;
                     case 'tcard': return <TCardPage onBack={goBack} onNavigate={navigate} />;
                     case 'tcard-detail': return <TCardDetail onBack={goBack} data={currentScreen.data} onNavigate={navigate} />;
+                    case 'tcard-topup': return <TCardTopUp onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
+                    case 'tcard-withdraw': return <TCardNFCAction type="withdraw" onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
+                    case 'tcard-nfc-receive': return <TCardNFCAction type="receive" onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
+                    case 'tcard-nfc-pay': return <TCardNFCAction type="pay" onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
                     case 'services': return <ServicesPage onBack={goBack} onNavigate={navigate} />;
                     case 'service-detail': return <ServiceDetail onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
                     case 'scan': return <ScanPay onBack={goBack} onNavigate={navigate} />;
