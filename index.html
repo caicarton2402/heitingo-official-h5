@@ -127,7 +127,7 @@
                         {[
                             { id: 'agents', icon: 'banknote', label: 'Cash In/Out', color: 'bg-blue-50 text-blue-600' },
                             { id: 'remit', icon: 'globe', label: 'Remittance', color: 'bg-emerald-50 text-emerald-600' },
-                            { id: 'subsidy', icon: 'user-check', label: 'Subsidies', color: 'bg-amber-50 text-amber-600' },
+                            { id: 'tcard', icon: 'credit-card', label: 'T-Card', color: 'bg-orange-100 text-orange-700 font-bold' },
                             { id: 'services', icon: 'layout-grid', label: 'Services', color: 'bg-slate-50 text-slate-600' }
                         ].map(item => (
                             <button key={item.id} onClick={() => onNavigate(item.id)} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
@@ -168,7 +168,7 @@
                             {[
                                 { title: 'Intl Remittance (Wise)', subtitle: 'From: Jose Ramos (AU)', amount: '+$240.00', time: 'Today, 10:20', type: 'in' },
                                 { title: 'Cash Out at Agent', subtitle: 'Timor Plaza Shop 12', amount: '-$50.00', time: 'Yesterday, 14:15', type: 'out' },
-                                { title: 'Government Subsidy', subtitle: 'Retirement Benefit Gadu', amount: '+$120.00', time: 'May 15, 2026', type: 'in' }
+                                { title: 'T-Card Subsidy', subtitle: 'Retirement Benefit Gadu', amount: '+$120.00', time: 'May 15, 2026', type: 'in' }
                             ].map((tx, i) => (
                                 <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-50 shadow-sm">
                                     <div className="flex items-center gap-3">
@@ -283,18 +283,18 @@
             </div>
         );
 
-        const SubsidyPage = ({ onBack, onNavigate }) => (
+        const TCardPage = ({ onBack, onNavigate }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">Govt Subsidies</h2>
+                    <h2 className="text-xl font-extrabold">T-Card (NFC)</h2>
                 </div>
                 <div className="px-6 space-y-4">
                     {[
                         { id: 'sub-vet', title: 'Veterans Benefit', provider: 'Ministry of Social', amount: '$150.00', status: 'Ready' },
                         { id: 'sub-edu', title: 'Student Support', provider: 'Education Dept', amount: '$45.00', status: 'Processing' },
                     ].map(item => (
-                        <button key={item.id} onClick={() => onNavigate('subsidy-detail', { name: item.title, amount: item.amount })} className="w-full bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center text-left active:scale-95 transition-transform">
+                        <button key={item.id} onClick={() => onNavigate('tcard-detail', { name: item.title, amount: item.amount })} className="w-full bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center text-left active:scale-95 transition-transform">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center"><Icon name="award" /></div>
                                 <div>
@@ -309,11 +309,11 @@
                         </button>
                     ))}
                 </div>
-                <p className="p-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: National Subsidy Program Registry (Gadu Integration)</p>
+                <p className="p-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: T-Card NFC Subsidy Registry (Gadu Integration)</p>
             </div>
         );
 
-        const SubsidyDetail = ({ onBack, onNavigate, data }) => (
+        const TCardDetail = ({ onBack, onNavigate, data }) => (
             <div className="flex-1 bg-white flex flex-col animate-in fade-in duration-300">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
@@ -339,8 +339,8 @@
                         </div>
                     </div>
                     
-                    <button onClick={() => onNavigate('success', { title: 'Benefit Claimed!', msg: 'The subsidy has been credited to your card.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-3xl mt-12 font-black shadow-xl shadow-primary/20">Claim to My NFC Card</button>
-                    <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: Deep Financial Breakdown & Disbursement Logic</p>
+                    <button onClick={() => onNavigate('success', { title: 'Benefit Claimed!', msg: 'The subsidy has been credited to your T-Card.', level: 4 })} className="w-full bg-primary text-white py-5 rounded-3xl mt-12 font-black shadow-xl shadow-primary/20">Claim to T-Card</button>
+                    <p className="mt-6 text-[11px] text-slate-400 font-bold text-center">Level 3: T-Card Financial Breakdown & Disbursement Logic</p>
                 </div>
             </div>
         );
@@ -493,24 +493,110 @@
         );
 
         const ScanPay = ({ onBack, onNavigate }) => (
-            <div className="flex-1 bg-black flex flex-col text-white animate-in zoom-in duration-500">
-                <div className="px-6 py-8 flex justify-between items-center">
+            <div className="flex-1 bg-black flex flex-col text-white animate-in zoom-in duration-500 relative">
+                <div className="px-6 py-8 flex justify-between items-center z-10">
                     <button onClick={onBack} className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="x" /></button>
                     <span className="text-xs font-black uppercase tracking-widest">Scan Merchant QR</span>
                     <button className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="flashlight" size={20} /></button>
                 </div>
-                <div className="flex-1 flex items-center justify-center relative">
-                    <div className="w-64 h-64 border-2 border-white/30 rounded-[48px] relative">
-                        <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-primary rounded-tl-3xl"></div>
-                        <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-primary rounded-tr-3xl"></div>
-                        <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-primary rounded-bl-3xl"></div>
-                        <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-primary rounded-br-3xl"></div>
-                        <div className="absolute inset-x-0 h-0.5 bg-primary/50 animate-[scan_2s_infinite]"></div>
+                <div className="flex-1 flex flex-col items-center justify-center relative">
+                    <div className="relative group">
+                        {/* Scanning Box */}
+                        <div className="w-72 h-72 border-2 border-white/20 rounded-[56px] relative overflow-hidden bg-slate-900/40 backdrop-blur-sm">
+                            {/* QR Code Image Placeholder */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                                <Icon name="qr-code" size={200} className="text-white" />
+                            </div>
+                            
+                            {/* Corners */}
+                            <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-[40px]"></div>
+                            <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-[40px]"></div>
+                            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-[40px]"></div>
+                            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-[40px]"></div>
+                            
+                            {/* Scanning Line */}
+                            <div className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_20px_rgba(0,87,183,0.8)] animate-[scan_2.5s_infinite] z-20"></div>
+                            
+                            {/* Shimmer Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent h-1/2 animate-[shimmer_2.5s_infinite]"></div>
+                        </div>
                     </div>
-                    <button onClick={() => onNavigate('pay-input')} className="absolute bottom-10 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-[10px] font-black uppercase">Simulate Found: Burger Dili</button>
+
+                    <div className="mt-12 flex flex-col items-center animate-bounce">
+                        <p className="text-xs font-bold text-primary uppercase tracking-[4px]">Align QR Code</p>
+                    </div>
+
+                    <button 
+                        onClick={() => onNavigate('pay-input')} 
+                        className="mt-10 bg-white/10 hover:bg-white/20 backdrop-blur-md px-8 py-3 rounded-2xl border border-white/10 flex items-center gap-3 transition-all active:scale-95"
+                    >
+                        <Icon name="store" size={18} />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Simulate Found: Burger Dili</span>
+                    </button>
                 </div>
+                
                 <p className="p-10 text-[11px] text-white/40 font-bold text-center uppercase tracking-widest">Level 2: Computer Vision / Scan Integration</p>
-                <style>{`@keyframes scan { 0% { top: 10%; } 50% { top: 90%; } 100% { top: 10%; } }`}</style>
+                
+                <style>{`
+                    @keyframes scan { 
+                        0% { top: 5%; } 
+                        50% { top: 90%; opacity: 1; } 
+                        100% { top: 5%; } 
+                    }
+                    @keyframes shimmer {
+                        0% { transform: translateY(-100%); }
+                        50% { transform: translateY(100%); }
+                        100% { transform: translateY(-100%); }
+                    }
+                `}</style>
+            </div>
+        );
+
+        const ProfilePage = ({ onBack }) => (
+            <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-right duration-300">
+                <div className="px-6 py-8 flex items-center gap-4">
+                    <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
+                    <h2 className="text-xl font-extrabold">My Profile</h2>
+                </div>
+                <div className="flex flex-col items-center px-6">
+                    <div className="relative mb-6">
+                        <div className="w-28 h-28 bg-primary rounded-[32px] flex items-center justify-center text-white shadow-xl shadow-primary/20">
+                            <Icon name="user" size={56} />
+                        </div>
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-secondary rounded-2xl border-4 border-surface flex items-center justify-center text-primary shadow-lg">
+                            <Icon name="camera" size={16} />
+                        </div>
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900">Alexandre Gusmao</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">TL-2024-8839-X</p>
+                    
+                    <div className="w-full mt-10 space-y-3">
+                        {[
+                            { icon: 'shield', label: 'Security Settings', val: 'Level 3 Verified' },
+                            { icon: 'credit-card', label: 'Payment Methods', val: '1 Linked Card' },
+                            { icon: 'languages', label: 'App Language', val: 'Tetum / English' },
+                            { icon: 'help-circle', label: 'Support Center', val: '' }
+                        ].map((item, i) => (
+                            <div key={i} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center group active:scale-[0.98] transition-all">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                        <Icon name={item.icon} size={20} />
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-700">{item.label}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-slate-300 uppercase">{item.val}</span>
+                                    <Icon name="chevron-right" size={16} className="text-slate-200" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button className="w-full mt-8 bg-accent/5 text-accent py-5 rounded-[24px] font-black text-xs uppercase tracking-widest border border-accent/10">
+                        Sign Out
+                    </button>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center tracking-[4px] uppercase">Level 2: Account Management</p>
+                </div>
             </div>
         );
 
@@ -567,13 +653,14 @@
                     case 'remit': return <RemittancePage onBack={goBack} onNavigate={navigate} />;
                     case 'remit-claim': return <RemitClaimPage onBack={goBack} onNavigate={navigate} />;
                     case 'card-mgmt': return <CardMgmt onBack={goBack} />;
-                    case 'subsidy': return <SubsidyPage onBack={goBack} onNavigate={navigate} />;
-                    case 'subsidy-detail': return <SubsidyDetail onBack={goBack} data={currentScreen.data} onNavigate={navigate} />;
+                    case 'tcard': return <TCardPage onBack={goBack} onNavigate={navigate} />;
+                    case 'tcard-detail': return <TCardDetail onBack={goBack} data={currentScreen.data} onNavigate={navigate} />;
                     case 'services': return <ServicesPage onBack={goBack} onNavigate={navigate} />;
                     case 'service-detail': return <ServiceDetail onBack={goBack} onNavigate={navigate} data={currentScreen.data} />;
                     case 'scan': return <ScanPay onBack={goBack} onNavigate={navigate} />;
                     case 'pay-input': return <PayInput onBack={goBack} onNavigate={navigate} />;
-                    case 'success': return <SuccessPage onBack={goBack} data={currentScreen.data} />;
+                    case 'profile': return <ProfilePage onBack={goBack} />;
+                    case 'success': return <SuccessPage onBack={(home) => home ? setNavStack([{id:'home'}]) : goBack()} data={currentScreen.data} />;
                     case 'home':
                     default: return <HomePage onNavigate={navigate} />;
                 }
