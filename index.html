@@ -273,40 +273,179 @@
         );
 
         const RemittancePage = ({ onBack, onNavigate }) => (
-            <div className="flex-1 bg-primary flex flex-col text-white animate-in slide-in-from-bottom duration-300">
-                <div className="px-6 py-6 flex items-center gap-4">
-                    <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">International Remit</h2>
+            <div className="flex-1 bg-slate-900 flex flex-col text-white animate-in slide-in-from-bottom duration-300">
+                {/* Header with Network Info */}
+                <div className="px-6 py-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="chevron-left" /></button>
+                        <div>
+                            <h2 className="text-xl font-extrabold">Stable-Remit</h2>
+                            <p className="text-[8px] text-emerald-400 font-black uppercase tracking-widest">T-Chain / USDT Settlement</p>
+                        </div>
+                    </div>
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span className="text-[9px] font-black uppercase tracking-tighter text-emerald-500">Node Online</span>
+                    </div>
                 </div>
+
                 <div className="flex-1 bg-surface rounded-t-[48px] p-8 text-slate-800">
-                    <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 mb-8">
-                        <div className="flex items-center gap-4 mb-4">
-                            <Icon name="shield-check" className="text-emerald-600" size={32} />
-                            <div>
-                                <h3 className="font-black text-slate-800">Wise / Remitly Partner</h3>
-                                <p className="text-xs text-slate-500">Fastest way to receive money in Timor</p>
+                    {/* M-PESA Style SMS Bridge Notice */}
+                    <div className="bg-blue-50 border border-blue-100 rounded-3xl p-5 mb-8 flex items-start gap-4">
+                        <Icon name="message-square" className="text-blue-600 mt-1" size={24} />
+                        <div>
+                            <h3 className="font-black text-xs text-blue-900">SMS/USSD Bridge Enabled</h3>
+                            <p className="text-[10px] text-blue-700/60 leading-tight font-bold">You can also use <span className="text-blue-800 font-black">*122#</span> for offline transfers in low-network areas.</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-soft">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-4">Transfer Mode</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button className="bg-primary text-white py-4 rounded-2xl flex flex-col items-center gap-2">
+                                    <Icon name="phone" size={20} />
+                                    <span className="text-[10px] font-black uppercase">To Phone (Hot)</span>
+                                </button>
+                                <button className="bg-slate-50 text-slate-400 py-4 rounded-2xl flex flex-col items-center gap-2 border border-slate-100">
+                                    <Icon name="wallet" size={20} />
+                                    <span className="text-[10px] font-black uppercase">To Cold Wallet</span>
+                                </button>
                             </div>
                         </div>
-                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-700">
-                            <span>Status: Online</span>
-                            <span>Fee: $0.50</span>
-                        </div>
-                    </div>
-                    <div className="space-y-6">
+
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Reference Number (MoneyGram/Wise)</label>
-                            <input type="text" placeholder="e.g. 123-456-789" className="w-full bg-white border border-slate-100 rounded-2xl py-5 px-6 text-xl font-mono shadow-sm focus:ring-2 focus:ring-primary outline-none" />
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Recipient Phone / Wallet</label>
+                            <div className="relative">
+                                <input type="text" placeholder="+670 7xxx xxxx" className="w-full bg-white border border-slate-100 rounded-2xl py-5 px-6 text-xl font-mono shadow-sm focus:ring-2 focus:ring-primary outline-none" />
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-[8px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                                    <Icon name="link" size={10} />
+                                    <span>LINKED TO USDT</span>
+                                </div>
+                            </div>
                         </div>
-                        <button onClick={() => onNavigate('remit-claim')} className="w-full bg-primary text-white py-6 rounded-[24px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
-                            Claim My Funds
+
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Amount (USD/USDT)</label>
+                            <input type="number" placeholder="0.00" className="w-full bg-white border border-slate-100 rounded-2xl py-5 px-6 text-3xl font-black shadow-sm outline-none" />
+                        </div>
+
+                        <button onClick={() => onNavigate('remit-auth')} className="w-full bg-primary text-white py-6 rounded-[24px] text-xl font-black shadow-2xl shadow-primary/30 active:scale-95 transition-transform flex items-center justify-center gap-3">
+                            Initiate T-Chain Transfer
+                            <Icon name="arrow-right" />
                         </button>
                     </div>
-                    <p className="text-center text-[10px] font-bold text-slate-400 mt-8 leading-relaxed">
-                        Funds will be deposited to your TimorPay card instantly.<br />Visit any Agent to cash out in 10 minutes.
+
+                    <p className="text-center text-[9px] font-bold text-slate-400 mt-10 uppercase tracking-[4px] leading-relaxed">
+                        Layer 2 Settlement: Polygon/USDT Bridge<br />
+                        <span className="text-primary font-black">Secured by Hot/Cold Architecture</span>
                     </p>
                 </div>
             </div>
         );
+
+        const RemitAuthPage = ({ onBack, onNavigate }) => {
+            const [mode, setMode] = useState('face'); // 'face' or 'voice'
+
+            return (
+                <div className="flex-1 bg-slate-900 flex flex-col text-white animate-in zoom-in duration-300">
+                    <div className="px-6 py-6">
+                        <button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><Icon name="x" /></button>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center p-8">
+                        <div className="mb-12 text-center">
+                            <h2 className="text-2xl font-black mb-2">Bio-Signature</h2>
+                            <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Verification Required for Chain Settlement</p>
+                        </div>
+
+                        <div className="w-64 h-64 border-2 border-white/20 rounded-full flex items-center justify-center relative mb-12">
+                            {mode === 'face' ? (
+                                <div className="w-56 h-56 bg-primary/20 rounded-full overflow-hidden flex items-center justify-center relative">
+                                    <Icon name="user" size={120} className="text-white/20" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+                                    {/* Scanning Line */}
+                                    <div className="absolute left-0 right-0 h-1 bg-primary shadow-[0_0_15px_#0057B7] animate-[scan_3s_infinite]"></div>
+                                </div>
+                            ) : (
+                                <div className="flex items-end gap-1.5 h-16">
+                                    {[1, 2, 3, 4, 3, 5, 2, 4, 6, 3, 2].map((h, i) => (
+                                        <div key={i} className={`w-1.5 bg-primary rounded-full animate-bounce`} style={{ height: h * 10, animationDelay: `${i * 0.1}s` }}></div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 w-full mb-10">
+                            <button onClick={() => setMode('face')} className={`py-4 rounded-2xl font-black text-[10px] uppercase border transition-all ${mode === 'face' ? 'bg-white text-slate-900 border-white' : 'bg-transparent text-white border-white/20'}`}>Face Verify</button>
+                            <button onClick={() => setMode('voice')} className={`py-4 rounded-2xl font-black text-[10px] uppercase border transition-all ${mode === 'voice' ? 'bg-white text-slate-900 border-white' : 'bg-transparent text-white border-white/20'}`}>Voice Print</button>
+                        </div>
+
+                        <button 
+                            onClick={() => onNavigate('remit-trace')} 
+                            className="w-full bg-emerald-500 text-white py-6 rounded-[24px] text-xl font-black shadow-2xl shadow-emerald-500/30"
+                        >
+                            Confirm Identity
+                        </button>
+                    </div>
+
+                    <style>{`
+                        @keyframes scan { 0% { top: 10%; } 50% { top: 90%; } 100% { top: 10%; } }
+                    `}</style>
+                </div>
+            );
+        };
+
+        const RemitTracePage = ({ onBack, onNavigate }) => {
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    onNavigate('success', { title: 'Transfer Complete', msg: '100 USDT settled on-chain and SMS notification sent to recipient.', level: 4 });
+                }, 5000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return (
+                <div className="flex-1 bg-slate-950 flex flex-col text-white animate-in fade-in duration-500">
+                    <div className="p-8 mt-20">
+                        <div className="flex flex-col items-center text-center">
+                            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                                <Icon name="cpu" size={32} />
+                            </div>
+                            <h2 className="text-xl font-black mb-1">Settling on T-Chain...</h2>
+                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-[4px]">Blockchain Consensus in Progress</p>
+                        </div>
+
+                        <div className="mt-12 space-y-4">
+                            {[
+                                { label: 'Signature', val: '0x8820...3392', status: 'Verified' },
+                                { label: 'Settlement Asset', val: 'USDT (Stable)', status: 'Active' },
+                                { label: 'SMS Bridge', val: '+670 7720 1192', status: 'Queued' },
+                                { label: 'Back-end Wallet', val: 'Hot-Node-Dili-01', status: 'Syncing' }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white/5 border border-white/10 p-5 rounded-3xl flex justify-between items-center animate-in slide-in-from-right" style={{ animationDelay: `${i * 0.5}s` }}>
+                                    <div>
+                                        <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">{item.label}</p>
+                                        <p className="text-xs font-mono font-bold mt-1">{item.val}</p>
+                                    </div>
+                                    <span className="text-[8px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full uppercase">{item.status}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="mt-auto p-10">
+                        <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-primary animate-[progress_5s_linear]"></div>
+                        </div>
+                    </div>
+
+                    <style>{`
+                        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
+                    `}</style>
+                </div>
+            );
+        };
+
 
         const CardMgmt = ({ onBack }) => (
             <div className="flex-1 bg-surface flex flex-col animate-in fade-in duration-300">
@@ -592,30 +731,43 @@
             <div className="flex-1 bg-surface flex flex-col animate-in slide-in-from-bottom duration-300">
                 <div className="px-6 py-6 flex items-center gap-4">
                     <button onClick={onBack} className="w-10 h-10 bg-white rounded-full shadow-soft flex items-center justify-center"><Icon name="chevron-left" /></button>
-                    <h2 className="text-xl font-extrabold">Agent Service</h2>
+                    <h2 className="text-xl font-extrabold">Liquidity Node</h2>
                 </div>
                 <div className="p-8">
-                    <div className="bg-white rounded-[32px] p-8 shadow-soft border border-slate-100 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 bg-primary/10 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="coffee" size={40} /></div>
-                        <h3 className="text-xl font-black text-slate-800 mb-2">Letefoho Coffee - Timor Plaza</h3>
-                        <p className="text-xs font-bold text-slate-400 uppercase mb-8">Authorized Agent ID: AGT-9902</p>
+                    <div className="bg-white rounded-[32px] p-8 shadow-soft border border-slate-100 flex flex-col items-center text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4"><Icon name="shield-check" className="text-emerald-500" size={20} /></div>
+                        
+                        <div className="w-20 h-20 bg-primary/10 text-primary rounded-[24px] flex items-center justify-center mb-6"><Icon name="store" size={40} /></div>
+                        <h3 className="text-xl font-black text-slate-800 mb-1">Letefoho - Timor Plaza</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-8 tracking-widest">Master Agent: L-9902 (Offline Sync Ready)</p>
                         
                         <div className="grid grid-cols-2 gap-4 w-full mb-8">
-                            <div className="bg-slate-50 p-4 rounded-2xl">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Cash Out</p>
-                                <p className="text-sm font-black text-emerald-600">Available</p>
+                            <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                                <p className="text-[9px] font-black text-emerald-700 uppercase mb-1 tracking-tighter">USDT Liquidity</p>
+                                <p className="text-sm font-black text-emerald-600">High</p>
                             </div>
-                            <div className="bg-slate-50 p-4 rounded-2xl">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">NFC Sync</p>
-                                <p className="text-sm font-black text-primary">Ready</p>
+                            <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                                <p className="text-[9px] font-black text-blue-700 uppercase mb-1 tracking-tighter">Cash Pool</p>
+                                <p className="text-sm font-black text-blue-600">$5,000+</p>
                             </div>
                         </div>
 
-                        <button onClick={() => onNavigate('withdrawal-qr')} className="w-full bg-primary text-white py-5 rounded-[24px] font-black shadow-lg shadow-primary/30 active:scale-95 transition-transform uppercase tracking-wider">
-                            Generate Cash-Out Code
-                        </button>
+                        <div className="w-full space-y-3 mb-8">
+                            <button onClick={() => onNavigate('withdrawal-qr')} className="w-full bg-slate-900 text-white py-5 rounded-[24px] font-black flex items-center justify-center gap-3 active:scale-95 transition-all">
+                                <Icon name="banknote" size={20} />
+                                <span>Cash ↔ USDT Swap</span>
+                            </button>
+                            <button className="w-full bg-primary/5 text-primary py-4 rounded-[24px] font-black text-[10px] uppercase border border-primary/10">
+                                Scan Agent Physical ID
+                            </button>
+                        </div>
+                        
+                        <div className="p-4 bg-slate-50 rounded-2xl w-full flex items-center gap-3">
+                            <Icon name="lock" size={16} className="text-slate-400" />
+                            <p className="text-[9px] font-bold text-slate-500 text-left leading-tight uppercase">Agent reserve is protected by Multi-Sig Cold Storage Logic.</p>
+                        </div>
                     </div>
-                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed">Level 2: Authorized Agent Profile & Service Discovery</p>
+                    <p className="mt-8 text-[11px] text-slate-400 font-bold text-center leading-relaxed uppercase tracking-[4px]">Level 2: Authorized Liquidity On-Ramp</p>
                 </div>
             </div>
         );
@@ -916,6 +1068,8 @@
                     case 'agent-detail': return <AgentDetail onBack={goBack} onNavigate={navigate} />;
                     case 'withdrawal-qr': return <WithdrawalQR onBack={goBack} onNavigate={navigate} />;
                     case 'remit': return <RemittancePage onBack={goBack} onNavigate={navigate} />;
+                    case 'remit-auth': return <RemitAuthPage onBack={goBack} onNavigate={navigate} />;
+                    case 'remit-trace': return <RemitTracePage onBack={goBack} onNavigate={navigate} />;
                     case 'remit-claim': return <RemitClaimPage onBack={goBack} onNavigate={navigate} />;
                     case 'card-mgmt': return <CardMgmt onBack={goBack} />;
                     case 'tcard': return <TCardPage onBack={goBack} onNavigate={navigate} />;
