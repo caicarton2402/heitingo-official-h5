@@ -1,818 +1,778 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TimorPay Global Wallet</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        body {
-            background-color: #f5f7fa;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            margin: 0 auto;
-            background: #ffffff;
-            position: relative;
-            overflow: hidden;
-        }
-        /* 头部通用样式 */
-        .app-header {
-            padding: 20px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: #0057D9;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .logo-text {
-            font-size: 20px;
-            font-weight: 600;
-            color: #0057D9;
-        }
-        .back-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #f0f4ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .page-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #111;
-        }
-        /* 钱包卡片 */
-        .bank-card {
-            margin: 0 16px 20px;
-            background: linear-gradient(135deg, #0057D9, #003a8c);
-            border-radius: 20px;
-            padding: 28px 24px;
-            color: #fff;
-            position: relative;
-            box-shadow: 0 8px 24px rgba(0,87,217,0.25);
-            overflow: hidden;
-        }
-        .card-label {
-            font-size: 13px;
-            opacity: 0.85;
-            margin-bottom: 8px;
-        }
-        .card-balance {
-            font-size: 34px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        .card-number {
-            font-size: 15px;
-            letter-spacing: 1px;
-            opacity: 0.9;
-        }
-        .card-type {
-            position: absolute;
-            bottom: 20px;
-            right: 24px;
-            font-size: 14px;
-            font-weight: 600;
-            opacity: 0.85;
-        }
-        /* 快捷功能区 */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 16px;
-            padding: 0 16px 20px;
-        }
-        .action-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .action-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            background: #f0f4ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .action-text {
-            font-size: 12px;
-            color: #333;
-        }
-        /* 内容区域 */
-        .content-section {
-            flex: 1;
-            padding: 0 16px;
-            overflow-y: auto;
-            padding-bottom: 80px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 10px 0 12px;
-        }
-        .activity-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .point-item {
-            padding: 12px;
-            background: #f9fbfd;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-        /* 页面切换核心 */
-        .page {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #fff;
-            padding-bottom: 75px;
-            flex-direction: column;
-        }
-        .page.active {
-            display: flex;
-        }
-        /* 标签切换 */
-        .tab-group {
-            display: flex;
-            gap: 10px;
-            margin: 15px 20px;
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 11px 0;
-            border-radius: 8px;
-            background: #f0f4ff;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .tab.active {
-            background: #0057D9;
-            color: #fff;
-        }
-        /* 输入框与按钮 */
-        .input-field {
-            width: calc(100% - 40px);
-            margin: 0 20px 16px;
-            padding: 14px 16px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-        }
-        .btn-primary {
-            width: calc(100% - 40px);
-            margin: 10px 20px;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background: #0057D9;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        /* 个人中心样式 */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 10px 20px 20px;
-        }
-        .profile-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: #f0f4ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #0057D9;
-            font-weight: bold;
-        }
-        .menu-item {
-            margin: 0 20px 8px;
-            padding: 16px;
-            background: #f9fbfd;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        .badge {
-            padding: 4px 8px;
-            background: #E6F0FF;
-            color: #0057D9;
-            font-size: 10px;
-            border-radius: 4px;
-        }
-        /* NFC页面样式 */
-        .nfc-touch-area {
-            width: 140px;
-            height: 140px;
-            margin: 60px auto;
-            position: relative;
-        }
-        .nfc-circle {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(0,87,217,0.15);
-            animation: nfcPulse 2s infinite ease-in-out;
-        }
-        .nfc-circle:nth-child(2){animation-delay:0.5s;}
-        .nfc-circle:nth-child(3){animation-delay:1s;}
-        @keyframes nfcPulse{
-            0%{transform:scale(0.8);opacity:0.7;}
-            100%{transform:scale(1.2);opacity:0;}
-        }
-        .nfc-core {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            width: 60px;
-            height: 60px;
-            background: #0057D9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .nfc-desc{text-align:center;color:#666;margin-top:10px;}
-        /* ========== 扫码页 纯白底 付款收款+指定二维码图片 ========== */
-        #scan{background:#fff !important;}
-        .scan-back{
-            position:absolute;
-            top:20px;
-            left:16px;
-            width:36px;
-            height:36px;
-            border-radius:50%;
-            background:#f0f4ff;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:10;
-            cursor:pointer;
-        }
-        .scan-top-tab{
-            display:flex;
-            justify-content:center;
-            gap:15px;
-            margin-top:80px;
-        }
-        .scan-top-tab .tab{width:100px;}
-        .scan-main-box{
-            width:260px;
-            height:260px;
-            margin:40px auto 0;
-            position:relative;
-            border:1px solid #e5e5e5;
-            border-radius:12px;
-            background:#fafafa;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-        .scan-border-frame{
-            width:210px;
-            height:210px;
-            position:relative;
-        }
-        .corner{
-            position:absolute;
-            width:18px;
-            height:18px;
-            border:2px solid #0057D9;
-        }
-        .corner-tl{top:0;left:0;border-right:none;border-bottom:none;}
-        .corner-tr{top:0;right:0;border-left:none;border-bottom:none;}
-        .corner-bl{bottom:0;left:0;border-right:none;border-top:none;}
-        .corner-br{bottom:0;right:0;border-left:none;border-top:none;}
-        .scan-flow-line{
-            width:100%;
-            height:2px;
-            background:#0057D9;
-            position:absolute;
-            left:0;
-            top:0;
-            animation:scanFlow 1.5s linear infinite;
-        }
-        @keyframes scanFlow{
-            0%{top:0;}
-            100%{top:206px;}
-        }
-        /* 指定二维码图片 */
-        .inner-qr-code{
-            position:absolute;
-            top:50%;
-            left:50%;
-            transform:translate(-50%,-50%);
-            width:170px;
-            height:170px;
-            background-image: url('https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/9e925fc7da764dd4b880c407a71a0878.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=202605201515167E049706DC0BC3ED4D35&rrcfp=8a172a1a&x-expires=1779866117&x-signature=8itKZKNyvIKKwSmLIVZo0Pa7lmY%3D');
-            background-size: cover;
-            background-position: center;
-            border-radius:6px;
-        }
-        .scan-tips-text{
-            text-align:center;
-            margin-top:35px;
-            color:#666;
-            font-size:13px;
-        }
-        /* ========== 人脸识别弹窗 纯白底+指定图片 优化版 ========== */
-        .face-mask{
-            position:fixed;
-            top:0;left:0;
-            width:100%;height:100%;
-            background:#ffffff !important; /* 纯白背景 */
-            z-index:9999;
-            display:none;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            color:#333; /* 文字改为深灰色更适配白底 */
-        }
-        /* 人脸识别图片容器 */
-        .face-box{
-            width:200px;height:240px; /* 优化尺寸更适配手机 */
-            border:none; /* 移除原有边框 */
-            border-radius:16px;
-            position:relative;
-            margin-bottom:30px;
-            background-image: url('https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/94fc47a0a11e4682ba2c50037a7c0f73.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=20260520151926558E174461BBBAA62892&rrcfp=8a172a1a&x-expires=1779866366&x-signature=dxLQdZy0d%2BrZj5xKEywARSvLx2o%3D');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        /* 优化扫描线 适配新图片 */
-        .face-scan-line{
-            position:absolute;
-            width:80%;
-            height:2px;
-            left:10%;
-            background:#0057D9;
-            top:50%; /* 居中显示扫描线 */
-            animation:faceScan 2s linear infinite;
-            border-radius:1px;
-        }
-        @keyframes faceScan{
-            0%{top:30%; opacity:1;}
-            50%{top:70%; opacity:0.8;}
-            100%{top:30%; opacity:1;}
-        }
-        /* 人脸识别文字优化 */
-        .face-mask h3{
-            font-size:20px;
-            font-weight:600;
-            color:#0057D9;
-            margin-bottom:8px;
-        }
-        .face-mask p{
-            font-size:14px;
-            color:#666;
-            opacity:1;
-        }
-        /* 全局提示 */
-        .toast-success{
-            position:fixed;
-            top:50%;left:50%;
-            transform:translate(-50%,-50%);
-            background:rgba(0,0,0,0.75);
-            color:#fff;
-            padding:12px 24px;
-            border-radius:8px;
-            font-size:14px;
-            z-index:10000;
-            display:none;
-        }
-        /* 底部全局导航 所有页面常驻 */
-        .app-nav{
-            position:fixed;
-            bottom:0;
-            left:50%;
-            transform:translateX(-50%);
-            width:100%;
-            max-width:420px;
-            height:64px;
-            background:#fff;
-            display:flex;
-            align-items:center;
-            justify-content:space-around;
-            border-top:1px solid #eee;
-            z-index:998;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.03); /* 增加轻微阴影提升质感 */
-        }
-        .nav-item{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            gap:4px;
-            color:#666;
-            font-size:10px;
-            cursor:pointer;
-            padding:4px 0;
-        }
-        .nav-item.active{color:#0057D9;}
-        .nav-center{
-            width:56px;height:56px;
-            border-radius:50%;
-            background:#0057D9;
-            color:#fff;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin-top:-26px;
-            box-shadow:0 4px 12px rgba(0,87,217,0.3);
-            cursor:pointer;
-        }
-        /* 全局优化：按钮hover效果 */
-        .btn-primary:hover{
-            background:#004bc9;
-            transition: background 0.2s ease;
-        }
-        .nav-item:hover{
-            color:#004bc9;
-            transition: color 0.2s ease;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>无网社交</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      transition: all 0.25s ease;
+    }
+
+    :root {
+      --bg: #000000;
+      --bg2: #111111;
+      --bg3: #1C1C1E;
+      --text: #FFFFFF;
+      --text2: #8E8E93;
+      --border: #2C2C2C;
+      --grad1: #9D4EDD;
+      --grad2: #C77DFF;
+      --grad3: #E0AAFF;
+      --red: #EF4444;
+      --green: #34D399;
+      --yellow: #FBBF24;
+      --heart: #F472B6;
+      --fire: #F97316;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app-frame {
+      width: 393px;
+      height: 852px;
+      background: var(--bg);
+      border-radius: 50px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+    }
+
+    .page {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; 
+      height: 100%;
+      background: var(--bg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 0;
+      overflow-y: auto;
+      padding-bottom: 100px;
+    }
+
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 10;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    }
+
+    .btn {
+      height: 64px;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .btn.small {
+      height: 40px;
+      font-size: 14px;
+      border-radius: 20px;
+    }
+
+    .btn.yellow {
+      background: transparent;
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+    }
+
+    .btn:active { transform: scale(0.96); opacity: 0.9; }
+
+    .tabbar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: rgba(17,17,17,0.92);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 20px;
+      z-index: 999;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text2);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .tab.active { color: white; }
+    .tab ion-icon { font-size: 24px; }
+
+    .card {
+      background: var(--bg2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card.group-card {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .card.user-card {
+      flex-direction: column;
+      align-items: flex-start;
+      width: calc(50% - 8px);
+      margin-bottom: 16px;
+      padding: 16px;
+      min-height: 220px;
+    }
+
+    .avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .avatar.sm { width: 44px; height: 44px; }
+    .avatar.xs { width: 56px; height: 56px; }
+
+    .input {
+      background: var(--bg3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: white;
+      border: none;
+      margin: 12px 0;
+      font-size: 17px;
+      width: 100%;
+    }
+
+    .tag {
+      background: var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .tag.active { background: linear-gradient(135deg, var(--grad1),var(--grad3)); }
+    .tag.online { color: var(--green); background: transparent; }
+
+    .overlay {
+      position: absolute; top:0;left:0;right:0;bottom:0;
+      background: rgba(0,0,0,0.6); z-index:998;
+      opacity:0; visibility:hidden;
+    }
+    .overlay.show { opacity:1; visibility:visible; }
+
+    .modal {
+      position: absolute;
+      bottom: -100%; left:0; right:0;
+      background: var(--bg2);
+      border-radius: 28px 28px 0 0;
+      padding: 32px; z-index:1000;
+      max-height:70vh;
+      overflow-y:auto;
+    }
+    .modal.show { bottom:0; }
+
+    .toast {
+      position: fixed; top: 120px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: white; padding: 10px 20px;
+      border-radius: 12px; font-size:14px;
+      opacity:0; z-index:9999;
+    }
+    .toast.show { opacity:1; }
+
+    h1 { font-size: 40px; font-weight: 700; color: white; margin: 16px 0; }
+    h2 { font-size: 32px; font-weight: 700; color: white; margin: 12px 0; }
+    h3 { font-size: 24px; font-weight: 600; color: white; margin: 8px 0; }
+    h4 { font-size: 18px; font-weight: 600; color: white; margin: 4px 0; }
+    p { color: var(--text2); font-size: 15px; line-height: 1.4; }
+    .caption { font-size: 12px; color: var(--text2); }
+    .text-yellow { color: var(--yellow); }
+    .text-heart { color: var(--heart); }
+    .text-fire { color: var(--fire); }
+    .text-green { color: var(--green); }
+
+    .row { display:flex; align-items:center; gap:12px; margin:8px 0; }
+    .row-between { display:flex; align-items:center; justify-content:space-between; width:100%; }
+    .row-wrap { display:flex; flex-wrap:wrap; justify-content:space-between; width:100%; }
+    .spacer { flex:1; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    ion-icon { font-size:22px; color:white; cursor:pointer; }
+    ion-icon.yellow { color: var(--yellow); }
+    ion-icon.green { color: var(--green); }
+
+    .msg-left { background:var(--bg2); padding:14px 18px; border-radius:18px 18px 18px 4px; color:white; align-self:flex-start; max-width:75%; margin-bottom:10px; }
+    .msg-right { background:linear-gradient(90deg,var(--grad1),var(--grad3)); padding:14px 18px; border-radius:18px 18px 4px 18px; color:white; align-self:flex-end; max-width:75%; margin-bottom:10px; }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .user-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 16px;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      background: var(--yellow);
+      color: black;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge.fire {
+      background: var(--fire);
+      color: white;
+    }
+  </style>
 </head>
 <body>
-<!-- 人脸核验弹窗 纯白底+指定图片 -->
-<div class="face-mask" id="faceMask">
-    <div class="face-box">
-        <div class="face-scan-line"></div>
-    </div>
-    <h3>Face Identity Verification</h3>
-    <p>Scanning facial features...</p>
-</div>
-<!-- 全局提示 -->
-<div class="toast-success" id="toastTip">Operation Success</div>
 
-<div class="app-container">
-    <!-- 首页 -->
-    <div class="page active" id="home">
-        <div class="app-header">
-            <div class="logo">
-                <div class="logo-icon">T</div>
-                <div class="logo-text">TimorPay</div>
-            </div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="bank-card">
-            <div class="card-label">Mini Wallet (Account Balance)</div>
-            <div class="card-balance">$ 125.00</div>
-            <div class="card-number">•••• •••• •••• 1835</div>
-            <div class="card-type">NFC • QR • Offline Pay</div>
-        </div>
-        <div class="quick-actions">
-            <div class="action-item" onclick="goPage('scan')">
-                <div class="action-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <path d="M7 7h10v10H7z"></path>
-                    </svg>
-                </div>
-                <div class="action-text">Scan Pay</div>
-            </div>
-            <div class="action-item" onclick="goPage('receive')">
-                <div class="action-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"></path>
-                        <line x1="7" y1="12" x2="17" y2="12"></line>
-                        <polyline points="12 7 17 12 12 17"></polyline>
-                    </svg>
-                </div>
-                <div class="action-text">Receive</div>
-            </div>
-            <div class="action-item" onclick="goPage('nfc')">
-                <div class="action-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B59B6" stroke-width="2">
-                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                        <line x1="2" y1="10" x2="22" y2="10"></line>
-                    </svg>
-                </div>
-                <div class="action-text">NFC Pay</div>
-            </div>
-        </div>
-        <div class="content-section">
-            <div class="recent-activity">
-                <div class="section-title">Recent Transactions</div>
-                <div class="activity-item">
-                    <div>Account Top Up</div>
-                    <div style="color:green;font-weight:500">+$50.00</div>
-                </div>
-                <div class="activity-item">
-                    <div>Merchant Payment</div>
-                    <div style="color:red;font-weight:500">-$12.50</div>
-                </div>
-                <div class="activity-item">
-                    <div>Transfer In</div>
-                    <div style="color:green;font-weight:500">+$30.00</div>
-                </div>
-            </div>
-            <div class="cash-points">
-                <div class="section-title">Nearby Cash Service Points</div>
-                <div class="point-item" onclick="goPage('cash')">Central Market • 0.3km Away</div>
-                <div class="point-item" onclick="goPage('cash')">National Post Office • 0.8km Away</div>
-            </div>
-        </div>
-    </div>
+<div class="app-frame">
+  <div class="screen">
+    <div id="p0" class="page active"></div>
+    <div id="p1" class="page"></div>
+    <div id="p2" class="page"></div>
+    <div id="p3" class="page"></div>
+    <div id="p4" class="page"></div>
+    <div id="p5" class="page"></div>
+    <div id="p6" class="page"></div>
+    <div id="p7" class="page"></div>
+    <div id="p8" class="page"></div>
+    <div id="p9" class="page"></div>
+    <div id="p10" class="page"></div>
+    <div id="p11" class="page"></div>
+    <div id="p12" class="page"></div>
+    <div id="p13" class="page"></div>
+    <div id="p14" class="page"></div>
+    <div id="p15" class="page"></div>
+    <div id="p16" class="page"></div>
+    <div id="p17" class="page"></div>
 
-    <!-- 扫码支付页 纯白底+付款收款+指定二维码图片 -->
-    <div class="page" id="scan">
-        <div class="scan-back" onclick="goPage('home')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-        </div>
-        <div class="scan-top-tab">
-            <div class="tab active">Payment</div>
-            <div class="tab">Receive</div>
-        </div>
-        <div class="scan-main-box">
-            <div class="scan-border-frame">
-                <div class="corner corner-tl"></div>
-                <div class="corner corner-tr"></div>
-                <div class="corner corner-bl"></div>
-                <div class="corner corner-br"></div>
-                <div class="scan-flow-line"></div>
-            </div>
-            <div class="inner-qr-code"></div>
-        </div>
-        <div class="scan-tips-text">Align QR code inside frame to complete operation</div>
-    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="sosModal"></div>
+    <div class="modal" id="createGroupModal"></div>
+    <div class="modal" id="filterModal"></div>
+    <div class="toast" id="toast"></div>
 
-    <!-- NFC页面 -->
-    <div class="page" id="nfc">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('home')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">NFC Tap & Pay</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="tab-group">
-            <div class="tab active">Payment</div>
-            <div class="tab">Receive Funds</div>
-        </div>
-        <div class="nfc-touch-area">
-            <div class="nfc-circle"></div>
-            <div class="nfc-circle"></div>
-            <div class="nfc-circle"></div>
-            <div class="nfc-core">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                    <line x1="2" y1="10" x2="22" y2="10"></line>
-                </svg>
-            </div>
-        </div>
-        <div style="text-align:center;">
-            <h2>Tap Device Close To Terminal</h2>
-            <p class="nfc-desc">Fast offline NFC transaction</p>
-        </div>
-        <div style="flex:1;"></div>
-        <button class="btn-primary" onclick="showToast('NFC Payment Completed Successfully')">Confirm Payment</button>
+    <div class="tabbar">
+      <div class="tab active" onclick="goPage('p2')"><ion-icon name="people"></ion-icon><span>发现</span></div>
+      <div class="tab" onclick="goPage('p3')"><ion-icon name="chatbubble"></ion-icon><span>消息</span></div>
+      <div class="tab" onclick="goPage('p5')"><ion-icon name="people-circle"></ion-icon><span>群组</span></div>
+      <div class="tab" onclick="goPage('p6')"><ion-icon name="map"></ion-icon><span>户外</span></div>
+      <div class="tab" onclick="goPage('p7')"><ion-icon name="person-circle"></ion-icon><span>我的</span></div>
     </div>
-
-    <!-- 转账页面 -->
-    <div class="page" id="transfer">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('home')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">Wallet Transfer</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="tab-group">
-            <div class="tab active">Transfer To User</div>
-            <div class="tab">Bank Transfer</div>
-        </div>
-        <input class="input-field" placeholder="Enter recipient account">
-        <input class="input-field" placeholder="Enter transfer amount">
-        <input class="input-field" placeholder="Payment password">
-        <button class="btn-primary" onclick="showToast('Transfer Sent Successfully')">Confirm Transfer</button>
-    </div>
-
-    <!-- 现金存取 -->
-    <div class="page" id="cash">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('home')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">Cash Deposit & Withdraw</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="tab-group">
-            <div class="tab active">Cash Deposit</div>
-            <div class="tab">Cash Withdraw</div>
-        </div>
-        <input class="input-field" placeholder="Enter cash amount">
-        <input class="input-field" placeholder="Select nearby service outlet">
-        <button class="btn-primary" onclick="showToast('Cash Service Request Submitted')">Submit Application</button>
-    </div>
-
-    <!-- 个人中心 -->
-    <div class="page" id="profile">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('home')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">Personal Center</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="profile-header">
-            <div class="profile-avatar">U</div>
-            <div>
-                <div style="font-size:18px;font-weight:600;">TimorPay Global User</div>
-                <div style="color:#666;margin-top:4px;">Country Code +670 | Verified Account</div>
-            </div>
-        </div>
-        <div class="menu-item" onclick="showFaceScan()">
-            <div>SIM Card Offline Cold Wallet</div>
-            <span class="badge">High Security</span>
-        </div>
-        <div class="menu-item">Account Security Settings</div>
-        <div class="menu-item">Transaction Record Query</div>
-        <div class="menu-item">Language & Region Setting</div>
-        <div class="menu-item">About TimorPay Wallet</div>
-    </div>
-
-    <!-- 离线冷钱包 -->
-    <div class="page" id="simwallet">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('profile')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">SIM Card Cold Wallet</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div class="bank-card" style="background:#111827;">
-            <div class="card-label">Offline Encrypted Blockchain Wallet</div>
-            <div class="card-balance">$ 0.00</div>
-            <div style="font-size:12px;opacity:0.8;">Offline Storage · Chip Encrypted · No Network Risk</div>
-        </div>
-        <input class="input-field" placeholder="Transfer amount to mini wallet">
-        <button class="btn-primary" style="margin-top:20px;" onclick="showToast('Cold Wallet Assets Transferred Successfully')">Transfer To Daily Wallet</button>
-    </div>
-
-    <!-- 收款页面 -->
-    <div class="page" id="receive">
-        <div class="app-header">
-            <div class="back-btn" onclick="goPage('home')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0057D9" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </div>
-            <div class="page-title">Receive Payment</div>
-            <div style="width:36px;"></div>
-        </div>
-        <div style="margin:60px auto;text-align:center;">
-            <div style="width:200px;height:200px;border:2px solid #eee;border-radius:12px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#999;">Personal Receive QR Code</div>
-            <h3 style="margin-top:20px;color:#333;">My Exclusive Receive Code</h3>
-            <p style="color:#666;font-size:13px;margin-top:6px;">Others scan to transfer money to you</p>
-            <button class="btn-primary" style="width:200px;margin:30px auto 0;">Save QR Code Image</button>
-        </div>
-    </div>
-
-    <!-- 全局底部五按钮 所有页面永久显示 -->
-    <div class="app-nav">
-        <div class="nav-item" onclick="switchNav('nfc')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="2" y1="10" x2="22" y2="10"></line>
-            </svg>
-            <div>NFC</div>
-        </div>
-        <div class="nav-item" onclick="switchNav('transfer')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12l-7-7-7 7"></path>
-                <path d="M12 19V5"></path>
-            </svg>
-            <div>Transfer</div>
-        </div>
-        <div class="nav-center" onclick="switchNav('scan')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                <path d="M7 7h10v10H7z"></path>
-            </svg>
-        </div>
-        <div class="nav-item" onclick="switchNav('cash')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="6" y="4" width="12" height="16" rx="2"></rect>
-                <line x1="8" y1="8" x2="16" y2="8"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-                <line x1="8" y1="16" x2="16" y2="16"></line>
-            </svg>
-            <div>Cash</div>
-        </div>
-        <div class="nav-item" onclick="switchNav('profile')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <div>Me</div>
-        </div>
-    </div>
+  </div>
 </div>
 
+<script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
 <script>
-let currentPage = 'home';
-// 页面跳转统一方法
-function goPage(pageId){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    currentPage = pageId;
+// 核心修复：统一跳转函数，解决所有按钮点击失效
+function goPage(id){
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  if(document.querySelector(`.tabbar .tab[onclick="goPage('${id}')"]`)){
+    document.querySelector(`.tabbar .tab[onclick="goPage('${id}')"]`).classList.add('active');
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
-// 底部导航切换+高亮
-function switchNav(pageId){
-    document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('active'));
-    if(event && event.currentTarget && !event.currentTarget.classList.contains('nav-center')){
-        event.currentTarget.classList.add('active');
-    }
-    goPage(pageId);
+
+function showModal(id){
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById(id).classList.add('show');
 }
-// 人脸核验弹窗
-function showFaceScan(){
-    document.getElementById('faceMask').style.display = 'flex';
-    setTimeout(()=>{
-        document.getElementById('faceMask').style.display = 'none';
-        goPage('simwallet');
-        showToast('Identity Verified Successfully');
-    },2000);
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
 }
-// 所有标签统一切换
-document.querySelectorAll('.tab').forEach(tab=>{
-    tab.addEventListener('click',function(){
-        let parent = this.parentElement;
-        parent.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        this.classList.add('active');
-    })
-})
-// 全局轻提示
-function showToast(text){
-    let tip = document.getElementById('toastTip');
-    tip.innerText = text;
-    tip.style.display = 'block';
-    setTimeout(()=>{
-        tip.style.display = 'none';
-    },1800);
+
+function msg(txt){
+  const t=document.getElementById('toast');
+  t.textContent=txt;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1600);
 }
+
+// 启动页
+p0.innerHTML=`
+<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px">
+  <div style="width:120px;height:120px;border-radius:28px;overflow:hidden">
+    <img src="https://picsum.photos/id/1005/200/200" style="width:100%;height:100%;object-fit:cover" />
+  </div>
+  <h1>无网社交</h1>
+  <p style="font-size:18px;margin:16px 0 40px;color:var(--text2)">无需网络，遇见身边的人</p>
+  <button class="btn gradient" style="width:100%" onclick="goPage('p1')">开始使用</button>
+  <p style="margin-top:24px;color:var(--text2)">已有账号？<span style="color:var(--grad2);cursor:pointer" onclick="goPage('p1')">立即登录</span></p>
+</div>
+`;
+
+// 创建身份
+p1.innerHTML=`
+<div class="status-bar">
+  <ion-icon name="chevron-back" onclick="goPage('p0')"></ion-icon>
+  <p class="text-right" onclick="goPage('p2')">跳过</p>
+</div>
+
+<div style="display:grid;place-items:center;margin:20px 0">
+  <div class="avatar" style="width:100px;height:100px;background-image:url('https://picsum.photos/id/1012/200/200');border:4px solid var(--grad2)"></div>
+  <p style="margin-top:8px;color:white;cursor:pointer">编辑头像</p>
+</div>
+
+<h2 style="text-align:center;margin:24px 0">创建个人资料</h2>
+
+<input class="input" placeholder="昵称" value="山野行者">
+<input class="input" placeholder="简介（选填）" value="户外爱好者">
+
+<h4 style="margin:24px 0 16px">兴趣（选择3-5个）</h4>
+<div class="row-wrap">
+  <div class="tag active">徒步</div>
+  <div class="tag">露营</div>
+  <div class="tag active">骑行</div>
+  <div class="tag">摄影</div>
+  <div class="tag active">登山</div>
+  <div class="tag">钓鱼</div>
+  <div class="tag">跑步</div>
+  <div class="tag">皮划艇</div>
+</div>
+
+<button class="btn gradient" style="width:100%;margin-top:40px" onclick="goPage('p2')">继续</button>
+`;
+
+// 发现页
+p2.innerHTML=`
+<div class="status-bar">
+  <ion-icon name="search"></ion-icon>
+  <p class="text-right text-green">在线</p>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+  <p style="color:white">筛选卡片 #111111</p>
+  <p class="text-right">16pt 圆角</p>
+</div>
+
+<div class="user-grid">
+  <div class="card user-card" onclick="goPage('p9')">
+    <div class="row-between" style="width:100%">
+      <div class="row">
+        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/64/200/200')"></div>
+        <div style="margin-left:12px">
+          <h4>刘雨</h4>
+          <p class="caption">#111111</p>
+        </div>
+      </div>
+      <ion-icon name="checkmark-circle" class="green"></ion-icon>
+    </div>
+    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
+    <div class="row-between" style="width:100%;margin-top:12px">
+      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
+      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
+    </div>
+  </div>
+
+  <div class="card user-card" onclick="goPage('p9')">
+    <div class="row-between" style="width:100%">
+      <div class="row">
+        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/76/200/200')"></div>
+        <div style="margin-left:12px">
+          <h4>邓丽</h4>
+          <p class="caption">#111111</p>
+        </div>
+      </div>
+      <ion-icon name="checkmark-circle" class="green"></ion-icon>
+    </div>
+    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
+    <div class="row-between" style="width:100%;margin-top:12px">
+      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
+      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
+    </div>
+  </div>
+
+  <div class="card user-card" onclick="goPage('p9')">
+    <div class="row-between" style="width:100%">
+      <div class="row">
+        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/1012/200/200')"></div>
+        <div style="margin-left:12px">
+          <h4>张曲</h4>
+          <p class="caption">#111111</p>
+        </div>
+      </div>
+      <ion-icon name="checkmark-circle" class="green"></ion-icon>
+    </div>
+    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
+    <div class="row-between" style="width:100%;margin-top:12px">
+      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
+      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
+    </div>
+  </div>
+
+  <div class="card user-card" onclick="goPage('p9')">
+    <div class="row-between" style="width:100%">
+      <div class="row">
+        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/1027/200/200')"></div>
+        <div style="margin-left:12px">
+          <h4>张进</h4>
+          <p class="caption">#111111</p>
+        </div>
+      </div>
+      <ion-icon name="checkmark-circle" class="green"></ion-icon>
+    </div>
+    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
+    <div class="row-between" style="width:100%;margin-top:12px">
+      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
+      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
+    </div>
+  </div>
+</div>
+`;
+
+// 消息页
+p3.innerHTML=`
+<div class="status-bar">
+  <ion-icon name="chevron-back" onclick="goPage('p2')"></ion-icon>
+  <h3>消息</h3>
+  <ion-icon name="settings-outline"></ion-icon>
+</div>
+
+<div class="card" onclick="goPage('p4')">
+  <div style="display:flex;align-items:center">
+    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/64/200/200')"></div>
+    <div style="margin-left:16px">
+      <h4>刘雨</h4>
+      <p style="font-size:14px;margin-top:2px">明天一起去爬山吗？</p>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <p class="text-yellow">42pt</p>
+    <ion-icon name="heart" class="text-heart" style="margin-top:4px"></ion-icon>
+  </div>
+</div>
+
+<div class="card" onclick="goPage('p4')">
+  <div style="display:flex;align-items:center">
+    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/1012/200/200')"></div>
+    <div style="margin-left:16px">
+      <h4>山野</h4>
+      <p style="font-size:14px;margin-top:2px">这里风景超棒！</p>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <p class="text-yellow">48pt</p>
+  </div>
+</div>
+
+<div class="badge" style="position:absolute;top:320px;left:50%;transform:translateX(-50%);z-index:10">
+  <span>2</span> 有2个新匹配
+</div>
+
+<div class="card" onclick="goPage('p4')">
+  <div style="display:flex;align-items:center">
+    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/76/200/200')"></div>
+    <div style="margin-left:16px">
+      <h4>邓丽</h4>
+      <p style="font-size:14px;margin-top:2px">收到消息啦</p>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <p class="text-yellow">48pt</p>
+  </div>
+</div>
+
+<div class="badge fire" style="position:absolute;top:480px;left:50%;transform:translateX(-50%);z-index:10">
+  <ion-icon name="flame" style="font-size:14px"></ion-icon> 热门匹配
+</div>
+
+<div style="position:absolute;bottom:80px;left:24px;right:24px;background:var(--bg2);border-radius:28px;height:56px;display:flex;align-items:center;padding:0 20px;gap:12px">
+  <ion-icon name="heart" class="text-heart"></ion-icon>
+  <input placeholder="输入消息..." style="background:transparent;border:none;color:white;flex:1;outline:none">
+  <ion-icon name="download"></ion-icon>
+  <ion-icon name="add"></ion-icon>
+</div>
+`;
+
+// 聊天页
+p4.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p3')"></ion-icon><h3>限时聊天</h3><div class="spacer"></div></div>
+<p style="text-align:center;color:var(--heart);margin:8px 0">⚠️ 消息阅后即焚</p>
+<div style="display:flex;flex-direction:column;margin-top:20px">
+  <div class="msg-left">你也喜欢徒步吗？</div>
+  <div class="msg-right">是的，我每周都去</div>
+  <div class="msg-left">明天一起吗？</div>
+  <div class="msg-right">好呀，早上8点山口见</div>
+</div>
+<div style="margin-top:auto;background:var(--bg2);border-radius:28px;height:56px;display:flex;align-items:center;padding:0 16px;gap:12px">
+  <input placeholder="输入消息..." style="background:transparent;border:none;color:white;flex:1;outline:none">
+  <ion-icon name="flame" onclick="msg('消息已发送')"></ion-icon>
+</div>
+`;
+
+// 群组页
+p5.innerHTML=`
+<div class="status-bar">
+  <h1>群组</h1>
+  <button class="btn small yellow" onclick="showModal('createGroupModal')">+ 创建</button>
+</div>
+
+<h3 style="margin:24px 0 16px">我的群组</h3>
+
+<div class="card group-card" onclick="goPage('p12')">
+  <div class="row">
+    <div class="avatar sm" style="background-color:var(--yellow);display:grid;place-items:center;color:black;font-weight:bold">G</div>
+    <div style="margin-left:16px">
+      <h4>热门临时群组</h4>
+      <p style="font-size:14px;margin-top:2px">在线成员 2000-18</p>
+    </div>
+  </div>
+  <button class="btn small yellow" onclick="msg('加入成功')">加入</button>
+</div>
+
+<h3 style="margin:24px 0 16px">附近公开群组</h3>
+
+<div class="card group-card" onclick="goPage('p12')">
+  <div class="row">
+    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/1005/200/200')"></div>
+    <div style="margin-left:16px">
+      <h4>徒步登山小队</h4>
+      <p style="font-size:14px;margin-top:2px">在线成员 2000-18</p>
+    </div>
+  </div>
+  <button class="btn small" style="background:transparent;border:1px solid white;color:white" onclick="msg('加入成功')">加入</button>
+</div>
+`;
+
+createGroupModal.innerHTML=`
+<h3>创建群组</h3>
+<input class="input" placeholder="群组名称">
+<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('群组创建成功');closeModal()">创建</button>
+`;
+
+// 户外模式
+p6.innerHTML=`
+<div class="status-bar">
+  <h3>户外模式</h3>
+  <button style="background:var(--red);color:white;border:none;padding:8px 14px;border-radius:16px;font-size:14px" onclick="showModal('sosModal')">紧急求救</button>
+</div>
+
+<div class="card" onclick="goPage('p14')">
+  <div>
+    <h4>🎙️ 徒步小队实时对讲</h4>
+    <p>5人在线 · 点击加入</p>
+  </div>
+  <ion-icon name="chevron-forward"></ion-icon>
+</div>
+
+<div class="card" onclick="goPage('p16')">
+  <div>
+    <h4>🗺️ 团队位置共享</h4>
+    <p>查看所有成员位置</p>
+  </div>
+  <ion-icon name="chevron-forward"></ion-icon>
+</div>
+`;
+
+sosModal.innerHTML=`
+<h2 style="color:var(--red);text-align:center">SOS 紧急求救</h2>
+<p style="text-align:center;margin:16px 0">向5公里内用户发送求救信号</p>
+<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('求救信号已发送');closeModal()">发送求救</button>
+`;
+
+// 我的页面
+p7.innerHTML=`
+<div class="status-bar">
+  <h3>我的</h3>
+  <ion-icon name="settings" onclick="goPage('p10')"></ion-icon>
+</div>
+
+<div style="display:flex;align-items:center;margin:24px 0">
+  <div class="avatar" style="background-image:url('https://picsum.photos/id/1005/200/200')"></div>
+  <div style="margin-left:16px">
+    <h4>山野行者</h4>
+    <p>户外爱好者 · 已认证</p>
+  </div>
+</div>
+
+<div class="card" onclick="goPage('p17')">
+  <div class="row">
+    <ion-icon name="hardware-chip"></ion-icon>
+    <h4>设备绑定</h4>
+  </div>
+  <p class="text-green">未绑定</p>
+</div>
+
+<div class="card" onclick="msg('编辑资料')">
+  <div class="row">
+    <ion-icon name="create"></ion-icon>
+    <h4>编辑资料</h4>
+  </div>
+  <ion-icon name="chevron-forward"></ion-icon>
+</div>
+
+<div class="card" onclick="goPage('p8')">
+  <div class="row">
+    <ion-icon name="diamond"></ion-icon>
+    <h4>会员中心</h4>
+  </div>
+  <ion-icon name="chevron-forward"></ion-icon>
+</div>
+`;
+
+// 会员中心
+p8.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>会员中心</h3></div>
+<div class="card gradient"><h3>年度套餐</h3><p>¥79 / 年</p></div>
+<div class="card"><h3>月度套餐</h3><p>¥9.9 / 月</p></div>
+<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('开通成功')">立即开通</button>
+`;
+
+// 用户详情
+p9.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p2')"></ion-icon></div>
+<div class="avatar" style="width:100px;height:100px;background-image:url('https://picsum.photos/id/64/200/200')"></div>
+<h3>刘雨</h3>
+<p>女 · 徒步爱好者 · 320米</p>
+<div class="card"><p>简介：喜欢徒步、登山，周末经常进山，期待同伴一起出发</p></div>
+<button class="btn gradient" style="width:100%;margin-top:20px" onclick="goPage('p4')">发消息</button>
+`;
+
+// 设置
+p10.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>设置</h3></div>
+<div class="card" onclick="goPage('p11')"><p>隐私设置</p><ion-icon name="chevron-forward"></ion-icon></div>
+<div class="card" onclick="msg('账号安全')"><p>账号安全</p><ion-icon name="chevron-forward"></ion-icon></div>
+<div class="card" onclick="msg('通用设置')"><p>通用设置</p><ion-icon name="chevron-forward"></ion-icon></div>
+`;
+
+// 隐私设置
+p11.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p10')"></ion-icon><h3>隐私设置</h3></div>
+<div class="card" onclick="msg('已隐藏位置')"><p>隐藏实时位置 ✅</p></div>
+<div class="card" onclick="msg('已开启隐身')"><p>隐身模式 ✅</p></div>
+`;
+
+// 群组详情
+p12.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p5')"></ion-icon><h3>徒步登山小队</h3><ion-icon name="settings-outline" onclick="goPage('p13')"></ion-icon></div>
+<div class="card"><p>群公告：每周六早8点集合登山</p></div>
+<div class="card" onclick="goPage('p6')"><p>开启实时对讲</p></div>
+<div class="card" onclick="goPage('p16')"><p>查看群成员位置</p></div>
+<div class="card" onclick="msg('已退出群组')"><p style="color:var(--red)">退出群组</p></div>
+`;
+
+// 群组设置
+p13.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p12')"></ion-icon><h3>群设置</h3></div>
+<div class="card" onclick="msg('已开启免打扰')"><p>消息免打扰 ✅</p></div>
+<div class="card" onclick="msg('已置顶')"><p>置顶群组 ✅</p></div>
+`;
+
+// 对讲房间
+p14.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p6')"></ion-icon><h3>实时对讲</h3><ion-icon name="settings-outline" onclick="goPage('p15')"></ion-icon></div>
+<div class="card"><p>当前在线：5人</p></div>
+<div style="margin:60px auto; text-align:center">
+  <div style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,var(--grad1),var(--grad3));display:grid;place-items:center;cursor:pointer" onclick="msg('正在说话...')">
+    <ion-icon name="mic" style="font-size:60px"></ion-icon>
+    <p style="color:white;margin-top:8px">按住说话</p>
+  </div>
+</div>
+`;
+
+// 对讲设置
+p15.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p14')"></ion-icon><h3>对讲设置</h3></div>
+<div class="card" onclick="msg('音量已调大')"><p>调整音量</p></div>
+<div class="card" onclick="msg('已开启降噪')"><p>降噪模式 ✅</p></div>
+`;
+
+// 位置共享
+p16.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p12')"></ion-icon><h3>位置共享</h3></div>
+<div style="width:100%;height:200px;background:var(--bg2);border-radius:16px;display:grid;place-items:center;margin:20px 0">
+  <p>实时位置地图</p>
+</div>
+<div class="card"><p>刘雨 · 320米</p></div>
+<div class="card"><p>山野 · 500米</p></div>
+`;
+
+// 设备绑定
+p17.innerHTML=`
+<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>绑定设备</h3></div>
+
+<div style="width:100%;height:240px;background:var(--bg2);border-radius:16px;display:grid;place-items:center;margin:20px 0">
+  <ion-icon name="qr-code" style="font-size:80px;color:var(--text2)"></ion-icon>
+  <p style="margin-top:10px;color:var(--text2)">扫描设备二维码绑定</p>
+</div>
+
+<div class="card" onclick="msg('已打开扫描')">
+  <div class="row">
+    <ion-icon name="scan"></ion-icon>
+    <h4>扫码绑定</h4>
+  </div>
+</div>
+
+<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('设备绑定成功')">立即绑定</button>
+`;
+
+document.getElementById('overlay').onclick = closeModal;
+goPage('p0');
 </script>
 </body>
 </html>
