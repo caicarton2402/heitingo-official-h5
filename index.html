@@ -23,6 +23,8 @@
       --red: #fa5151;
       --shadow: 0 22px 70px rgba(0,0,0,.22);
       --radius: 8px;
+      --status-height: 38px;
+      --nav-height: 90px;
     }
 
     * {
@@ -53,6 +55,7 @@
 
     button {
       -webkit-tap-highlight-color: transparent;
+      min-width: 0;
     }
 
     .phone-shell {
@@ -76,7 +79,7 @@
     }
 
     .app-status {
-      height: 38px;
+      height: var(--status-height);
       padding: 12px 18px 0;
       display: flex;
       align-items: center;
@@ -101,7 +104,7 @@
     }
 
     main {
-      height: calc(100% - 116px);
+      height: calc(100% - var(--status-height) - var(--nav-height));
       overflow: auto;
       padding: 14px 18px 24px;
       scrollbar-width: none;
@@ -117,9 +120,11 @@
       justify-content: space-between;
       gap: 14px;
       margin-bottom: 16px;
+      min-width: 0;
     }
 
     .title-block {
+      flex: 1;
       min-width: 0;
     }
 
@@ -136,6 +141,13 @@
     h3,
     p {
       margin: 0;
+      min-width: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      overflow-wrap: anywhere;
     }
 
     h1 {
@@ -163,6 +175,7 @@
       color: var(--muted);
       font-size: 14px;
       line-height: 1.45;
+      overflow-wrap: anywhere;
     }
 
     .muted {
@@ -188,6 +201,7 @@
     .section-title span {
       color: var(--muted);
       font-size: 12px;
+      flex: 0 0 auto;
     }
 
     .top-actions {
@@ -235,6 +249,8 @@
       justify-content: center;
       gap: 8px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .btn.secondary {
@@ -487,6 +503,13 @@
       text-overflow: ellipsis;
     }
 
+    .person-name p,
+    .distance {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .distance {
       color: var(--blue);
       font-size: 12px;
@@ -563,10 +586,12 @@
       align-items: center;
       gap: 12px;
       min-width: 0;
+      flex: 1;
     }
 
     .list-copy {
       min-width: 0;
+      flex: 1;
     }
 
     .list-copy h3,
@@ -593,6 +618,9 @@
       font-size: 12px;
       font-weight: 800;
       white-space: nowrap;
+      max-width: 92px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .badge.amber {
@@ -802,8 +830,8 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: 78px;
-      padding: 8px 10px 14px;
+      height: var(--nav-height);
+      padding: 8px 6px calc(10px + env(safe-area-inset-bottom));
       background: rgba(247,247,247,.94);
       border-top: 1px solid rgba(0,0,0,.08);
       backdrop-filter: blur(22px);
@@ -815,6 +843,7 @@
 
     .nav-item {
       min-width: 0;
+      min-height: 68px;
       border: 0;
       border-radius: var(--radius);
       background: transparent;
@@ -824,8 +853,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      font-size: 11px;
+      gap: 6px;
+      font-size: 12px;
+      line-height: 1;
     }
 
     .nav-item.active {
@@ -836,6 +866,152 @@
 
     .nav-item.active .icon {
       color: var(--green);
+    }
+
+    .nav .icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 650;
+    }
+
+    .nav-icon {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      display: block;
+      color: currentColor;
+    }
+
+    .nav-discover::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .nav-discover::after {
+      content: "";
+      position: absolute;
+      left: 17px;
+      top: 19px;
+      width: 8px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+      transform: rotate(-45deg);
+      transform-origin: left center;
+    }
+
+    .nav-chat::before {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 5px;
+      width: 21px;
+      height: 15px;
+      border: 2px solid currentColor;
+      border-radius: 8px;
+    }
+
+    .nav-chat::after {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 18px;
+      width: 8px;
+      height: 8px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-28deg);
+      background: transparent;
+    }
+
+    .nav-groups::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      box-shadow: -8px 6px 0 -4px currentColor, 8px 6px 0 -4px currentColor;
+    }
+
+    .nav-groups::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      bottom: 4px;
+      width: 18px;
+      height: 9px;
+      border: 2px solid currentColor;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      border-bottom: 0;
+    }
+
+    .nav-outdoor::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 8px;
+      width: 18px;
+      height: 12px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: skewX(-18deg);
+    }
+
+    .nav-outdoor::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 5px;
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(-28deg);
+    }
+
+    .nav-me::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .nav-me::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      bottom: 4px;
+      width: 18px;
+      height: 10px;
+      border: 2px solid currentColor;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      border-bottom: 0;
+    }
+
+    .nav-item span:last-child {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .overlay {
@@ -948,6 +1124,262 @@
         padding-inline: 16px;
       }
     }
+
+    @media (max-width: 390px) {
+      :root {
+        --nav-height: 94px;
+      }
+
+      .app-status {
+        padding: 10px 14px 0;
+        font-size: 12px;
+      }
+
+      main {
+        padding: 10px 12px 14px;
+      }
+
+      .page-head {
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .title-block {
+        max-width: calc(100% - 92px);
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 1.16;
+      }
+
+      h2 {
+        font-size: 20px;
+        line-height: 1.24;
+      }
+
+      h3 {
+        font-size: 16px;
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      .eyebrow {
+        font-size: 11px;
+        margin-bottom: 5px;
+      }
+
+      .top-actions {
+        gap: 6px;
+      }
+
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+      }
+
+      .hero-panel {
+        min-height: 150px;
+        padding: 14px;
+      }
+
+      .hero-panel.art-hero h2 {
+        font-size: 19px;
+      }
+
+      .hero-row {
+        gap: 8px;
+      }
+
+      .signal-pill {
+        max-width: 205px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .stat-grid {
+        gap: 6px;
+      }
+
+      .stat {
+        min-height: 62px;
+        padding: 10px;
+      }
+
+      .stat strong {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .chip {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .section-title {
+        margin: 18px 0 10px;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .person-card {
+        min-height: 0;
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .person-card > p {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .person-top {
+        gap: 8px;
+      }
+
+      .match-ring {
+        width: 42px;
+        height: 42px;
+      }
+
+      .match-ring::before {
+        width: 31px;
+        height: 31px;
+      }
+
+      .card-actions {
+        grid-template-columns: minmax(0, 1fr) 46px;
+      }
+
+      .btn.small {
+        min-height: 38px;
+        padding: 0 11px;
+      }
+
+      .list-card {
+        min-height: 68px;
+        padding: 12px 10px;
+        gap: 10px;
+      }
+
+      .list-main {
+        gap: 10px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+      }
+
+      .avatar.sm {
+        width: 42px;
+        height: 42px;
+      }
+
+      .avatar.lg {
+        width: 68px;
+        height: 68px;
+      }
+
+      .profile-hero {
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .profile-hero > div:last-child {
+        min-width: 0;
+      }
+
+      .map-panel {
+        min-height: 230px;
+      }
+
+      .map-label {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        padding: 10px;
+      }
+
+      .split-actions {
+        gap: 8px;
+      }
+
+      .nav {
+        padding: 7px 3px calc(9px + env(safe-area-inset-bottom));
+        gap: 0;
+      }
+
+      .nav-item {
+        min-height: 74px;
+        gap: 7px;
+        font-size: 12px;
+      }
+
+      .nav .icon {
+        width: 31px;
+        height: 31px;
+        font-size: 25px;
+      }
+
+      .nav-icon {
+        width: 31px;
+        height: 31px;
+      }
+
+      .splash-logo {
+        width: 94%;
+        max-height: 110px;
+      }
+
+      .splash-title {
+        font-size: 23px;
+      }
+
+      .splash-enter {
+        bottom: calc(30px + env(safe-area-inset-bottom));
+      }
+    }
+
+    @media (max-width: 350px) {
+      main {
+        padding-inline: 10px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .title-block {
+        max-width: calc(100% - 86px);
+      }
+
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+      }
+
+      .nav .icon {
+        font-size: 23px;
+      }
+
+      .nav-icon {
+        transform: scale(.94);
+      }
+
+      .nav-item {
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -971,11 +1403,11 @@
       <main id="app"></main>
 
       <nav class="nav" aria-label="主导航">
-        <button class="nav-item" data-tab="discover" onclick="setTab('discover')"><span class="icon">⌕</span><span>发现</span></button>
-        <button class="nav-item" data-tab="messages" onclick="setTab('messages')"><span class="icon">◐</span><span>消息</span></button>
-        <button class="nav-item" data-tab="groups" onclick="setTab('groups')"><span class="icon">◎</span><span>群组</span></button>
-        <button class="nav-item" data-tab="outdoor" onclick="setTab('outdoor')"><span class="icon">⌁</span><span>户外</span></button>
-        <button class="nav-item" data-tab="profile" onclick="setTab('profile')"><span class="icon">●</span><span>我的</span></button>
+        <button class="nav-item" data-tab="discover" onclick="setTab('discover')"><span class="nav-icon nav-discover" aria-hidden="true"></span><span>发现</span></button>
+        <button class="nav-item" data-tab="messages" onclick="setTab('messages')"><span class="nav-icon nav-chat" aria-hidden="true"></span><span>消息</span></button>
+        <button class="nav-item" data-tab="groups" onclick="setTab('groups')"><span class="nav-icon nav-groups" aria-hidden="true"></span><span>群组</span></button>
+        <button class="nav-item" data-tab="outdoor" onclick="setTab('outdoor')"><span class="nav-icon nav-outdoor" aria-hidden="true"></span><span>户外</span></button>
+        <button class="nav-item" data-tab="profile" onclick="setTab('profile')"><span class="nav-icon nav-me" aria-hidden="true"></span><span>我的</span></button>
       </nav>
 
       <div class="overlay" id="overlay" onclick="closeSheet()"></div>
@@ -1598,7 +2030,8 @@
             ${iconButton("设置", "⚙", "openSheet('groupSettings')")}
           </header>
 
-          <section class="hero-panel" style="min-height:134px;--hero-image:url('https://picsum.photos/seed/${group.id}-group-cover/720/300')">
+          <section class="hero-panel art-hero" style="min-height:134px">
+            <div class="hero-visual">${groupHeroArt()}</div>
             <span class="signal-pill">◎ ${group.members}</span>
             <div>
               <h2>${group.name}</h2>
@@ -1713,7 +2146,8 @@
             ${iconButton("返回", "←", "setTab('profile')")}
             <div class="title-block" style="flex:1"><p class="eyebrow">会员中心</p><h1>Pro 权益</h1></div>
           </header>
-          <section class="hero-panel" style="--hero-image:url('https://picsum.photos/seed/offline-pro-membership/720/340')">
+          <section class="hero-panel art-hero">
+            <div class="hero-visual">${discoverHeroArt()}</div>
             <span class="signal-pill">◇ 当前为 Pro</span>
             <div><h2>高级中继与路线备份</h2><p>适合高频户外、群组组织者和应急通信场景。</p></div>
           </section>
