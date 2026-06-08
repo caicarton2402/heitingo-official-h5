@@ -252,9 +252,12 @@
     .icon-btn:active,
     .btn:active,
     .chip:active,
-    .nav-item:active,
     .card:active {
       transform: translateY(1px);
+    }
+
+    .nav-item:active {
+      transform: none;
     }
 
     .icon {
@@ -898,6 +901,7 @@
       backdrop-filter: blur(22px);
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: stretch;
       gap: 0;
       z-index: 20;
       overflow: hidden;
@@ -907,7 +911,7 @@
       min-width: 0;
       width: 100%;
       height: 100%;
-      min-height: 0;
+      min-height: 54px;
       border: 0;
       border-radius: var(--radius);
       background: transparent;
@@ -917,11 +921,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 4px;
       font-size: 12px;
-      line-height: 1;
-      padding: 0;
-      overflow: hidden;
+      line-height: 1.15;
+      padding: 1px 0 0;
+      overflow: visible;
+      touch-action: manipulation;
     }
 
     .nav-item.active {
@@ -949,7 +954,7 @@
       height: 28px;
       display: block;
       color: currentColor;
-      flex: 0 0 auto;
+      flex: 0 0 28px;
     }
 
     .nav-discover::before {
@@ -1075,10 +1080,14 @@
 
     .nav-item span:last-child {
       display: block;
-      max-width: 100%;
+      flex: 0 0 15px;
+      height: 15px;
+      line-height: 15px;
+      max-width: 58px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: center;
     }
 
     .overlay {
@@ -1417,25 +1426,30 @@
       }
 
       .nav {
-        padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+        padding: 7px 0 max(10px, env(safe-area-inset-bottom));
         gap: 0;
       }
 
       .nav-item {
-        min-height: 0;
-        height: auto;
-        align-self: stretch;
-        justify-content: flex-start;
+        height: 100%;
+        min-height: 54px;
+        justify-content: center;
         gap: 4px;
         font-size: 11px;
-        line-height: 1.12;
-        padding-top: 1px;
+        line-height: 1.15;
+        padding-top: 0;
       }
 
       .nav-icon {
-        width: 27px;
-        height: 27px;
-        flex: 0 0 27px;
+        width: 26px;
+        height: 26px;
+        flex: 0 0 26px;
+      }
+
+      .nav-item span:last-child {
+        flex-basis: 15px;
+        height: 15px;
+        line-height: 15px;
       }
 
       .splash-logo {
