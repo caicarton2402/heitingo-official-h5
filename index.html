@@ -1,778 +1,1811 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>无网社交</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>无网社交 - UI 优化版</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      transition: all 0.25s ease;
+    :root {
+      color-scheme: light;
+      --bg: #ededed;
+      --panel: #ffffff;
+      --panel-2: #f7f7f7;
+      --panel-3: #f2f2f2;
+      --text: #111111;
+      --muted: #7a7a7a;
+      --soft: #4f5b5d;
+      --line: rgba(0,0,0,.08);
+      --green: #07c160;
+      --green-2: #06ad56;
+      --amber: #fa9d3b;
+      --blue: #576b95;
+      --violet: #8b6dff;
+      --red: #fa5151;
+      --shadow: 0 22px 70px rgba(0,0,0,.22);
+      --radius: 8px;
     }
 
-    :root {
-      --bg: #000000;
-      --bg2: #111111;
-      --bg3: #1C1C1E;
-      --text: #FFFFFF;
-      --text2: #8E8E93;
-      --border: #2C2C2C;
-      --grad1: #9D4EDD;
-      --grad2: #C77DFF;
-      --grad3: #E0AAFF;
-      --red: #EF4444;
-      --green: #34D399;
-      --yellow: #FBBF24;
-      --heart: #F472B6;
-      --fire: #F97316;
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
     }
 
     body {
-      background: var(--bg);
-      display: flex;
-      justify-content: center;
-      padding: 20px;
+      margin: 0;
+      background: #dfe4e6;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      place-items: center;
+      padding: 24px;
     }
 
-    .app-frame {
-      width: 393px;
-      height: 852px;
-      background: var(--bg);
-      border-radius: 50px;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone-shell {
+      width: min(100%, 420px);
+      height: min(880px, calc(100vh - 48px));
+      min-height: 720px;
+      background: #111111;
+      border: 1px solid rgba(0,0,0,.14);
+      border-radius: 34px;
+      padding: 10px;
+      box-shadow: var(--shadow);
     }
 
     .screen {
-      width: 100%;
-      height: 100%;
-      border-radius: 36px;
-      overflow: hidden;
       position: relative;
-      background: var(--bg);
-    }
-
-    .page {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; 
       height: 100%;
+      overflow: hidden;
+      border-radius: 26px;
       background: var(--bg);
-      padding: 24px;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    .app-status {
+      height: 38px;
+      padding: 12px 18px 0;
       display: flex;
-      flex-direction: column;
-      opacity: 0;
-      visibility: hidden;
-      z-index: 0;
-      overflow-y: auto;
-      padding-bottom: 100px;
+      align-items: center;
+      justify-content: space-between;
+      color: #111111;
+      font-size: 12px;
+      letter-spacing: 0;
     }
 
-    .page.active {
-      opacity: 1;
-      visibility: visible;
-      z-index: 10;
+    .status-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .gradient {
-      background: linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+    .mesh-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(7,193,96,.14);
+    }
+
+    main {
+      height: calc(100% - 116px);
+      overflow: auto;
+      padding: 14px 18px 24px;
+      scrollbar-width: none;
+    }
+
+    main::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .title-block {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin: 0 0 6px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 29px;
+      line-height: 1.12;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    h2 {
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: 0;
+      font-weight: 820;
+    }
+
+    h3 {
+      font-size: 17px;
+      line-height: 1.24;
+      letter-spacing: 0;
+      font-weight: 760;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .soft {
+      color: var(--soft);
+    }
+
+    .accent {
+      color: var(--green);
+    }
+
+    .section-title {
+      margin: 22px 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:active,
+    .btn:active,
+    .chip:active,
+    .nav-item:active,
+    .card:active {
+      transform: translateY(1px);
+    }
+
+    .icon {
+      font-size: 18px;
+      line-height: 1;
     }
 
     .btn {
-      height: 64px;
-      border-radius: 32px;
-      display: flex;
+      min-height: 44px;
+      border: 0;
+      border-radius: var(--radius);
+      padding: 0 16px;
+      color: #ffffff;
+      background: var(--green);
+      font-weight: 750;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 18px;
-      border: none;
-      cursor: pointer;
-      margin-top: 16px;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+    }
+
+    .btn.warning {
+      color: #ffffff;
+      background: var(--green);
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: var(--red);
+    }
+
+    .btn.ghost {
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
     }
 
     .btn.small {
-      height: 40px;
-      font-size: 14px;
-      border-radius: 20px;
+      min-height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
     }
 
-    .btn.yellow {
-      background: transparent;
-      border: 1px solid var(--yellow);
-      color: var(--yellow);
+    .btn.full {
+      width: 100%;
     }
 
-    .btn:active { transform: scale(0.96); opacity: 0.9; }
-
-    .tabbar {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 80px;
-      background: rgba(17,17,17,0.92);
-      backdrop-filter: blur(20px);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding-bottom: 20px;
-      z-index: 999;
-    }
-
-    .tab {
+    .hero-panel {
+      min-height: 176px;
+      position: relative;
+      isolation: isolate;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--text2);
-      font-size: 11px;
-      cursor: pointer;
+      justify-content: space-between;
+      background:
+        linear-gradient(180deg, rgba(6,10,11,.08), rgba(6,10,11,.74)),
+        linear-gradient(90deg, rgba(7,193,96,.24), rgba(87,107,149,.16)),
+        var(--hero-image, none) center/cover;
+      border: 0;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
     }
 
-    .tab.active { color: white; }
-    .tab ion-icon { font-size: 24px; }
+    .hero-panel.art-hero {
+      background:
+        linear-gradient(180deg, rgba(5,9,9,.08), rgba(5,9,9,.9)),
+        linear-gradient(135deg, #0d2521 0%, #11191b 52%, #081210 100%);
+      border-color: transparent;
+      color: #ffffff;
+    }
+
+    .hero-panel.art-hero > :not(.hero-visual) {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-panel.art-hero h2 {
+      color: #ffffff;
+      text-shadow: 0 1px 10px rgba(0,0,0,.34);
+    }
+
+    .hero-panel.art-hero p {
+      color: rgba(255,255,255,.76);
+    }
+
+    .hero-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-visual svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .signal-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      padding: 7px 10px;
+      border-radius: var(--radius);
+      background: rgba(5,9,9,.72);
+      border: 1px solid rgba(255,255,255,.1);
+      font-size: 12px;
+      color: #ffffff;
+      backdrop-filter: blur(16px);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .stat {
+      min-height: 70px;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 0 4px;
+      scrollbar-width: none;
+    }
+
+    .chip-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex: 0 0 auto;
+      min-height: 34px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: #424242;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .chip.active {
+      background: rgba(7,193,96,.1);
+      border-color: rgba(7,193,96,.5);
+      color: var(--green);
+      font-weight: 760;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
 
     .card {
-      background: var(--bg2);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
       cursor: pointer;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+
+    .person-card {
+      min-height: 214px;
+      padding: 12px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .card.group-card {
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .card.user-card {
       flex-direction: column;
-      align-items: flex-start;
-      width: calc(50% - 8px);
-      margin-bottom: 16px;
-      padding: 16px;
-      min-height: 220px;
+      gap: 12px;
     }
 
     .avatar {
-      width: 64px; height: 64px;
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
-      background-size: cover;
-      background-position: center;
+      color: #fff;
+      font-weight: 800;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,0)),
+        var(--avatar-color, #256b57);
+      isolation: isolate;
     }
 
-    .avatar.sm { width: 44px; height: 44px; }
-    .avatar.xs { width: 56px; height: 56px; }
+    .avatar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--avatar-image, none) center/cover;
+      z-index: -1;
+    }
 
-    .input {
-      background: var(--bg3);
-      border-radius: 12px;
-      padding: 16px 20px;
-      color: white;
-      border: none;
-      margin: 12px 0;
-      font-size: 17px;
-      width: 100%;
+    .avatar.sm {
+      width: 44px;
+      height: 44px;
+      font-size: 14px;
+    }
+
+    .avatar.lg {
+      width: 86px;
+      height: 86px;
+      font-size: 24px;
+    }
+
+    .avatar.square {
+      border-radius: var(--radius);
+    }
+
+    .person-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .person-name {
+      margin-top: 2px;
+      min-width: 0;
+    }
+
+    .person-name h3 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .distance {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .match-ring {
+      position: relative;
+      isolation: isolate;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--green) calc(var(--match) * 1%), rgba(0,0,0,.08) 0);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .match-ring::before {
+      content: "";
+      width: 28px;
+      height: 28px;
+      position: absolute;
+      border-radius: 50%;
+      background: var(--panel);
+      z-index: -1;
+    }
+
+    .tag-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-height: 26px;
     }
 
     .tag {
-      background: var(--border);
-      padding: 6px 12px;
-      border-radius: 8px;
-      color: white;
-      font-size: 12px;
-      margin-right: 6px;
-      display: inline-block;
-    }
-
-    .tag.active { background: linear-gradient(135deg, var(--grad1),var(--grad3)); }
-    .tag.online { color: var(--green); background: transparent; }
-
-    .overlay {
-      position: absolute; top:0;left:0;right:0;bottom:0;
-      background: rgba(0,0,0,0.6); z-index:998;
-      opacity:0; visibility:hidden;
-    }
-    .overlay.show { opacity:1; visibility:visible; }
-
-    .modal {
-      position: absolute;
-      bottom: -100%; left:0; right:0;
-      background: var(--bg2);
-      border-radius: 28px 28px 0 0;
-      padding: 32px; z-index:1000;
-      max-height:70vh;
-      overflow-y:auto;
-    }
-    .modal.show { bottom:0; }
-
-    .toast {
-      position: fixed; top: 120px; left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.75);
-      color: white; padding: 10px 20px;
-      border-radius: 12px; font-size:14px;
-      opacity:0; z-index:9999;
-    }
-    .toast.show { opacity:1; }
-
-    h1 { font-size: 40px; font-weight: 700; color: white; margin: 16px 0; }
-    h2 { font-size: 32px; font-weight: 700; color: white; margin: 12px 0; }
-    h3 { font-size: 24px; font-weight: 600; color: white; margin: 8px 0; }
-    h4 { font-size: 18px; font-weight: 600; color: white; margin: 4px 0; }
-    p { color: var(--text2); font-size: 15px; line-height: 1.4; }
-    .caption { font-size: 12px; color: var(--text2); }
-    .text-yellow { color: var(--yellow); }
-    .text-heart { color: var(--heart); }
-    .text-fire { color: var(--fire); }
-    .text-green { color: var(--green); }
-
-    .row { display:flex; align-items:center; gap:12px; margin:8px 0; }
-    .row-between { display:flex; align-items:center; justify-content:space-between; width:100%; }
-    .row-wrap { display:flex; flex-wrap:wrap; justify-content:space-between; width:100%; }
-    .spacer { flex:1; }
-    .text-right { text-align: right; }
-    .text-center { text-align: center; }
-
-    ion-icon { font-size:22px; color:white; cursor:pointer; }
-    ion-icon.yellow { color: var(--yellow); }
-    ion-icon.green { color: var(--green); }
-
-    .msg-left { background:var(--bg2); padding:14px 18px; border-radius:18px 18px 18px 4px; color:white; align-self:flex-start; max-width:75%; margin-bottom:10px; }
-    .msg-right { background:linear-gradient(90deg,var(--grad1),var(--grad3)); padding:14px 18px; border-radius:18px 18px 4px 18px; color:white; align-self:flex-end; max-width:75%; margin-bottom:10px; }
-
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
+      display: inline-flex;
       align-items: center;
-      width: 100%;
-      margin-bottom: 20px;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 6px;
+      background: #f2f2f2;
+      color: var(--soft);
+      font-size: 12px;
     }
 
-    .user-grid {
+    .card-actions {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr 42px;
+      gap: 8px;
+    }
+
+    .list {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-card {
+      min-height: 74px;
+      padding: 13px 12px;
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      width: 100%;
-      margin-top: 16px;
-      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .list-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .list-copy {
+      min-width: 0;
+    }
+
+    .list-copy h3,
+    .list-copy p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .meta {
+      text-align: right;
+      flex: 0 0 auto;
     }
 
     .badge {
-      background: var(--yellow);
-      color: black;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 12px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      min-height: 25px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(25,195,125,.14);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
-    .badge.fire {
-      background: var(--fire);
-      color: white;
+    .badge.amber {
+      background: rgba(255,176,32,.16);
+      color: var(--amber);
+    }
+
+    .badge.red {
+      background: rgba(255,90,103,.16);
+      color: var(--red);
+    }
+
+    .chat-log {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .bubble {
+      max-width: 78%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.44;
+    }
+
+    .bubble.left {
+      align-self: flex-start;
+      background: #ffffff;
+      border-bottom-left-radius: 5px;
+      border: 1px solid var(--line);
+    }
+
+    .bubble.right {
+      align-self: flex-end;
+      background: #95ec69;
+      color: #111111;
+      border-bottom-right-radius: 5px;
+      font-weight: 650;
+    }
+
+    .composer {
+      position: sticky;
+      bottom: 0;
+      margin: 20px -2px 0;
+      height: 56px;
+      border-radius: 12px;
+      background: rgba(247,247,247,.94);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      backdrop-filter: blur(18px);
+    }
+
+    .composer input {
+      min-width: 0;
+      flex: 1;
+      height: 40px;
+      border: 0;
+      outline: 0;
+      color: var(--text);
+      background: transparent;
+      padding: 0 8px;
+    }
+
+    .split-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+    }
+
+    .map-panel {
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #dfeee6;
+      border: 1px solid var(--line);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+
+    .map-canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    .map-canvas svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .map-label {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,0,0,.07);
+      padding: 12px;
+      backdrop-filter: blur(16px);
+    }
+
+    .sos-panel {
+      border-color: rgba(250,81,81,.22);
+      background: #fff5f5;
+    }
+
+    .talk-button {
+      width: 188px;
+      height: 188px;
+      border: 0;
+      border-radius: 50%;
+      margin: 28px auto;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--green);
+      box-shadow: 0 16px 46px rgba(7,193,96,.25);
+      cursor: pointer;
+    }
+
+    .talk-button strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 6px;
+    }
+
+    .splash {
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+      background: #ffffff;
+      color: #006eb6;
+      cursor: pointer;
+      transition: opacity .48s ease, visibility .48s ease;
+    }
+
+    .splash.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-logo {
+      width: min(96%, 350px);
+      max-height: 132px;
+      object-fit: contain;
+      margin-bottom: 34px;
+    }
+
+    .splash-title {
+      color: #0878c8;
+      font-size: 25px;
+      line-height: 1.2;
+      font-weight: 850;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    .splash-subtitle {
+      margin-top: 9px;
+      color: #4b6572;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .splash-enter {
+      position: absolute;
+      bottom: 42px;
+      min-width: 112px;
+      min-height: 42px;
+      border: 0;
+      border-radius: var(--radius);
+      background: #0878c8;
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(0,110,182,.2);
+    }
+
+    .nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 78px;
+      padding: 8px 10px 14px;
+      background: rgba(247,247,247,.94);
+      border-top: 1px solid rgba(0,0,0,.08);
+      backdrop-filter: blur(22px);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      z-index: 20;
+    }
+
+    .nav-item {
+      min-width: 0;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 11px;
+    }
+
+    .nav-item.active {
+      color: var(--green);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .nav-item.active .icon {
+      color: var(--green);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      background: rgba(0,0,0,.36);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      max-height: 78%;
+      overflow: auto;
+      border-radius: 20px 20px 0 0;
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      padding: 18px;
+      transform: translateY(105%);
+      transition: transform .22s ease;
+      box-shadow: 0 -24px 60px rgba(0,0,0,.18);
+    }
+
+    .sheet.show {
+      transform: translateY(0);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      background: #f7f7f7;
+      color: var(--text);
+      outline: 0;
+      border-radius: var(--radius);
+      padding: 0 12px;
+      margin: 8px 0;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      top: 64px;
+      z-index: 60;
+      transform: translate(-50%, -10px);
+      opacity: 0;
+      pointer-events: none;
+      min-height: 38px;
+      max-width: calc(100% - 44px);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      border-radius: var(--radius);
+      background: rgba(17,17,17,.9);
+      color: #ffffff;
+      box-shadow: 0 16px 40px rgba(0,0,0,.18);
+      font-size: 13px;
+      font-weight: 760;
+      transition: opacity .18s ease, transform .18s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 0;
+        background: var(--bg);
+      }
+
+      .phone-shell {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+      }
+
+      .screen {
+        border-radius: 0;
+        border: 0;
+      }
+
+      main {
+        padding-inline: 16px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="phone-shell">
+    <div class="screen">
+      <section class="splash" id="splash" aria-label="启动界面" onclick="enterApp()">
+        <img class="splash-logo" src="outernet-logo-splash-white.png" alt="Outernet 无网通信 Logo" />
+        <div class="splash-title">离线，不失联</div>
+        <div class="splash-subtitle">Offline, not out of touch</div>
+        <button class="splash-enter" type="button" onclick="event.stopPropagation();enterApp()">进入</button>
+      </section>
 
-<div class="app-frame">
-  <div class="screen">
-    <div id="p0" class="page active"></div>
-    <div id="p1" class="page"></div>
-    <div id="p2" class="page"></div>
-    <div id="p3" class="page"></div>
-    <div id="p4" class="page"></div>
-    <div id="p5" class="page"></div>
-    <div id="p6" class="page"></div>
-    <div id="p7" class="page"></div>
-    <div id="p8" class="page"></div>
-    <div id="p9" class="page"></div>
-    <div id="p10" class="page"></div>
-    <div id="p11" class="page"></div>
-    <div id="p12" class="page"></div>
-    <div id="p13" class="page"></div>
-    <div id="p14" class="page"></div>
-    <div id="p15" class="page"></div>
-    <div id="p16" class="page"></div>
-    <div id="p17" class="page"></div>
-
-    <div class="overlay" id="overlay"></div>
-    <div class="modal" id="sosModal"></div>
-    <div class="modal" id="createGroupModal"></div>
-    <div class="modal" id="filterModal"></div>
-    <div class="toast" id="toast"></div>
-
-    <div class="tabbar">
-      <div class="tab active" onclick="goPage('p2')"><ion-icon name="people"></ion-icon><span>发现</span></div>
-      <div class="tab" onclick="goPage('p3')"><ion-icon name="chatbubble"></ion-icon><span>消息</span></div>
-      <div class="tab" onclick="goPage('p5')"><ion-icon name="people-circle"></ion-icon><span>群组</span></div>
-      <div class="tab" onclick="goPage('p6')"><ion-icon name="map"></ion-icon><span>户外</span></div>
-      <div class="tab" onclick="goPage('p7')"><ion-icon name="person-circle"></ion-icon><span>我的</span></div>
-    </div>
-  </div>
-</div>
-
-<script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
-<script>
-// 核心修复：统一跳转函数，解决所有按钮点击失效
-function goPage(id){
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  if(document.querySelector(`.tabbar .tab[onclick="goPage('${id}')"]`)){
-    document.querySelector(`.tabbar .tab[onclick="goPage('${id}')"]`).classList.add('active');
-  }
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function showModal(id){
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById(id).classList.add('show');
-}
-
-function closeModal(){
-  document.getElementById('overlay').classList.remove('show');
-  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
-}
-
-function msg(txt){
-  const t=document.getElementById('toast');
-  t.textContent=txt;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),1600);
-}
-
-// 启动页
-p0.innerHTML=`
-<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px">
-  <div style="width:120px;height:120px;border-radius:28px;overflow:hidden">
-    <img src="https://picsum.photos/id/1005/200/200" style="width:100%;height:100%;object-fit:cover" />
-  </div>
-  <h1>无网社交</h1>
-  <p style="font-size:18px;margin:16px 0 40px;color:var(--text2)">无需网络，遇见身边的人</p>
-  <button class="btn gradient" style="width:100%" onclick="goPage('p1')">开始使用</button>
-  <p style="margin-top:24px;color:var(--text2)">已有账号？<span style="color:var(--grad2);cursor:pointer" onclick="goPage('p1')">立即登录</span></p>
-</div>
-`;
-
-// 创建身份
-p1.innerHTML=`
-<div class="status-bar">
-  <ion-icon name="chevron-back" onclick="goPage('p0')"></ion-icon>
-  <p class="text-right" onclick="goPage('p2')">跳过</p>
-</div>
-
-<div style="display:grid;place-items:center;margin:20px 0">
-  <div class="avatar" style="width:100px;height:100px;background-image:url('https://picsum.photos/id/1012/200/200');border:4px solid var(--grad2)"></div>
-  <p style="margin-top:8px;color:white;cursor:pointer">编辑头像</p>
-</div>
-
-<h2 style="text-align:center;margin:24px 0">创建个人资料</h2>
-
-<input class="input" placeholder="昵称" value="山野行者">
-<input class="input" placeholder="简介（选填）" value="户外爱好者">
-
-<h4 style="margin:24px 0 16px">兴趣（选择3-5个）</h4>
-<div class="row-wrap">
-  <div class="tag active">徒步</div>
-  <div class="tag">露营</div>
-  <div class="tag active">骑行</div>
-  <div class="tag">摄影</div>
-  <div class="tag active">登山</div>
-  <div class="tag">钓鱼</div>
-  <div class="tag">跑步</div>
-  <div class="tag">皮划艇</div>
-</div>
-
-<button class="btn gradient" style="width:100%;margin-top:40px" onclick="goPage('p2')">继续</button>
-`;
-
-// 发现页
-p2.innerHTML=`
-<div class="status-bar">
-  <ion-icon name="search"></ion-icon>
-  <p class="text-right text-green">在线</p>
-</div>
-
-<div class="card" style="margin-bottom:24px">
-  <p style="color:white">筛选卡片 #111111</p>
-  <p class="text-right">16pt 圆角</p>
-</div>
-
-<div class="user-grid">
-  <div class="card user-card" onclick="goPage('p9')">
-    <div class="row-between" style="width:100%">
-      <div class="row">
-        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/64/200/200')"></div>
-        <div style="margin-left:12px">
-          <h4>刘雨</h4>
-          <p class="caption">#111111</p>
+      <div class="app-status">
+        <span>09:41</span>
+        <div class="status-dots">
+          <span class="mesh-dot"></span>
+          <span>Mesh 在线</span>
         </div>
       </div>
-      <ion-icon name="checkmark-circle" class="green"></ion-icon>
-    </div>
-    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
-    <div class="row-between" style="width:100%;margin-top:12px">
-      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
-      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
-    </div>
-  </div>
 
-  <div class="card user-card" onclick="goPage('p9')">
-    <div class="row-between" style="width:100%">
-      <div class="row">
-        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/76/200/200')"></div>
-        <div style="margin-left:12px">
-          <h4>邓丽</h4>
-          <p class="caption">#111111</p>
-        </div>
-      </div>
-      <ion-icon name="checkmark-circle" class="green"></ion-icon>
-    </div>
-    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
-    <div class="row-between" style="width:100%;margin-top:12px">
-      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
-      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
+      <main id="app"></main>
+
+      <nav class="nav" aria-label="主导航">
+        <button class="nav-item" data-tab="discover" onclick="setTab('discover')"><span class="icon">⌕</span><span>发现</span></button>
+        <button class="nav-item" data-tab="messages" onclick="setTab('messages')"><span class="icon">◐</span><span>消息</span></button>
+        <button class="nav-item" data-tab="groups" onclick="setTab('groups')"><span class="icon">◎</span><span>群组</span></button>
+        <button class="nav-item" data-tab="outdoor" onclick="setTab('outdoor')"><span class="icon">⌁</span><span>户外</span></button>
+        <button class="nav-item" data-tab="profile" onclick="setTab('profile')"><span class="icon">●</span><span>我的</span></button>
+      </nav>
+
+      <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+      <section class="sheet" id="sheet" aria-live="polite"></section>
+      <div class="toast" id="toast"></div>
     </div>
   </div>
 
-  <div class="card user-card" onclick="goPage('p9')">
-    <div class="row-between" style="width:100%">
-      <div class="row">
-        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/1012/200/200')"></div>
-        <div style="margin-left:12px">
-          <h4>张曲</h4>
-          <p class="caption">#111111</p>
-        </div>
-      </div>
-      <ion-icon name="checkmark-circle" class="green"></ion-icon>
-    </div>
-    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
-    <div class="row-between" style="width:100%;margin-top:12px">
-      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
-      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
-    </div>
-  </div>
+  <script>
+    const people = [
+      {
+        id: "liu",
+        name: "刘雨",
+        initial: "雨",
+        distance: "320m",
+        match: 92,
+        status: "在线",
+        tags: ["徒步", "摄影", "登山"],
+        bio: "周末常走城郊山线，喜欢轻装徒步和记录路线。",
+        color: "#2e7d68",
+        image: "url('https://picsum.photos/seed/liuyu-hike/180/180')"
+      },
+      {
+        id: "deng",
+        name: "邓丽",
+        initial: "丽",
+        distance: "540m",
+        match: 86,
+        status: "刚刚活跃",
+        tags: ["露营", "咖啡", "骑行"],
+        bio: "正在找附近露营搭子，偏好安静营地和短途骑行。",
+        color: "#6157a9",
+        image: "url('https://picsum.photos/seed/dengli-camp/180/180')"
+      },
+      {
+        id: "zhang",
+        name: "张曲",
+        initial: "曲",
+        distance: "780m",
+        match: 81,
+        status: "在线",
+        tags: ["跑步", "城市探索"],
+        bio: "夜跑和城市探索爱好者，熟悉附近补给点。",
+        color: "#b56a28",
+        image: "url('https://picsum.photos/seed/zhangqu-run/180/180')"
+      },
+      {
+        id: "chen",
+        name: "陈进",
+        initial: "进",
+        distance: "1.2km",
+        match: 78,
+        status: "离线可达",
+        tags: ["钓鱼", "路线记录"],
+        bio: "常在河岸和水库附近活动，可共享离线路线。",
+        color: "#2f6f95",
+        image: "url('https://picsum.photos/seed/chenjin-map/180/180')"
+      }
+    ];
 
-  <div class="card user-card" onclick="goPage('p9')">
-    <div class="row-between" style="width:100%">
-      <div class="row">
-        <div class="avatar xs" style="background-image:url('https://picsum.photos/id/1027/200/200')"></div>
-        <div style="margin-left:12px">
-          <h4>张进</h4>
-          <p class="caption">#111111</p>
-        </div>
-      </div>
-      <ion-icon name="checkmark-circle" class="green"></ion-icon>
-    </div>
-    <p class="caption tag online" style="margin:8px 0">#111111 • 在线</p>
-    <div class="row-between" style="width:100%;margin-top:12px">
-      <button class="btn small gradient" style="width:45%" onclick="msg('已感兴趣')">感兴趣</button>
-      <button class="btn small" style="width:45%;background:var(--bg3)" onclick="msg('已跳过')">跳过</button>
-    </div>
-  </div>
-</div>
-`;
+    const groups = [
+      { id: "trail", name: "徒步登山小队", members: "18 人在线", desc: "周六 8:00 山口集合，当前路线 7.6km。", accent: "green" },
+      { id: "camp", name: "近郊露营交换", members: "42 人在线", desc: "营地、补给、水源与天气信息共享。", accent: "amber" },
+      { id: "ride", name: "城市夜骑频道", members: "23 人在线", desc: "20:30 出发，低速巡航，适合新手。", accent: "blue" }
+    ];
 
-// 消息页
-p3.innerHTML=`
-<div class="status-bar">
-  <ion-icon name="chevron-back" onclick="goPage('p2')"></ion-icon>
-  <h3>消息</h3>
-  <ion-icon name="settings-outline"></ion-icon>
-</div>
+    const messages = [
+      { personId: "liu", text: "明天 8 点山口见，我把离线路线发你。", time: "刚刚", unread: 2 },
+      { personId: "deng", text: "这个营地信号弱，Mesh 可以覆盖吗？", time: "12:12", unread: 0 },
+      { personId: "zhang", text: "今晚跑步路线我标好了。", time: "昨天", unread: 0 }
+    ];
 
-<div class="card" onclick="goPage('p4')">
-  <div style="display:flex;align-items:center">
-    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/64/200/200')"></div>
-    <div style="margin-left:16px">
-      <h4>刘雨</h4>
-      <p style="font-size:14px;margin-top:2px">明天一起去爬山吗？</p>
-    </div>
-  </div>
-  <div style="text-align:right">
-    <p class="text-yellow">42pt</p>
-    <ion-icon name="heart" class="text-heart" style="margin-top:4px"></ion-icon>
-  </div>
-</div>
+    const state = {
+      tab: "discover",
+      view: "discover",
+      person: people[0],
+      group: groups[0],
+      sheet: null
+    };
 
-<div class="card" onclick="goPage('p4')">
-  <div style="display:flex;align-items:center">
-    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/1012/200/200')"></div>
-    <div style="margin-left:16px">
-      <h4>山野</h4>
-      <p style="font-size:14px;margin-top:2px">这里风景超棒！</p>
-    </div>
-  </div>
-  <div style="text-align:right">
-    <p class="text-yellow">48pt</p>
-  </div>
-</div>
+    const app = document.getElementById("app");
+    const sheet = document.getElementById("sheet");
+    const overlay = document.getElementById("overlay");
+    const toastEl = document.getElementById("toast");
 
-<div class="badge" style="position:absolute;top:320px;left:50%;transform:translateX(-50%);z-index:10">
-  <span>2</span> 有2个新匹配
-</div>
+    function avatar(item, size = "") {
+      return `<div class="avatar ${size}" style="--avatar-color:${item.color || "#256b57"};--avatar-image:${item.image || "none"}">${item.initial || item.name.slice(0, 1)}</div>`;
+    }
 
-<div class="card" onclick="goPage('p4')">
-  <div style="display:flex;align-items:center">
-    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/76/200/200')"></div>
-    <div style="margin-left:16px">
-      <h4>邓丽</h4>
-      <p style="font-size:14px;margin-top:2px">收到消息啦</p>
-    </div>
-  </div>
-  <div style="text-align:right">
-    <p class="text-yellow">48pt</p>
-  </div>
-</div>
+    function iconButton(label, icon, handler, extra = "") {
+      return `<button class="icon-btn ${extra}" aria-label="${label}" title="${label}" onclick="${handler}"><span class="icon">${icon}</span></button>`;
+    }
 
-<div class="badge fire" style="position:absolute;top:480px;left:50%;transform:translateX(-50%);z-index:10">
-  <ion-icon name="flame" style="font-size:14px"></ion-icon> 热门匹配
-</div>
+    function setTab(tab) {
+      state.tab = tab;
+      state.view = tab;
+      render();
+    }
 
-<div style="position:absolute;bottom:80px;left:24px;right:24px;background:var(--bg2);border-radius:28px;height:56px;display:flex;align-items:center;padding:0 20px;gap:12px">
-  <ion-icon name="heart" class="text-heart"></ion-icon>
-  <input placeholder="输入消息..." style="background:transparent;border:none;color:white;flex:1;outline:none">
-  <ion-icon name="download"></ion-icon>
-  <ion-icon name="add"></ion-icon>
-</div>
-`;
+    function setView(view) {
+      state.view = view;
+      render();
+    }
 
-// 聊天页
-p4.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p3')"></ion-icon><h3>限时聊天</h3><div class="spacer"></div></div>
-<p style="text-align:center;color:var(--heart);margin:8px 0">⚠️ 消息阅后即焚</p>
-<div style="display:flex;flex-direction:column;margin-top:20px">
-  <div class="msg-left">你也喜欢徒步吗？</div>
-  <div class="msg-right">是的，我每周都去</div>
-  <div class="msg-left">明天一起吗？</div>
-  <div class="msg-right">好呀，早上8点山口见</div>
-</div>
-<div style="margin-top:auto;background:var(--bg2);border-radius:28px;height:56px;display:flex;align-items:center;padding:0 16px;gap:12px">
-  <input placeholder="输入消息..." style="background:transparent;border:none;color:white;flex:1;outline:none">
-  <ion-icon name="flame" onclick="msg('消息已发送')"></ion-icon>
-</div>
-`;
+    function openPerson(id) {
+      state.person = people.find(person => person.id === id) || people[0];
+      state.view = "person";
+      render();
+    }
 
-// 群组页
-p5.innerHTML=`
-<div class="status-bar">
-  <h1>群组</h1>
-  <button class="btn small yellow" onclick="showModal('createGroupModal')">+ 创建</button>
-</div>
+    function openChat(id) {
+      state.person = people.find(person => person.id === id) || people[0];
+      state.tab = "messages";
+      state.view = "chat";
+      render();
+    }
 
-<h3 style="margin:24px 0 16px">我的群组</h3>
+    function openGroup(id) {
+      state.group = groups.find(group => group.id === id) || groups[0];
+      state.tab = "groups";
+      state.view = "groupDetail";
+      render();
+    }
 
-<div class="card group-card" onclick="goPage('p12')">
-  <div class="row">
-    <div class="avatar sm" style="background-color:var(--yellow);display:grid;place-items:center;color:black;font-weight:bold">G</div>
-    <div style="margin-left:16px">
-      <h4>热门临时群组</h4>
-      <p style="font-size:14px;margin-top:2px">在线成员 2000-18</p>
-    </div>
-  </div>
-  <button class="btn small yellow" onclick="msg('加入成功')">加入</button>
-</div>
+    function showToast(text) {
+      toastEl.textContent = text;
+      toastEl.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toastEl.classList.remove("show"), 1700);
+    }
 
-<h3 style="margin:24px 0 16px">附近公开群组</h3>
+    function openSheet(type) {
+      state.sheet = type;
+      sheet.innerHTML = renderSheet(type);
+      overlay.classList.add("show");
+      sheet.classList.add("show");
+    }
 
-<div class="card group-card" onclick="goPage('p12')">
-  <div class="row">
-    <div class="avatar sm" style="background-image:url('https://picsum.photos/id/1005/200/200')"></div>
-    <div style="margin-left:16px">
-      <h4>徒步登山小队</h4>
-      <p style="font-size:14px;margin-top:2px">在线成员 2000-18</p>
-    </div>
-  </div>
-  <button class="btn small" style="background:transparent;border:1px solid white;color:white" onclick="msg('加入成功')">加入</button>
-</div>
-`;
+    function closeSheet() {
+      overlay.classList.remove("show");
+      sheet.classList.remove("show");
+    }
 
-createGroupModal.innerHTML=`
-<h3>创建群组</h3>
-<input class="input" placeholder="群组名称">
-<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('群组创建成功');closeModal()">创建</button>
-`;
+    function enterApp() {
+      document.getElementById("splash")?.classList.add("hide");
+    }
 
-// 户外模式
-p6.innerHTML=`
-<div class="status-bar">
-  <h3>户外模式</h3>
-  <button style="background:var(--red);color:white;border:none;padding:8px 14px;border-radius:16px;font-size:14px" onclick="showModal('sosModal')">紧急求救</button>
-</div>
+    function render() {
+      document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle("active", item.dataset.tab === state.tab);
+      });
+      app.innerHTML = views[state.view]();
+    }
 
-<div class="card" onclick="goPage('p14')">
-  <div>
-    <h4>🎙️ 徒步小队实时对讲</h4>
-    <p>5人在线 · 点击加入</p>
-  </div>
-  <ion-icon name="chevron-forward"></ion-icon>
-</div>
+    function personCard(person) {
+      return `
+        <article class="card person-card" onclick="openPerson('${person.id}')">
+          <div class="person-top">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0">
+              ${avatar(person)}
+              <div class="person-name">
+                <h3>${person.name}</h3>
+                <p class="distance">${person.distance} · ${person.status}</p>
+              </div>
+            </div>
+            <div class="match-ring" style="--match:${person.match}">${person.match}</div>
+          </div>
+          <p>${person.bio}</p>
+          <div class="tag-list">
+            ${person.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
+          </div>
+          <div class="card-actions">
+            <button class="btn small" onclick="event.stopPropagation();showToast('已发送兴趣信号')">感兴趣</button>
+            <button class="btn secondary small" aria-label="发消息" onclick="event.stopPropagation();openChat('${person.id}')">◐</button>
+          </div>
+        </article>`;
+    }
 
-<div class="card" onclick="goPage('p16')">
-  <div>
-    <h4>🗺️ 团队位置共享</h4>
-    <p>查看所有成员位置</p>
-  </div>
-  <ion-icon name="chevron-forward"></ion-icon>
-</div>
-`;
+    function discoverHeroArt() {
+      return `
+        <svg viewBox="0 0 720 320" preserveAspectRatio="none" role="img" aria-label="附近用户连接插画">
+          <defs>
+            <linearGradient id="discoverSky" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#123a36"/>
+              <stop offset=".55" stop-color="#15272c"/>
+              <stop offset="1" stop-color="#0b1112"/>
+            </linearGradient>
+            <linearGradient id="discoverGlow" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#19c37d" stop-opacity=".75"/>
+              <stop offset=".55" stop-color="#55c2ff" stop-opacity=".38"/>
+              <stop offset="1" stop-color="#ffb020" stop-opacity=".45"/>
+            </linearGradient>
+          </defs>
+          <rect width="720" height="320" fill="url(#discoverSky)"/>
+          <path d="M0 225 C110 178 174 207 260 170 C382 117 506 166 720 104 L720 320 L0 320 Z" fill="#0b201c" opacity=".9"/>
+          <path d="M0 255 C118 222 208 242 314 205 C435 162 548 190 720 146 L720 320 L0 320 Z" fill="#0a1717" opacity=".92"/>
+          <g opacity=".7">
+            <rect x="40" y="62" width="98" height="188" rx="8" fill="#1d3d3d"/>
+            <rect x="162" y="36" width="132" height="214" rx="10" fill="#203034"/>
+            <rect x="316" y="70" width="116" height="180" rx="8" fill="#193237"/>
+            <rect x="470" y="42" width="150" height="208" rx="10" fill="#1c2c32"/>
+            <g fill="#8bc8bf" opacity=".45">
+              <rect x="58" y="86" width="18" height="10" rx="2"/><rect x="88" y="86" width="18" height="10" rx="2"/>
+              <rect x="58" y="120" width="18" height="10" rx="2"/><rect x="88" y="120" width="18" height="10" rx="2"/>
+              <rect x="184" y="70" width="22" height="10" rx="2"/><rect x="224" y="70" width="22" height="10" rx="2"/>
+              <rect x="184" y="110" width="22" height="10" rx="2"/><rect x="224" y="110" width="22" height="10" rx="2"/>
+              <rect x="492" y="80" width="26" height="10" rx="2"/><rect x="540" y="80" width="26" height="10" rx="2"/>
+              <rect x="492" y="126" width="26" height="10" rx="2"/><rect x="540" y="126" width="26" height="10" rx="2"/>
+            </g>
+          </g>
+          <path d="M72 220 C170 166 244 238 335 181 C441 115 511 188 642 116" fill="none" stroke="url(#discoverGlow)" stroke-width="6" stroke-linecap="round" stroke-dasharray="1 16"/>
+          <g>
+            <circle cx="88" cy="212" r="12" fill="#19c37d"/><circle cx="88" cy="212" r="27" fill="#19c37d" opacity=".12"/>
+            <circle cx="334" cy="181" r="12" fill="#55c2ff"/><circle cx="334" cy="181" r="28" fill="#55c2ff" opacity=".12"/>
+            <circle cx="641" cy="116" r="12" fill="#ffb020"/><circle cx="641" cy="116" r="28" fill="#ffb020" opacity=".13"/>
+          </g>
+          <g fill="none" stroke="#19c37d" stroke-width="3" opacity=".4">
+            <path d="M575 86 Q641 38 707 86"/>
+            <path d="M596 111 Q641 78 686 111"/>
+            <path d="M617 135 Q641 118 665 135"/>
+          </g>
+        </svg>`;
+    }
 
-sosModal.innerHTML=`
-<h2 style="color:var(--red);text-align:center">SOS 紧急求救</h2>
-<p style="text-align:center;margin:16px 0">向5公里内用户发送求救信号</p>
-<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('求救信号已发送');closeModal()">发送求救</button>
-`;
+    function groupHeroArt() {
+      return `
+        <svg viewBox="0 0 720 300" preserveAspectRatio="none" role="img" aria-label="路线补给位置共享插画">
+          <defs>
+            <linearGradient id="groupBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#123225"/>
+              <stop offset=".52" stop-color="#142127"/>
+              <stop offset="1" stop-color="#101111"/>
+            </linearGradient>
+            <linearGradient id="groupRoute" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#19c37d"/>
+              <stop offset=".52" stop-color="#55c2ff"/>
+              <stop offset="1" stop-color="#ffb020"/>
+            </linearGradient>
+          </defs>
+          <rect width="720" height="300" fill="url(#groupBg)"/>
+          <g fill="none" stroke="#d7e6df" stroke-width="1.2" opacity=".13">
+            <path d="M-40 88 C82 36 149 126 278 70 C411 12 507 91 760 38"/>
+            <path d="M-32 136 C98 84 175 166 302 116 C439 62 552 145 752 94"/>
+            <path d="M-28 190 C102 143 180 222 330 164 C472 109 560 194 748 150"/>
+            <path d="M-12 244 C118 207 204 266 360 218 C488 178 594 244 742 202"/>
+          </g>
+          <g opacity=".88">
+            <path d="M96 226 C162 148 234 204 302 130 C381 45 478 105 582 72" fill="none" stroke="#0c1515" stroke-width="17" stroke-linecap="round"/>
+            <path d="M96 226 C162 148 234 204 302 130 C381 45 478 105 582 72" fill="none" stroke="url(#groupRoute)" stroke-width="7" stroke-linecap="round"/>
+            <path d="M96 226 C162 148 234 204 302 130 C381 45 478 105 582 72" fill="none" stroke="#f7fbfb" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 14" opacity=".58"/>
+          </g>
+          <g>
+            <rect x="70" y="190" width="70" height="54" rx="10" fill="#11201f" stroke="#2a6b57"/>
+            <path d="M84 224 L105 198 L127 224 Z" fill="#19c37d" opacity=".92"/>
+            <path d="M100 224 L116 204 L132 224 Z" fill="#55c2ff" opacity=".7"/>
+          </g>
+          <g>
+            <circle cx="303" cy="130" r="18" fill="#0c1515"/>
+            <circle cx="303" cy="130" r="9" fill="#55c2ff"/>
+            <path d="M303 94 C334 94 360 112 374 138" fill="none" stroke="#55c2ff" stroke-width="3" opacity=".35"/>
+            <path d="M303 76 C350 76 391 104 413 146" fill="none" stroke="#55c2ff" stroke-width="3" opacity=".22"/>
+          </g>
+          <g>
+            <rect x="508" y="42" width="108" height="72" rx="14" fill="#0e1819" stroke="rgba(255,176,32,.42)"/>
+            <circle cx="532" cy="68" r="9" fill="#ffb020"/>
+            <rect x="552" y="60" width="40" height="8" rx="4" fill="#ffcf70" opacity=".72"/>
+            <rect x="552" y="78" width="50" height="7" rx="4" fill="#ffffff" opacity=".22"/>
+          </g>
+          <g fill="#f7fbfb" opacity=".18">
+            <circle cx="174" cy="84" r="5"/><circle cx="454" cy="207" r="4"/><circle cx="632" cy="180" r="5"/>
+          </g>
+        </svg>`;
+    }
 
-// 我的页面
-p7.innerHTML=`
-<div class="status-bar">
-  <h3>我的</h3>
-  <ion-icon name="settings" onclick="goPage('p10')"></ion-icon>
-</div>
+    function mapArt() {
+      return `
+        <div class="map-canvas" aria-hidden="true">
+          <svg viewBox="0 0 720 420" preserveAspectRatio="none" role="img" aria-label="2D 地图与定位点">
+            <defs>
+              <linearGradient id="mapGround" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#dff2e7"/>
+                <stop offset=".45" stop-color="#e6f0f6"/>
+                <stop offset="1" stop-color="#f5efd9"/>
+              </linearGradient>
+              <filter id="pinGlow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="7" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <rect width="720" height="420" fill="url(#mapGround)"/>
+            <g opacity=".36" stroke="#ffffff" stroke-width="1">
+              <path d="M0 70 H720"/><path d="M0 140 H720"/><path d="M0 210 H720"/><path d="M0 280 H720"/><path d="M0 350 H720"/>
+              <path d="M120 0 V420"/><path d="M240 0 V420"/><path d="M360 0 V420"/><path d="M480 0 V420"/><path d="M600 0 V420"/>
+            </g>
+            <g fill="none" stroke-linecap="round">
+              <path d="M-20 250 C88 206 150 224 236 166 C342 94 436 128 538 70 C610 30 672 26 746 46" stroke="#b8d8c7" stroke-width="48" opacity=".64"/>
+              <path d="M-18 250 C88 206 150 224 236 166 C342 94 436 128 538 70 C610 30 672 26 746 46" stroke="#7fc8a3" stroke-width="10" opacity=".52"/>
+              <path d="M78 432 C104 310 191 302 244 230 C288 169 332 162 428 148 C534 134 596 92 640 -20" stroke="#ffffff" stroke-width="32" opacity=".92"/>
+              <path d="M78 432 C104 310 191 302 244 230 C288 169 332 162 428 148 C534 134 596 92 640 -20" stroke="#c7cfd2" stroke-width="3" opacity=".72"/>
+              <path d="M-30 102 C90 120 148 86 244 104 C358 126 455 204 738 156" stroke="#ffffff" stroke-width="26" opacity=".88"/>
+              <path d="M-30 102 C90 120 148 86 244 104 C358 126 455 204 738 156" stroke="#d2d8d6" stroke-width="3" opacity=".7"/>
+            </g>
+            <g fill="none" stroke="#739083" stroke-width="2" opacity=".26">
+              <path d="M110 284 C180 204 272 213 342 154 C426 84 548 111 616 166 C682 220 626 286 550 300"/>
+              <path d="M88 308 C174 190 270 197 354 134 C448 64 578 86 656 152 C742 224 660 320 562 336"/>
+              <path d="M138 252 C198 216 258 226 318 178 C382 126 458 134 520 176 C574 212 550 252 500 270"/>
+            </g>
+            <path d="M136 280 C212 208 304 222 376 166 C454 104 548 126 612 184 C660 228 602 280 520 298" fill="none" stroke="#576b95" stroke-width="4" stroke-dasharray="10 12" opacity=".72"/>
+            <g filter="url(#pinGlow)">
+              <circle cx="146" cy="278" r="14" fill="#19c37d"/><circle cx="146" cy="278" r="31" fill="#19c37d" opacity=".16"/>
+              <circle cx="396" cy="158" r="13" fill="#55c2ff"/><circle cx="396" cy="158" r="29" fill="#55c2ff" opacity=".15"/>
+              <circle cx="592" cy="188" r="13" fill="#ffb020"/><circle cx="592" cy="188" r="29" fill="#ffb020" opacity=".14"/>
+            </g>
+            <g fill="#3f4a4d" opacity=".84" font-size="18" font-family="Arial, sans-serif">
+              <text x="168" y="270">我</text>
+              <text x="416" y="150">刘雨</text>
+              <text x="612" y="180">营地</text>
+            </g>
+          </svg>
+        </div>`;
+    }
 
-<div style="display:flex;align-items:center;margin:24px 0">
-  <div class="avatar" style="background-image:url('https://picsum.photos/id/1005/200/200')"></div>
-  <div style="margin-left:16px">
-    <h4>山野行者</h4>
-    <p>户外爱好者 · 已认证</p>
-  </div>
-</div>
+    const views = {
+      discover() {
+        return `
+          <header class="page-head">
+            <div class="title-block">
+              <p class="eyebrow">无网社交</p>
+              <h1>发现附近的人</h1>
+            </div>
+            <div class="top-actions">
+              ${iconButton("搜索", "⌕", "openSheet('search')")}
+              ${iconButton("筛选", "☷", "openSheet('filter')")}
+            </div>
+          </header>
 
-<div class="card" onclick="goPage('p17')">
-  <div class="row">
-    <ion-icon name="hardware-chip"></ion-icon>
-    <h4>设备绑定</h4>
-  </div>
-  <p class="text-green">未绑定</p>
-</div>
+          <section class="hero-panel art-hero">
+            <div class="hero-visual">${discoverHeroArt()}</div>
+            <div class="hero-row">
+              <span class="signal-pill"><span class="mesh-dot"></span> 2.4km Mesh 覆盖</span>
+              <span class="badge amber">离线可达</span>
+            </div>
+            <div>
+              <h2>附近 12 位可连接用户</h2>
+              <p>优先展示共同兴趣、距离更近、最近活跃的人。</p>
+            </div>
+          </section>
 
-<div class="card" onclick="msg('编辑资料')">
-  <div class="row">
-    <ion-icon name="create"></ion-icon>
-    <h4>编辑资料</h4>
-  </div>
-  <ion-icon name="chevron-forward"></ion-icon>
-</div>
+          <div class="stat-grid">
+            <div class="stat"><strong>12</strong><span>附近用户</span></div>
+            <div class="stat"><strong>5</strong><span>在线群组</span></div>
+            <div class="stat"><strong>2</strong><span>SOS 中继</span></div>
+          </div>
 
-<div class="card" onclick="goPage('p8')">
-  <div class="row">
-    <ion-icon name="diamond"></ion-icon>
-    <h4>会员中心</h4>
-  </div>
-  <ion-icon name="chevron-forward"></ion-icon>
-</div>
-`;
+          <div class="section-title">
+            <h3>兴趣筛选</h3>
+            <span>3 个已选</span>
+          </div>
+          <div class="chip-row">
+            <button class="chip active">徒步</button>
+            <button class="chip active">露营</button>
+            <button class="chip">骑行</button>
+            <button class="chip active">登山</button>
+            <button class="chip">摄影</button>
+          </div>
 
-// 会员中心
-p8.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>会员中心</h3></div>
-<div class="card gradient"><h3>年度套餐</h3><p>¥79 / 年</p></div>
-<div class="card"><h3>月度套餐</h3><p>¥9.9 / 月</p></div>
-<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('开通成功')">立即开通</button>
-`;
+          <div class="section-title">
+            <h3>推荐匹配</h3>
+            <span>按距离排序</span>
+          </div>
+          <div class="grid-2">
+            ${people.map(personCard).join("")}
+          </div>`;
+      },
 
-// 用户详情
-p9.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p2')"></ion-icon></div>
-<div class="avatar" style="width:100px;height:100px;background-image:url('https://picsum.photos/id/64/200/200')"></div>
-<h3>刘雨</h3>
-<p>女 · 徒步爱好者 · 320米</p>
-<div class="card"><p>简介：喜欢徒步、登山，周末经常进山，期待同伴一起出发</p></div>
-<button class="btn gradient" style="width:100%;margin-top:20px" onclick="goPage('p4')">发消息</button>
-`;
+      messages() {
+        return `
+          <header class="page-head">
+            <div class="title-block">
+              <p class="eyebrow">短距消息</p>
+              <h1>消息</h1>
+            </div>
+            ${iconButton("新消息", "＋", "openSheet('newMessage')")}
+          </header>
 
-// 设置
-p10.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>设置</h3></div>
-<div class="card" onclick="goPage('p11')"><p>隐私设置</p><ion-icon name="chevron-forward"></ion-icon></div>
-<div class="card" onclick="msg('账号安全')"><p>账号安全</p><ion-icon name="chevron-forward"></ion-icon></div>
-<div class="card" onclick="msg('通用设置')"><p>通用设置</p><ion-icon name="chevron-forward"></ion-icon></div>
-`;
+          <div class="chip-row" style="margin-bottom:14px">
+            <button class="chip active">全部</button>
+            <button class="chip">未读</button>
+            <button class="chip">限时聊天</button>
+            <button class="chip">群组</button>
+          </div>
 
-// 隐私设置
-p11.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p10')"></ion-icon><h3>隐私设置</h3></div>
-<div class="card" onclick="msg('已隐藏位置')"><p>隐藏实时位置 ✅</p></div>
-<div class="card" onclick="msg('已开启隐身')"><p>隐身模式 ✅</p></div>
-`;
+          <section class="list">
+            ${messages.map(message => {
+              const person = people.find(item => item.id === message.personId);
+              return `
+                <article class="card list-card" onclick="openChat('${person.id}')">
+                  <div class="list-main">
+                    ${avatar(person, "sm")}
+                    <div class="list-copy">
+                      <h3>${person.name}</h3>
+                      <p>${message.text}</p>
+                    </div>
+                  </div>
+                  <div class="meta">
+                    <p>${message.time}</p>
+                    ${message.unread ? `<span class="badge">${message.unread}</span>` : ""}
+                  </div>
+                </article>`;
+            }).join("")}
+          </section>`;
+      },
 
-// 群组详情
-p12.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p5')"></ion-icon><h3>徒步登山小队</h3><ion-icon name="settings-outline" onclick="goPage('p13')"></ion-icon></div>
-<div class="card"><p>群公告：每周六早8点集合登山</p></div>
-<div class="card" onclick="goPage('p6')"><p>开启实时对讲</p></div>
-<div class="card" onclick="goPage('p16')"><p>查看群成员位置</p></div>
-<div class="card" onclick="msg('已退出群组')"><p style="color:var(--red)">退出群组</p></div>
-`;
+      groups() {
+        return `
+          <header class="page-head">
+            <div class="title-block">
+              <p class="eyebrow">本地频道</p>
+              <h1>群组</h1>
+            </div>
+            <button class="btn small warning" onclick="openSheet('createGroup')">＋ 创建</button>
+          </header>
 
-// 群组设置
-p13.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p12')"></ion-icon><h3>群设置</h3></div>
-<div class="card" onclick="msg('已开启免打扰')"><p>消息免打扰 ✅</p></div>
-<div class="card" onclick="msg('已置顶')"><p>置顶群组 ✅</p></div>
-`;
+          <section class="hero-panel art-hero" style="min-height:146px">
+            <div class="hero-visual">${groupHeroArt()}</div>
+            <span class="signal-pill">◎ 当前加入 3 个群组</span>
+            <div>
+              <h2>路线、补给、位置都在本地共享</h2>
+              <p>群组消息会优先通过附近节点中继。</p>
+            </div>
+          </section>
 
-// 对讲房间
-p14.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p6')"></ion-icon><h3>实时对讲</h3><ion-icon name="settings-outline" onclick="goPage('p15')"></ion-icon></div>
-<div class="card"><p>当前在线：5人</p></div>
-<div style="margin:60px auto; text-align:center">
-  <div style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,var(--grad1),var(--grad3));display:grid;place-items:center;cursor:pointer" onclick="msg('正在说话...')">
-    <ion-icon name="mic" style="font-size:60px"></ion-icon>
-    <p style="color:white;margin-top:8px">按住说话</p>
-  </div>
-</div>
-`;
+          <div class="section-title">
+            <h3>附近公开群组</h3>
+            <span>5km 内</span>
+          </div>
+          <section class="list">
+            ${groups.map((group, index) => `
+              <article class="card list-card" onclick="openGroup('${group.id}')">
+                <div class="list-main">
+                  <div class="avatar sm square" style="--avatar-color:${index === 0 ? "#19875d" : index === 1 ? "#9d6a1c" : "#236987"}">${group.name.slice(0, 1)}</div>
+                  <div class="list-copy">
+                    <h3>${group.name}</h3>
+                    <p>${group.desc}</p>
+                  </div>
+                </div>
+                <span class="badge ${index === 1 ? "amber" : ""}">${group.members}</span>
+              </article>`).join("")}
+          </section>`;
+      },
 
-// 对讲设置
-p15.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p14')"></ion-icon><h3>对讲设置</h3></div>
-<div class="card" onclick="msg('音量已调大')"><p>调整音量</p></div>
-<div class="card" onclick="msg('已开启降噪')"><p>降噪模式 ✅</p></div>
-`;
+      outdoor() {
+        return `
+          <header class="page-head">
+            <div class="title-block">
+              <p class="eyebrow">户外模式</p>
+              <h1>队伍状态</h1>
+            </div>
+            <button class="btn small danger" onclick="openSheet('sos')">SOS</button>
+          </header>
 
-// 位置共享
-p16.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p12')"></ion-icon><h3>位置共享</h3></div>
-<div style="width:100%;height:200px;background:var(--bg2);border-radius:16px;display:grid;place-items:center;margin:20px 0">
-  <p>实时位置地图</p>
-</div>
-<div class="card"><p>刘雨 · 320米</p></div>
-<div class="card"><p>山野 · 500米</p></div>
-`;
+          <section class="map-panel">
+            ${mapArt()}
+            <div class="map-label">
+              <h3>徒步登山小队 · 7.6km 路线</h3>
+              <p>5 人在线，最近一次位置同步 18 秒前。</p>
+            </div>
+          </section>
 
-// 设备绑定
-p17.innerHTML=`
-<div class="row"><ion-icon name="chevron-back" onclick="goPage('p7')"></ion-icon><h3>绑定设备</h3></div>
+          <div class="split-actions">
+            <button class="btn full" onclick="setView('talk')">实时对讲</button>
+            <button class="btn full secondary" onclick="setView('location')">位置共享</button>
+          </div>
 
-<div style="width:100%;height:240px;background:var(--bg2);border-radius:16px;display:grid;place-items:center;margin:20px 0">
-  <ion-icon name="qr-code" style="font-size:80px;color:var(--text2)"></ion-icon>
-  <p style="margin-top:10px;color:var(--text2)">扫描设备二维码绑定</p>
-</div>
+          <div class="section-title">
+            <h3>户外工具</h3>
+            <span>离线优先</span>
+          </div>
+          <section class="list">
+            <article class="card list-card" onclick="showToast('路线已保存到本机')">
+              <div class="list-copy">
+                <h3>保存离线路线</h3>
+                <p>地图、补给点和撤退路线可无网查看。</p>
+              </div>
+              <span class="badge">已同步</span>
+            </article>
+            <article class="card list-card" onclick="showToast('已开启低电量广播')">
+              <div class="list-copy">
+                <h3>低电量广播</h3>
+                <p>降低刷新频率，保留 SOS 与位置中继。</p>
+              </div>
+              <span class="badge amber">省电</span>
+            </article>
+          </section>`;
+      },
 
-<div class="card" onclick="msg('已打开扫描')">
-  <div class="row">
-    <ion-icon name="scan"></ion-icon>
-    <h4>扫码绑定</h4>
-  </div>
-</div>
+      profile() {
+        return `
+          <header class="page-head">
+            <div class="title-block">
+              <p class="eyebrow">个人中心</p>
+              <h1>我的</h1>
+            </div>
+            ${iconButton("设置", "⚙", "setView('settings')")}
+          </header>
 
-<button class="btn gradient" style="width:100%;margin-top:20px" onclick="msg('设备绑定成功')">立即绑定</button>
-`;
+          <section class="profile-hero">
+            ${avatar({ name: "山野行者", initial: "山", color: "#23785c", image: "url('https://picsum.photos/seed/profile-hiker/180/180')" }, "lg")}
+            <div>
+              <h2>山野行者</h2>
+              <p>户外爱好者 · 已认证 · Mesh 信任分 96</p>
+              <div class="tag-list" style="margin-top:10px">
+                <span class="tag">徒步</span>
+                <span class="tag">登山</span>
+                <span class="tag">路线记录</span>
+              </div>
+            </div>
+          </section>
 
-document.getElementById('overlay').onclick = closeModal;
-goPage('p0');
-</script>
+          <div class="stat-grid">
+            <div class="stat"><strong>28</strong><span>同行记录</span></div>
+            <div class="stat"><strong>9</strong><span>离线路线</span></div>
+            <div class="stat"><strong>3</strong><span>绑定设备</span></div>
+          </div>
+
+          <div class="section-title">
+            <h3>账户与设备</h3>
+          </div>
+          <section class="list">
+            <article class="card list-card" onclick="setView('device')">
+              <div class="list-main"><span class="icon">▣</span><div class="list-copy"><h3>设备绑定</h3><p>手表、对讲模块、应急信标</p></div></div>
+              <span class="badge">3 台</span>
+            </article>
+            <article class="card list-card" onclick="setView('member')">
+              <div class="list-main"><span class="icon">◇</span><div class="list-copy"><h3>会员中心</h3><p>高级中继、路线备份、群组容量</p></div></div>
+              <span class="badge amber">Pro</span>
+            </article>
+            <article class="card list-card" onclick="setView('privacy')">
+              <div class="list-main"><span class="icon">◌</span><div class="list-copy"><h3>隐私设置</h3><p>可见距离、位置共享、阅后即焚</p></div></div>
+              <span class="badge">已开启</span>
+            </article>
+          </section>`;
+      },
+
+      person() {
+        const person = state.person;
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('discover')")}
+            <div class="top-actions">
+              ${iconButton("更多", "⋯", "openSheet('personMore')")}
+            </div>
+          </header>
+
+          <section class="profile-hero">
+            ${avatar(person, "lg")}
+            <div>
+              <h2>${person.name}</h2>
+              <p>${person.distance} · ${person.status} · 匹配度 ${person.match}</p>
+              <div class="tag-list" style="margin-top:10px">
+                ${person.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
+              </div>
+            </div>
+          </section>
+
+          <div class="section-title">
+            <h3>简介</h3>
+          </div>
+          <article class="card list-card" style="align-items:flex-start">
+            <div>
+              <h3>共同兴趣：${person.tags.slice(0, 2).join("、")}</h3>
+              <p style="margin-top:6px;white-space:normal">${person.bio} 最近一次连接来自附近公共节点，可信距离 ${person.distance}。</p>
+            </div>
+          </article>
+
+          <div class="split-actions">
+            <button class="btn full" onclick="openChat('${person.id}')">发消息</button>
+            <button class="btn full secondary" onclick="showToast('已跳过该用户')">跳过</button>
+          </div>`;
+      },
+
+      chat() {
+        const person = state.person;
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('messages')")}
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+              ${avatar(person, "sm")}
+              <div class="list-copy">
+                <h3>${person.name}</h3>
+                <p>${person.status} · 阅后 24h 自动清理</p>
+              </div>
+            </div>
+            ${iconButton("更多", "⋯", "openSheet('chatMore')")}
+          </header>
+
+          <div class="chat-log">
+            <div class="bubble left">你也喜欢徒步吗？我看你常走北线。</div>
+            <div class="bubble right">是的，每周都会走一段，离线路线也有记录。</div>
+            <div class="bubble left">明天一起吗？我这边 2 个人。</div>
+            <div class="bubble right">可以，8 点山口见。我把补给点发到群里。</div>
+          </div>
+
+          <div class="composer">
+            <button class="icon-btn" aria-label="语音" onclick="showToast('按住后开始录音')"><span class="icon">◉</span></button>
+            <input placeholder="输入消息" />
+            <button class="btn small" onclick="showToast('消息已发送')">发送</button>
+          </div>`;
+      },
+
+      groupDetail() {
+        const group = state.group;
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('groups')")}
+            <div class="title-block" style="flex:1">
+              <p class="eyebrow">群组详情</p>
+              <h2>${group.name}</h2>
+            </div>
+            ${iconButton("设置", "⚙", "openSheet('groupSettings')")}
+          </header>
+
+          <section class="hero-panel" style="min-height:134px;--hero-image:url('https://picsum.photos/seed/${group.id}-group-cover/720/300')">
+            <span class="signal-pill">◎ ${group.members}</span>
+            <div>
+              <h2>${group.name}</h2>
+              <p>${group.desc}</p>
+            </div>
+          </section>
+
+          <div class="section-title">
+            <h3>快速入口</h3>
+          </div>
+          <section class="list">
+            <article class="card list-card" onclick="setTab('outdoor')">
+              <div class="list-copy"><h3>开启实时对讲</h3><p>成员可在弱网环境下语音中继。</p></div>
+              <span class="badge">在线</span>
+            </article>
+            <article class="card list-card" onclick="setView('location')">
+              <div class="list-copy"><h3>查看成员位置</h3><p>只显示已授权共享的队友位置。</p></div>
+              <span class="badge amber">5 人</span>
+            </article>
+            <article class="card list-card" onclick="showToast('已退出群组')">
+              <div class="list-copy"><h3 style="color:var(--red)">退出群组</h3><p>本地缓存会保留 24 小时。</p></div>
+            </article>
+          </section>`;
+      },
+
+      talk() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('outdoor')")}
+            <div class="title-block" style="flex:1">
+              <p class="eyebrow">实时对讲</p>
+              <h2>徒步登山小队</h2>
+            </div>
+            ${iconButton("设置", "⚙", "openSheet('talkSettings')")}
+          </header>
+
+          <button class="talk-button" onclick="showToast('正在发送语音')">
+            <span>
+              <span class="icon" style="font-size:44px">◉</span>
+              <strong>按住说话</strong>
+            </span>
+          </button>
+
+          <section class="list">
+            <article class="card list-card">
+              <div class="list-main">${avatar(people[0], "sm")}<div class="list-copy"><h3>刘雨</h3><p>刚刚发送 6 秒语音</p></div></div>
+              <span class="badge">已达</span>
+            </article>
+            <article class="card list-card">
+              <div class="list-main">${avatar(people[1], "sm")}<div class="list-copy"><h3>邓丽</h3><p>等待中继确认</p></div></div>
+              <span class="badge amber">中继</span>
+            </article>
+          </section>`;
+      },
+
+      location() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('outdoor')")}
+            <div class="title-block" style="flex:1">
+              <p class="eyebrow">位置共享</p>
+              <h2>队伍地图</h2>
+            </div>
+            ${iconButton("刷新", "↻", "showToast('位置已刷新')")}
+          </header>
+          <section class="map-panel" style="min-height:340px">
+            ${mapArt()}
+            <div class="map-label">
+              <h3>全员在安全半径内</h3>
+              <p>最近成员 320m，最远成员 1.2km。</p>
+            </div>
+          </section>
+          <div class="section-title"><h3>成员位置</h3></div>
+          <section class="list">
+            ${people.slice(0, 3).map(person => `
+              <article class="card list-card">
+                <div class="list-main">${avatar(person, "sm")}<div class="list-copy"><h3>${person.name}</h3><p>${person.distance} · ${person.status}</p></div></div>
+                <span class="badge">已共享</span>
+              </article>`).join("")}
+          </section>`;
+      },
+
+      settings() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('profile')")}
+            <div class="title-block" style="flex:1"><p class="eyebrow">设置</p><h1>设置</h1></div>
+          </header>
+          <section class="list">
+            <article class="card list-card" onclick="setView('privacy')"><div class="list-copy"><h3>隐私设置</h3><p>距离可见、位置共享、黑名单</p></div><span class="icon">›</span></article>
+            <article class="card list-card" onclick="showToast('账号安全已打开')"><div class="list-copy"><h3>账号安全</h3><p>本机密钥、恢复码、设备管理</p></div><span class="icon">›</span></article>
+            <article class="card list-card" onclick="showToast('通用设置已打开')"><div class="list-copy"><h3>通用设置</h3><p>通知、声音、低电量模式</p></div><span class="icon">›</span></article>
+          </section>`;
+      },
+
+      privacy() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('profile')")}
+            <div class="title-block" style="flex:1"><p class="eyebrow">隐私</p><h1>隐私设置</h1></div>
+          </header>
+          <section class="list">
+            <article class="card list-card" onclick="showToast('实时位置已隐藏')"><div class="list-copy"><h3>隐藏实时位置</h3><p>仅显示大致距离，不显示精确坐标。</p></div><span class="badge">开启</span></article>
+            <article class="card list-card" onclick="showToast('隐身模式已开启')"><div class="list-copy"><h3>隐身模式</h3><p>暂停出现在附近推荐中。</p></div><span class="badge amber">手动</span></article>
+            <article class="card list-card" onclick="showToast('消息清理规则已更新')"><div class="list-copy"><h3>阅后即焚</h3><p>私聊默认 24 小时后清理。</p></div><span class="badge">24h</span></article>
+          </section>`;
+      },
+
+      member() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('profile')")}
+            <div class="title-block" style="flex:1"><p class="eyebrow">会员中心</p><h1>Pro 权益</h1></div>
+          </header>
+          <section class="hero-panel" style="--hero-image:url('https://picsum.photos/seed/offline-pro-membership/720/340')">
+            <span class="signal-pill">◇ 当前为 Pro</span>
+            <div><h2>高级中继与路线备份</h2><p>适合高频户外、群组组织者和应急通信场景。</p></div>
+          </section>
+          <div class="split-actions">
+            <button class="btn full warning" onclick="showToast('年度套餐已选择')">¥79 / 年</button>
+            <button class="btn full secondary" onclick="showToast('月度套餐已选择')">¥9.9 / 月</button>
+          </div>`;
+      },
+
+      device() {
+        return `
+          <header class="page-head">
+            ${iconButton("返回", "←", "setTab('profile')")}
+            <div class="title-block" style="flex:1"><p class="eyebrow">设备绑定</p><h1>绑定设备</h1></div>
+          </header>
+          <section class="map-panel" style="min-height:240px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(25,195,125,.16),rgba(85,194,255,.08)),var(--panel)">
+            <div style="width:138px;height:138px;border-radius:12px;background:
+              linear-gradient(90deg, var(--text) 10px, transparent 10px) 0 0/28px 28px,
+              linear-gradient(var(--text) 10px, transparent 10px) 0 0/28px 28px,
+              #0b1112;border:10px solid #f7fbfb"></div>
+          </section>
+          <section class="list" style="margin-top:14px">
+            <article class="card list-card" onclick="showToast('已打开扫码绑定')"><div class="list-copy"><h3>扫码绑定</h3><p>扫描设备二维码完成本机密钥配对。</p></div><span class="badge">推荐</span></article>
+            <article class="card list-card" onclick="showToast('附近设备搜索中')"><div class="list-copy"><h3>搜索附近设备</h3><p>通过短距广播发现可绑定设备。</p></div><span class="icon">›</span></article>
+          </section>`;
+      }
+    };
+
+    function renderSheet(type) {
+      const close = `<button class="icon-btn" aria-label="关闭" onclick="closeSheet()"><span class="icon">×</span></button>`;
+      const heads = {
+        filter: ["筛选附近的人", "调整距离、兴趣和在线状态。"],
+        search: ["搜索", "输入昵称、兴趣或群组名称。"],
+        createGroup: ["创建群组", "为附近活动建立一个本地频道。"],
+        sos: ["SOS 紧急求救", "向 5 公里内用户和已加入群组发送求救信号。"],
+        newMessage: ["新消息", "选择附近用户发起短距聊天。"],
+        personMore: ["更多操作", "管理这个用户的可见性和信任状态。"],
+        chatMore: ["聊天设置", "管理消息生命周期和提醒。"],
+        groupSettings: ["群组设置", "调整群组通知、置顶和成员可见性。"],
+        talkSettings: ["对讲设置", "调整音量、降噪和中继优先级。"]
+      };
+      const [title, desc] = heads[type] || ["操作", ""];
+      const head = `<div class="sheet-head"><div><h2>${title}</h2><p>${desc}</p></div>${close}</div>`;
+
+      if (type === "filter") {
+        return `${head}
+          <div class="chip-row" style="margin:12px 0 16px">
+            <button class="chip active">2km 内</button><button class="chip">5km 内</button><button class="chip">仅在线</button><button class="chip active">共同兴趣</button>
+          </div>
+          <button class="btn full" onclick="closeSheet();showToast('筛选已应用')">应用筛选</button>`;
+      }
+
+      if (type === "search") {
+        return `${head}
+          <input class="field" placeholder="搜索昵称 / 兴趣 / 群组" autofocus />
+          <button class="btn full" onclick="closeSheet();showToast('已开始搜索')">搜索</button>`;
+      }
+
+      if (type === "createGroup") {
+        return `${head}
+          <input class="field" placeholder="群组名称" />
+          <input class="field" placeholder="活动类型，例如徒步 / 露营" />
+          <button class="btn full warning" onclick="closeSheet();showToast('群组已创建')">创建群组</button>`;
+      }
+
+      if (type === "sos") {
+        return `${head}
+          <article class="card list-card sos-panel" style="margin-bottom:12px">
+            <div class="list-copy"><h3>将发送：当前位置、身份、应急备注</h3><p>信号会通过附近节点重复中继 15 分钟。</p></div>
+          </article>
+          <button class="btn full danger" onclick="closeSheet();showToast('SOS 求救信号已发送')">发送 SOS</button>`;
+      }
+
+      if (type === "newMessage") {
+        return `${head}<section class="list">
+          ${people.slice(0, 3).map(person => `
+            <article class="card list-card" onclick="closeSheet();openChat('${person.id}')">
+              <div class="list-main">${avatar(person, "sm")}<div class="list-copy"><h3>${person.name}</h3><p>${person.distance} · ${person.status}</p></div></div>
+              <span class="icon">›</span>
+            </article>`).join("")}
+        </section>`;
+      }
+
+      return `${head}
+        <section class="list">
+          <article class="card list-card" onclick="closeSheet();showToast('设置已更新')"><div class="list-copy"><h3>置顶 / 收藏</h3><p>把入口固定在常用列表。</p></div><span class="icon">›</span></article>
+          <article class="card list-card" onclick="closeSheet();showToast('已开启免打扰')"><div class="list-copy"><h3>免打扰</h3><p>保留 SOS 与紧急提醒。</p></div><span class="icon">›</span></article>
+        </section>`;
+    }
+
+    render();
+  </script>
 </body>
 </html>
