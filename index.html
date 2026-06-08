@@ -24,7 +24,7 @@
       --shadow: 0 22px 70px rgba(0,0,0,.22);
       --radius: 8px;
       --status-height: 38px;
-      --nav-height: 90px;
+      --nav-height: calc(76px + env(safe-area-inset-bottom));
     }
 
     * {
@@ -34,6 +34,8 @@
     html,
     body {
       min-height: 100%;
+      width: 100%;
+      overflow-x: hidden;
     }
 
     body {
@@ -45,6 +47,7 @@
       display: grid;
       place-items: center;
       padding: 24px;
+      overflow: hidden;
     }
 
     button,
@@ -60,6 +63,7 @@
 
     .phone-shell {
       width: min(100%, 420px);
+      max-width: 100%;
       height: min(880px, calc(100vh - 48px));
       min-height: 720px;
       background: #111111;
@@ -71,6 +75,8 @@
 
     .screen {
       position: relative;
+      width: 100%;
+      max-width: 100%;
       height: 100%;
       overflow: hidden;
       border-radius: 26px;
@@ -84,15 +90,29 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       color: #111111;
       font-size: 12px;
       letter-spacing: 0;
+      overflow: hidden;
     }
 
     .status-dots {
       display: flex;
       align-items: center;
       gap: 6px;
+      min-width: 0;
+      max-width: 54%;
+      justify-content: flex-end;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-dots span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .mesh-dot {
@@ -106,8 +126,11 @@
     main {
       height: calc(100% - var(--status-height) - var(--nav-height));
       overflow: auto;
+      overflow-x: hidden;
       padding: 14px 18px 24px;
       scrollbar-width: none;
+      width: 100%;
+      max-width: 100%;
     }
 
     main::-webkit-scrollbar {
@@ -121,6 +144,9 @@
       gap: 14px;
       margin-bottom: 16px;
       min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .title-block {
@@ -208,6 +234,7 @@
       display: flex;
       gap: 8px;
       flex-shrink: 0;
+      min-width: 0;
     }
 
     .icon-btn {
@@ -442,6 +469,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      min-width: 0;
     }
 
     .avatar {
@@ -638,15 +666,20 @@
       flex-direction: column;
       gap: 10px;
       padding-top: 4px;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .bubble {
-      max-width: 78%;
+      max-width: min(78%, calc(100% - 28px));
       padding: 12px 14px;
       border-radius: 14px;
       color: var(--text);
       font-size: 14px;
       line-height: 1.44;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .bubble.left {
@@ -654,6 +687,7 @@
       background: #ffffff;
       border-bottom-left-radius: 5px;
       border: 1px solid var(--line);
+      margin-right: auto;
     }
 
     .bubble.right {
@@ -662,12 +696,16 @@
       color: #111111;
       border-bottom-right-radius: 5px;
       font-weight: 650;
+      margin-left: auto;
     }
 
     .composer {
       position: sticky;
       bottom: 0;
-      margin: 20px -2px 0;
+      margin: 20px 0 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       height: 56px;
       border-radius: 12px;
       background: rgba(247,247,247,.94);
@@ -677,6 +715,7 @@
       gap: 8px;
       padding: 8px;
       backdrop-filter: blur(18px);
+      overflow: hidden;
     }
 
     .composer input {
@@ -688,6 +727,25 @@
       color: var(--text);
       background: transparent;
       padding: 0 8px;
+    }
+
+    .composer .btn.small {
+      flex: 0 0 auto;
+      min-width: 58px;
+    }
+
+    .chat-peer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    .chat-peer .list-copy {
+      min-width: 0;
+      overflow: hidden;
     }
 
     .split-actions {
@@ -831,19 +889,25 @@
       right: 0;
       bottom: 0;
       height: var(--nav-height);
-      padding: 8px 6px calc(10px + env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 6px 0 max(6px, env(safe-area-inset-bottom));
       background: rgba(247,247,247,.94);
       border-top: 1px solid rgba(0,0,0,.08);
       backdrop-filter: blur(22px);
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
       z-index: 20;
+      overflow: hidden;
     }
 
     .nav-item {
       min-width: 0;
-      min-height: 68px;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
       border: 0;
       border-radius: var(--radius);
       background: transparent;
@@ -853,9 +917,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       font-size: 12px;
       line-height: 1;
+      padding: 0;
+      overflow: hidden;
     }
 
     .nav-item.active {
@@ -883,6 +949,7 @@
       height: 28px;
       display: block;
       color: currentColor;
+      flex: 0 0 auto;
     }
 
     .nav-discover::before {
@@ -1100,19 +1167,27 @@
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 760px) {
       body {
         padding: 0;
         background: var(--bg);
       }
 
       .phone-shell {
-        width: 100%;
-        height: 100vh;
-        min-height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        height: 100dvh;
+        min-height: 100dvh;
         border: 0;
         border-radius: 0;
         padding: 0;
+      }
+
+      @supports not (height: 100dvh) {
+        .phone-shell {
+          height: 100vh;
+          min-height: 100vh;
+        }
       }
 
       .screen {
@@ -1125,9 +1200,9 @@
       }
     }
 
-    @media (max-width: 390px) {
+    @media (max-width: 430px) {
       :root {
-        --nav-height: 94px;
+        --nav-height: calc(76px + env(safe-area-inset-bottom));
       }
 
       .app-status {
@@ -1314,26 +1389,47 @@
         gap: 8px;
       }
 
+      .bubble {
+        max-width: min(74%, calc(100% - 22px));
+        padding: 11px 13px;
+        font-size: 14px;
+      }
+
+      .composer {
+        height: 54px;
+        padding: 7px;
+        gap: 7px;
+      }
+
+      .composer .icon-btn {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+      }
+
+      .composer input {
+        padding: 0 6px;
+      }
+
+      .composer .btn.small {
+        min-width: 56px;
+        padding: 0 12px;
+      }
+
       .nav {
-        padding: 7px 3px calc(9px + env(safe-area-inset-bottom));
+        padding: 5px 0 max(6px, env(safe-area-inset-bottom));
         gap: 0;
       }
 
       .nav-item {
-        min-height: 74px;
-        gap: 7px;
-        font-size: 12px;
-      }
-
-      .nav .icon {
-        width: 31px;
-        height: 31px;
-        font-size: 25px;
+        min-height: 0;
+        gap: 5px;
+        font-size: 11px;
       }
 
       .nav-icon {
-        width: 31px;
-        height: 31px;
+        width: 28px;
+        height: 28px;
       }
 
       .splash-logo {
@@ -1363,17 +1459,23 @@
         max-width: calc(100% - 86px);
       }
 
+      .bubble {
+        max-width: min(72%, calc(100% - 18px));
+      }
+
+      .composer .btn.small {
+        min-width: 52px;
+        padding: 0 10px;
+      }
+
       .icon-btn {
         width: 36px;
         height: 36px;
       }
 
-      .nav .icon {
-        font-size: 23px;
-      }
-
       .nav-icon {
-        transform: scale(.94);
+        width: 26px;
+        height: 26px;
       }
 
       .nav-item {
@@ -1994,7 +2096,7 @@
         return `
           <header class="page-head">
             ${iconButton("返回", "←", "setTab('messages')")}
-            <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+            <div class="chat-peer">
               ${avatar(person, "sm")}
               <div class="list-copy">
                 <h3>${person.name}</h3>
